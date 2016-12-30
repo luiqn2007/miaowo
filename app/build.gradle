@@ -66,32 +66,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-
-
-
 allprojects {
     repositories {
         jcenter()
-    }
-}
-
-signingConfigs {
-    debug {
-        storeFile file(RELEASE_STORE_FILE)
-        storePassword RELEASE_STORE_PASSWORD
-        keyAlias RELEASE_KEY_ALIAS
-        keyPassword RELEASE_KEY_PASSWORD
-    }
-    release {
-        storeFile file(RELEASE_STORE_FILE)
-        storePassword RELEASE_STORE_PASSWORD
-        keyAlias RELEASE_KEY_ALIAS
-        keyPassword RELEASE_KEY_PASSWORD
-    }
-    test {
-        storeFile file(RELEASE_STORE_FILE)
-        storePassword RELEASE_STORE_PASSWORD
-        keyAlias RELEASE_KEY_ALIAS
-        keyPassword RELEASE_KEY_PASSWORD
     }
 }
