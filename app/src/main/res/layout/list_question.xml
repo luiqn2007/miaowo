@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_item"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rect_blue_300"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingRight="8dp"
+    android:elevation="5dp"
+    android:layout_marginBottom="18sp">
+
+    <ImageView
+        android:id="@+id/iv_user"
+        android:src="@drawable/def_user"
+        android:padding="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
+    <TextView
+        android:id="@+id/tv_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/iv_user"
+        android:layout_toRightOf="@id/iv_user"
+        android:text="音熙"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_user"
+        android:layout_toRightOf="@id/tv_user"
+        android:layout_marginLeft="15dp"
+        android:text="大约24小时之前"
+        android:textSize="13sp"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_user"
+        android:layout_below="@id/tv_user"
+        android:textSize="18sp"
+        android:text="那么，你有没有爱上喵窝？"/>
+</RelativeLayout>
