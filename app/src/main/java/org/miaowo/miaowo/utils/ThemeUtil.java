@@ -14,7 +14,10 @@ import org.miaowo.miaowo.C;
 
 public class ThemeUtil {
 
-    // 加载默认配置
+    /**
+     * 加载默认主题配置
+     * @param context 上下文，用于获取参数
+     */
     public static void loadDefaultTheme(Context context) {
         /*
         自定义内容

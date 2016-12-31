@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="我的喵窝">
+        <menu>
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/login"
+                android:title="登录" />
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/setting"
+                android:title="设置" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/exit"
+                android:title="退出" />
+        </menu>
+    </item>
+</menu>

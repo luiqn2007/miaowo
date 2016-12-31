@@ -1,5 +1,7 @@
 package org.miaowo.miaowo;
 
+import android.support.annotation.WorkerThread;
+
 import org.miaowo.miaowo.beans.User;
 import org.miaowo.miaowo.utils.MD5Util;
 
@@ -40,6 +42,18 @@ public class T {
         return imgUrls[a];
     }
 
+    // 批量生成测试用户
+    @WorkerThread
+    public static ArrayList<User> createUsers(int count) {
+        ArrayList<User> users = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            int i1 = i + 5;
+            User u = new User(i1, "测试用户" + i1, "测试介绍" + i1, i1++, i1++, i1++, i1++, true, i1, false, i1, T.getRadomImgUrl());
+            users.add(u);
+        }
+        return users;
+    }
+
     public static boolean isLogin = false;
     public static ArrayList<User> users;
     public static User localUser;
@@ -48,7 +62,6 @@ public class T {
     {
         users = new ArrayList<>();
         users.add(new User(-1, "流浪喵", "欢迎来到喵窝"));
-        users.add(new User(0, "test", "测试账户", MD5Util.getMD5("test", "test"), null));
         localUser = users.get(0);
     }
 }

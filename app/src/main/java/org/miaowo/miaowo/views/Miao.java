@@ -16,11 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,164 +28,75 @@ import org.miaowo.miaowo.T;
 import org.miaowo.miaowo.beans.User;
 import org.miaowo.miaowo.beans.VersionMessage;
 import org.miaowo.miaowo.fragment.AnnouncementFragment;
+import org.miaowo.miaowo.fragment.AskFragment;
 import org.miaowo.miaowo.fragment.DailyFragment;
-import org.miaowo.miaowo.fragment.QuestionFragment;
 import org.miaowo.miaowo.fragment.WaterFragment;
 import org.miaowo.miaowo.impls.StateImpl;
+import org.miaowo.miaowo.impls.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.impls.interfaces.State;
-import org.miaowo.miaowo.utils.PopupUtil;
+import org.miaowo.miaowo.set.ChatWindows;
+import org.miaowo.miaowo.set.StateWindows;
 import org.miaowo.miaowo.utils.SpUtil;
 import org.miaowo.miaowo.utils.ThemeUtil;
+
+import java.util.ArrayList;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 // Android Studio自动生成的，用了一大堆支持库的东西，详见
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
 public class Miao extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Handled{
     private static final String TAG = "Miao";
 
     // 视图
-    ImageView iv_daily, iv_announcement, iv_question, iv_water;
-    Fragment fg_daily, fg_announcement, fg_question, fg_water;
-    LinearLayout ll_daily, ll_announcement, ll_ask, ll_water;
-    NavigationView navigationView;
-    PopupWindow mWindow;
+    private TextView tv_daily, tv_announcement, tv_ask, tv_water;
+    private Fragment fg_daily, fg_announcement, fg_ask, fg_water;
+    private NavigationView navigationView;
 
     // 组件
-    FragmentManager fm;
-    State mState = new StateImpl();
+    private FragmentManager fm;
+    private State mState;
+    private ChatWindows mChatWindows;
+    private StateWindows mStateWindows;
 
-    // 状态
-    long backTime;
-    Exception e = null;
-    boolean isLogin = true;
+    // 数据
+    private long backTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_miao);
         super.onCreate(savedInstanceState);
 
+        mState = new StateImpl();
+        mChatWindows = new ChatWindows(this);
+        mStateWindows = new StateWindows(this);
+
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // 绑定控件
+        initViews();
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        // 这里是在 Activity 完全加载后调用
         super.onPostCreate(savedInstanceState);
-
-        // 初始化控件
-        initViews();
-
+        // 加载用户信息
+        setUserMsg();
         // 显示 每日 页面
-        onClick(findViewById(R.id.ll_daily));
-
+        onClick(findViewById(R.id.tv_daily));
         // 显示对话框
-        Log.i(TAG, "onCreate: here");
         showAppDialog();
-
         // 记录APP打开时间
         backTime = System.currentTimeMillis();
-    }
-
-    private void login() {
-        isLogin = true;
-        mWindow = PopupUtil.showPopupWindowInCenter(this, R.layout.window_login, new PopupUtil.PopupWindowInit() {
-            @Override
-            public void init(View v, PopupWindow window) {
-                final EditText user = (EditText) v.findViewById(R.id.et_user);
-                final EditText pwd = (EditText) v.findViewById(R.id.et_password);
-                final EditText summary = (EditText) v.findViewById(R.id.et_summary);
-                final View label = v.findViewById(R.id.tv_label1);
-                final Button login = (Button) v.findViewById(R.id.btn_login);
-                login.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        new AsyncTask<String, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(String... params) {
-                                try {
-                                    Miao.this.e = null;
-                                    if (isLogin) {
-                                        Log.i(TAG, "doInBackground: " + params[0] + " / " + params[1]);
-                                        mState.login(new User(params[0], params[1]));
-                                    }
-                                } catch (final Exception e) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            handleError(e);
-                                        }
-                                    });
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                if (isLogin) {
-                                    if (e == null) {
-                                        setUserMsg();
-                                        mWindow.dismiss();
-                                    }
-                                } else {
-                                    ((Button) v).setText("登录");
-                                    label.setVisibility(View.GONE);
-                                    summary.setVisibility(View.GONE);
-                                    isLogin = true;
-                                }
-                            }
-                        }.execute(user.getText().toString(), pwd.getText().toString());
-                    }
-                });
-                v.findViewById(R.id.btn_regist).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new AsyncTask<String, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(String... params) {
-                                if (!isLogin) {
-                                    try {
-                                        Miao.this.e = null;
-                                        mState.regist(new User(params[0], params[2], params[1]));
-                                    } catch (final Exception e) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                handleError(e);
-                                            }
-                                        });
-                                    }
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                if (isLogin) {
-                                    login.setText("返回");
-                                    label.setVisibility(View.VISIBLE);
-                                    summary.setVisibility(View.VISIBLE);
-                                    isLogin = false;
-                                } else {
-                                    if (e == null) {
-                                        setUserMsg();
-                                        mWindow.dismiss();
-                                    }
-                                }
-                            }
-                        }.execute(user.getText().toString(), pwd.getText().toString(), summary.getText().toString());
-                    }
-                });
-            }
-        });
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
+        // 侧栏的动作响应
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_setting:
@@ -204,7 +111,10 @@ public class Miao extends BaseActivity
                 }
                 break;
             case R.id.nav_login:
-                login();
+                mStateWindows.showLogin();
+                break;
+            case R.id.nav_chat:
+                mChatWindows.showChatList(new ArrayList<User>());
                 break;
         }
 
@@ -213,7 +123,10 @@ public class Miao extends BaseActivity
         return true;
     }
 
-    private void showUsefulDialog() {
+    /*
+    弹窗
+     */
+    private void showFirstUseDialog() {
         if (!SpUtil.getBoolean(this, C.SP_FIRST_BOOT, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("人人都有\"萌\"的一面");
@@ -228,7 +141,6 @@ public class Miao extends BaseActivity
             builder.show();
         }
     }
-
     private void showAppDialog() {
         VersionMessage versionMessage = getIntent().getParcelableExtra(C.EXTRA_ITEM);
         if (SpUtil.getBoolean(Miao.this, C.SP_FIRST_UPDATE, true)) {
@@ -240,23 +152,26 @@ public class Miao extends BaseActivity
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     SpUtil.putBoolean(Miao.this, C.SP_FIRST_UPDATE, false);
-                    showUsefulDialog();
+                    showFirstUseDialog();
                     dialogInterface.dismiss();
                 }
             });
             builder.show();
         } else {
-            showUsefulDialog();
+            showFirstUseDialog();
         }
     }
 
     @Override
     public void onClick(View view) {
+        // 处理点击事件， 跳转不同 碎片
+        // 关闭所有 Fragment
         hideAllFragment();
 
+        // 加载相应的 Fragment
         FragmentTransaction transaction = fm.beginTransaction();
         switch (view.getId()) {
-            case R.id.ll_daily:
+            case R.id.tv_daily:
                 if (fg_daily == null) {
                     fg_daily = DailyFragment.newInstance();
                 }
@@ -266,7 +181,7 @@ public class Miao extends BaseActivity
                 transaction.show(fg_daily);
                 transaction.commit();
                 break;
-            case R.id.ll_announcement:
+            case R.id.tv_announcement:
                 if (fg_announcement == null) {
                     fg_announcement = AnnouncementFragment.newInstance();
                 }
@@ -276,17 +191,17 @@ public class Miao extends BaseActivity
                 transaction.show(fg_announcement);
                 transaction.commit();
                 break;
-            case R.id.ll_question:
-                if (fg_question == null) {
-                    fg_question = QuestionFragment.newInstance();
+            case R.id.tv_ask:
+                if (fg_ask == null) {
+                    fg_ask = AskFragment.newInstance();
                 }
-                if(!fg_question.isAdded()) {
-                    transaction.add(R.id.container, fg_question);
+                if(!fg_ask.isAdded()) {
+                    transaction.add(R.id.container, fg_ask);
                 }
-                transaction.show(fg_question);
+                transaction.show(fg_ask);
                 transaction.commit();
                 break;
-            case R.id.ll_water:
+            case R.id.tv_water:
                 if (fg_water == null) {
                     fg_water = WaterFragment.newInstance();
                 }
@@ -313,47 +228,42 @@ public class Miao extends BaseActivity
         if (fg_announcement != null) {
             transaction.hide(fg_announcement);
         }
-        if (fg_question != null) {
-            transaction.hide(fg_question);
+        if (fg_ask != null) {
+            transaction.hide(fg_ask);
         }
         if (fg_water != null) {
             transaction.hide(fg_water);
         }
         transaction.commit();
 
-        ll_daily.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
+        tv_daily.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
                 Color.argb(255, 255, 255, 255)));
-        ll_announcement.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
+        tv_announcement.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
                 Color.argb(255, 255, 255, 255)));
-        ll_ask.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
+        tv_ask.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
                 Color.argb(255, 255, 255, 255)));
-        ll_water.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
+        tv_water.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
                 Color.argb(255, 255, 255, 255)));
     }
 
     private void initViews() {
-        iv_daily = (ImageView) findViewById(R.id.iv_daily);
-        iv_water = (ImageView) findViewById(R.id.iv_water);
-        iv_question = (ImageView) findViewById(R.id.iv_ask);
-        iv_announcement = (ImageView) findViewById(R.id.iv_announcement);
+        tv_daily = (TextView) findViewById(R.id.tv_daily);
+        tv_water = (TextView) findViewById(R.id.tv_water);
+        tv_ask = (TextView) findViewById(R.id.tv_ask);
+        tv_announcement = (TextView) findViewById(R.id.tv_announcement);
 
-        ll_daily = (LinearLayout) findViewById(R.id.ll_daily);
-        ll_announcement = (LinearLayout) findViewById(R.id.ll_announcement);
-        ll_ask = (LinearLayout) findViewById(R.id.ll_question);
-        ll_water = (LinearLayout) findViewById(R.id.ll_water);
-
-        ll_daily.setOnClickListener(this);
-        ll_announcement.setOnClickListener(this);
-        ll_ask.setOnClickListener(this);
-        ll_water.setOnClickListener(this);
+        tv_daily.setOnClickListener(this);
+        tv_announcement.setOnClickListener(this);
+        tv_ask.setOnClickListener(this);
+        tv_water.setOnClickListener(this);
 
         fm = getSupportFragmentManager();
-
-        setUserMsg();
     }
 
     @Override
     public void onBackPressed() {
+        // 返回键
+        // 有侧滑打开，则关闭
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -370,9 +280,9 @@ public class Miao extends BaseActivity
         }
     }
 
-    // 错误处理
-    private void handleError(Exception e) {
-        this.e = e;
+    @Override
+    public void handleError(Exception e) {
+        // 错误处理
         e.printStackTrace();
         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
     }
@@ -388,24 +298,23 @@ public class Miao extends BaseActivity
             protected void onPostExecute(User u) {
                 View headerView = navigationView.getHeaderView(0);
                 navigationView.getMenu().clear();
+                navigationView.inflateMenu(R.menu.activity_main_drawer);
                 ImageView iv_user = (ImageView) headerView.findViewById(R.id.iv_user);
                 TextView tv_user = (TextView) headerView.findViewById(R.id.tv_user);
                 TextView tv_summary = (TextView) headerView.findViewById(R.id.tv_summary);
 
                 Log.i(TAG, "onPostExecute: " + u.getName() + " / " + u.getSummary() + " / " + u.getHeadImg());
 
-                if (u.getId() <= 0) {
+                if (u.getId() == -1) {
                     Picasso.with(Miao.this).load(R.drawable.def_user)
                             .fit().transform(new CropCircleTransformation())
                             .into(iv_user);
-                    if (u.getId() == -1)
-                        navigationView.inflateMenu(R.menu.activity_main_drawer_no_login);
-                    else navigationView.inflateMenu(R.menu.activity_main_drawer);
+                    getMenuInflater().inflate(R.menu.inmenu_logout, navigationView.getMenu());
                 } else {
                     Picasso.with(Miao.this).load(u.getHeadImg())
                             .fit().transform(new CropCircleTransformation())
                             .into(iv_user);
-                    navigationView.inflateMenu(R.menu.activity_main_drawer);
+                    getMenuInflater().inflate(R.menu.inmenu_login, navigationView.getMenu());
                 }
                 tv_summary.setText(u.getSummary());
                 tv_user.setText(u.getName());

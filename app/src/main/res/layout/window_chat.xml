@@ -2,10 +2,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_user"
     android:background="@drawable/bg_rect_deep_purple_300"
-    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:padding="15dp" >
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/include_chat_head" />
+
+    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
+        android:id="@+id/list"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_below="@id/include"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list">
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_btn_blue"
+            android:textSize="18sp"
+            android:text="发送"/>
+        <EditText
+            android:id="@+id/et_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/btn_send"
+            android:textSize="16sp"
+            android:text="测试内容"/>
+    </RelativeLayout>
 
 </RelativeLayout>

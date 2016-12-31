@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_user"
+    android:background="@drawable/bg_rect_deep_purple_300"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp" >
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/include_chat_head" />
+</RelativeLayout>

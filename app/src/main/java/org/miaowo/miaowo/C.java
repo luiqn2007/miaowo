@@ -34,4 +34,11 @@ public class C {
     public static final int LF_TYPE_WATER = 4;
     public static final int LF_POSITION_UP = 1;
     public static final int LF_POSITION_DOWN = 2;
+
+    // PopupWindow 类型
+    public static String PW_USER = "user";
+    public static String PW_LOGIN = "login";
+    public static String PW_CHAT = "chat";
+    public static String PW_CHAT_LIST = "chatList";
+
 }

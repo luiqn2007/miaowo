@@ -119,6 +119,11 @@ public class ItemRecycleAdapter<E> extends RecyclerView.Adapter<ItemRecycleAdapt
             }
             return this;
         }
+
+        // 获取自定义视图
+        public View getView() {
+            return itemView;
+        }
     }
 
 }

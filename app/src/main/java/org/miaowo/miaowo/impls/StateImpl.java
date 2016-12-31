@@ -13,13 +13,14 @@ import org.miaowo.miaowo.utils.MD5Util;
  */
 
 public class StateImpl implements State {
+
     @Override
     @WorkerThread
     public void login(User u) throws Exception {
         T.isLogin = true;
         String rlPwd = MD5Util.getMD5(u.getPwd(), u.getName());
         if (T.users.size() <= 1) {
-            throw new Exception("无账户");
+            throw new Exception("系统内无账户");
         }
         for (User user : T.users) {
             if (user.getName().equals(u.getName()) && user.getPwd().equals(rlPwd)) {
@@ -40,7 +41,7 @@ public class StateImpl implements State {
     @WorkerThread
     public void regist(User u) throws Exception {
         String pwd = MD5Util.getMD5(u.getPwd(), u.getName());
-        T.users.add(T.users.size(), new User(T.users.size(), u.getName(), u.getSummary(), pwd, T.getRadomImgUrl()));
+        T.users.add(new User(T.users.size(), u.getName(), u.getSummary(), pwd, T.getRadomImgUrl()));
         T.localUser = T.users.get(T.users.size() - 1);
         T.isLogin = true;
     }

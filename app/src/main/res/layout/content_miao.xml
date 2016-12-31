@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.miaowo.miaowo.views.Miao"
     tools:showIn="@layout/activity_miao">
 
@@ -17,58 +15,29 @@
         android:layout_height="wrap_content"
         android:background="#08000000"
         android:orientation="horizontal">
-        <LinearLayout
-            android:id="@+id/ll_daily"
-            style="@style/tab_bottom_container">
-            <ImageView
-                android:id="@+id/iv_daily"
-                style="@style/tab_bottom_image"
-                android:src="@drawable/daily0"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="每日"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/ll_announcement"
-            style="@style/tab_bottom_container">
-            <ImageView
-                android:id="@+id/iv_announcement"
-                style="@style/tab_bottom_image"
-                android:src="@drawable/announcement"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="公告"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/ll_question"
-            style="@style/tab_bottom_container">
-            <ImageView
-                android:id="@+id/iv_ask"
-                style="@style/tab_bottom_image"
-                android:src="@drawable/ask"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="提问"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/ll_water"
-            style="@style/tab_bottom_container">
-            <ImageView
-                android:id="@+id/iv_water"
-                style="@style/tab_bottom_image"
-                android:src="@drawable/water"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="灌水"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_daily"
+            android:drawableTop="@drawable/daily"
+            android:text="每日"/>
+
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_announcement"
+            android:text="公告"
+            android:drawableTop="@drawable/announcement" />
+
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_ask"
+            android:text="提问"
+            android:drawableTop="@drawable/ask"/>
+
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_water"
+            android:text="灌水"
+            android:drawableTop="@drawable/water"/>
     </LinearLayout>
 
     <!-- 页面 -->
