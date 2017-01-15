@@ -7,14 +7,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.beans.User;
-import org.miaowo.miaowo.impls.StateImpl;
-import org.miaowo.miaowo.impls.interfaces.NotSingle.Handled;
-import org.miaowo.miaowo.impls.interfaces.State;
-import org.miaowo.miaowo.utils.PopupUtil;
-import org.miaowo.miaowo.views.Miao;
+import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.impl.StateImpl;
+import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
+import org.miaowo.miaowo.impl.interfaces.State;
+import org.miaowo.miaowo.util.PopupUtil;
+import org.miaowo.miaowo.view.Miao;
 
 /**
  * 与用户登录状态有关的弹窗
@@ -32,7 +31,7 @@ public class StateWindows {
 
     public PopupWindow showLogin() {
         isLogin = true;
-        return PopupUtil.showPopupWindowInCenter(context, C.PW_LOGIN, R.layout.window_login, new PopupUtil.PopupWindowInit() {
+        return PopupUtil.showPopupWindowInCenter(context, R.layout.window_login, new PopupUtil.PopupWindowInit() {
             @Override
             public void init(View v, PopupWindow window) {
                 final EditText user = (EditText) v.findViewById(R.id.et_user);
@@ -83,7 +82,7 @@ public class StateWindows {
                             protected Exception doInBackground(String... params) {
                                 if (!isLogin) {
                                     try {
-                                        mState.regist(new User(params[0], params[2], params[1]));
+                                        mState.regist(new User(params[0], params[1], params[2]));
                                     } catch (final Exception e) {
                                         return e;
                                     }
@@ -99,18 +98,19 @@ public class StateWindows {
                                     summary.setVisibility(View.VISIBLE);
                                     isLogin = false;
                                 } else {
-                                    if (e != null) {
-                                        ((Handled) context).handleError(e);
+                                    if (e == null) {
                                         ((Miao) context).setUserMsg();
                                         PopupUtil.closePopupWindow();
+                                    } else {
+                                        ((Handled) context).handleError(e);
                                     }
                                 }
                             }
-                        }.execute(user.getText().toString(), pwd.getText().toString(), summary.getText().toString());
+                        }.execute(user.getText().toString(), summary.getText().toString(), pwd.getText().toString());
                     }
                 });
             }
-        });
+        }, null);
     }
 
 }

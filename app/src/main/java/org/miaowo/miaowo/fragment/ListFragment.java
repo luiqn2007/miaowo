@@ -1,28 +1,30 @@
 package org.miaowo.miaowo.fragment;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.adapters.ItemRecycleAdapter;
-import org.miaowo.miaowo.beans.Question;
-import org.miaowo.miaowo.beans.User;
-import org.miaowo.miaowo.impls.MsgImpl;
-import org.miaowo.miaowo.impls.interfaces.Message;
-import org.miaowo.miaowo.impls.interfaces.NotSingle.Handled;
+import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
+import org.miaowo.miaowo.bean.Question;
+import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.impl.MsgImpl;
+import org.miaowo.miaowo.impl.interfaces.Message;
+import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.set.UserWindows;
-import org.miaowo.miaowo.utils.SpUtil;
+import org.miaowo.miaowo.ui.LoadMoreList;
+import org.miaowo.miaowo.util.SpUtil;
 
 import java.util.ArrayList;
 
@@ -31,8 +33,8 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 abstract public class ListFragment extends Fragment implements Handled {
     private static final String TAG = "ListFragment";
 
-    private PullLoadMoreRecyclerView mList;
-    private ItemRecycleAdapter<Question> mAdapter;
+    private LoadMoreList mList;
+    private ItemRecyclerAdapter<Question> mAdapter;
     private ArrayList<Question> mItems;
     private Message mMessage;
     private Exception e = null;
@@ -57,7 +59,7 @@ abstract public class ListFragment extends Fragment implements Handled {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_list, container, false);
-        mList = (PullLoadMoreRecyclerView) v.findViewById(R.id.list_item);
+        mList = (LoadMoreList) v.findViewById(R.id.list_item);
         mMessage = new MsgImpl();
         mItems = new ArrayList<>();
         mUserWindows = new UserWindows(getActivity());
@@ -67,19 +69,19 @@ abstract public class ListFragment extends Fragment implements Handled {
     }
 
     private void initList() {
-        mAdapter = new ItemRecycleAdapter<>(
-                mItems, new ItemRecycleAdapter.ViewLoader<Question>() {
+        mAdapter = new ItemRecyclerAdapter<>(
+                mItems, new ItemRecyclerAdapter.ViewLoader<Question>() {
             @Override
-            public ItemRecycleAdapter.ViewHolder createHolder(ViewGroup parent, int viewType) {
+            public ItemRecyclerAdapter.ViewHolder createHolder(ViewGroup parent, int viewType) {
                 // 不能用 View.inflate
                 // 详见 http://blog.csdn.net/sinat_26710701/article/details/52514387
-                return new ItemRecycleAdapter.ViewHolder(
+                return new ItemRecyclerAdapter.ViewHolder(
                         LayoutInflater.from(getContext()).inflate(R.layout.list_question, parent, false)
                 );
             }
 
             @Override
-            public void bindView(final Question item, ItemRecycleAdapter.ViewHolder holder) {
+            public void bindView(final Question item, ItemRecyclerAdapter.ViewHolder holder) {
                 // 用户
                 final User u = item.getUser();
                 holder.setOnClickListener(new View.OnClickListener() {
@@ -111,26 +113,64 @@ abstract public class ListFragment extends Fragment implements Handled {
                         .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
             }
 
+            @Override
+            public int setType(Question item, int position) {
+                return 0;
+            }
+
             private void jumpToQuestion(Question i) {
                 Log.i(TAG, "jumpToQuestion: " + i.getTitle());
             }
 
         });
-        mList.setLinearLayout();
         mList.setAdapter(mAdapter);
-        mList.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+        mList.setPullRefresher(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mItems = checkUpdate(C.LF_POSITION_UP);
-                if (e == null) mAdapter.updateDate(mItems);
-                mList.setPullLoadMoreCompleted();
-            }
+                new AsyncTask<Void, Void, Void>(){
 
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        mItems = checkUpdate(C.LF_POSITION_UP);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        if (e == null) {
+                            mAdapter.updateDate(mItems);
+                            Snackbar.make(getActivity().getWindow().getDecorView(), "更新完成", Snackbar.LENGTH_SHORT).show();
+                        }
+                        mList.loadOver();
+                        mList.scrollToPosition(0);
+                    }
+                }.execute();
+            }
+        });
+        mList.setPushRefresher(new SwipeRefreshLayout.OnRefreshListener() {
+            int lastCount = 0;
             @Override
-            public void onLoadMore() {
-                mItems.addAll(checkUpdate(C.LF_POSITION_DOWN));
-                if (e == null) mAdapter.updateDate(mItems);
-                mList.setPullLoadMoreCompleted();
+            public void onRefresh() {
+                new AsyncTask<Void, Void, Void>(){
+
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        lastCount = mItems.size();
+                        mItems.addAll(checkUpdate(C.LF_POSITION_DOWN));
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        if (e == null) {
+                            mAdapter.updateDate(mItems);
+                            Snackbar.make(getActivity().getWindow().getDecorView(),
+                                    "更新了 " + (mItems.size() - lastCount) + " 条消息", Snackbar.LENGTH_SHORT).show();
+                        }
+                        mList.loadOver();
+                        mList.scrollToPosition(mItems.size() - 1);
+                    }
+                }.execute();
             }
         });
     }
@@ -162,7 +202,7 @@ abstract public class ListFragment extends Fragment implements Handled {
     @Override
     public void handleError(Exception e) {
         e.printStackTrace();
-        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().getWindow().getDecorView(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
     }
 
 }

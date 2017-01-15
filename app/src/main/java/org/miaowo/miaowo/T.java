@@ -2,18 +2,17 @@ package org.miaowo.miaowo;
 
 import android.support.annotation.WorkerThread;
 
-import org.miaowo.miaowo.beans.User;
-import org.miaowo.miaowo.utils.MD5Util;
+import org.miaowo.miaowo.bean.ChatMessage;
+import org.miaowo.miaowo.bean.User;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * T == Test
+ * T == Tests
  * 用于测试的一些数据
  * Created by lq2007 on 16-12-7.
  */
-
 public class T {
     private static int lastNum = 0;
     // 用于提供图片数据
@@ -33,6 +32,7 @@ public class T {
             "http://tupian.enterdesk.com/2013/mxy/12/16/4/6.jpg",
             "http://img.taopic.com/uploads/allimg/140326/235113-1403260I05466.jpg"
     };
+
     public static String getRadomImgUrl() {
         int a = new Random(System.currentTimeMillis()).nextInt(imgUrls.length);
         while (a == lastNum) {
@@ -54,9 +54,16 @@ public class T {
         return users;
     }
 
+    // 生成聊天回复
+    public static ChatMessage getReply(ChatMessage msg) {
+        return new ChatMessage(msg.getTo(), msg.getFrom(), "明白 -->  " + System.currentTimeMillis());
+    }
+
     public static boolean isLogin = false;
     public static ArrayList<User> users;
     public static User localUser;
+    final public static String BC_CHAT = "org.miaowo.t.newchat";
+    final public static String BC_MSG = "org.miaowo.t.newmsg";
 
     static
     {
