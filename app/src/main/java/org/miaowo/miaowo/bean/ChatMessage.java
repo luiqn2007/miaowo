@@ -9,8 +9,6 @@ import android.os.Parcelable;
  */
 public class ChatMessage implements Parcelable {
 
-    // 聊天室
-    ChatRoom chatRoom;
     // 谁发的
     User from;
     // 发给谁
@@ -66,14 +64,6 @@ public class ChatMessage implements Parcelable {
         this.message = message;
     }
 
-    public ChatRoom getChatRoom() {
-        return chatRoom;
-    }
-
-    public void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,19 +71,17 @@ public class ChatMessage implements Parcelable {
 
         ChatMessage that = (ChatMessage) o;
 
-        if (!chatRoom.equals(that.chatRoom)) return false;
         if (!from.equals(that.from)) return false;
         if (!to.equals(that.to)) return false;
-        return message != null ? message.equals(that.message) : that.message == null;
+        return message.equals(that.message);
 
     }
 
     @Override
     public int hashCode() {
-        int result = chatRoom.hashCode();
-        result = 31 * result + from.hashCode();
+        int result = from.hashCode();
         result = 31 * result + to.hashCode();
-        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = 31 * result + message.hashCode();
         return result;
     }
 

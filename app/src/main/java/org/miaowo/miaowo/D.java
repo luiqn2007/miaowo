@@ -1,8 +1,7 @@
 package org.miaowo.miaowo;
 
-import android.widget.PopupWindow;
-
 import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.view.BaseActivity;
 
 /**
  * D == Data
@@ -20,4 +19,5 @@ public class D {
     }
 
     public User activeChatUser = null;
+    public BaseActivity activeActivity = null;
 }

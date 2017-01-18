@@ -88,7 +88,7 @@ public class Splish extends BaseActivity {
         try {
             updateMessage = new MsgImpl().getUpdateMessage(pm.getPackageInfo(getPackageName(), 0).versionCode);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            handleError(e);
         }
     }
 

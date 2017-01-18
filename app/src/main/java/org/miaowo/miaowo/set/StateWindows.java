@@ -1,16 +1,15 @@
 package org.miaowo.miaowo.set;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.util.PopupUtil;
 import org.miaowo.miaowo.view.Miao;
@@ -21,17 +20,13 @@ import org.miaowo.miaowo.view.Miao;
  */
 
 public class StateWindows {
-    private Activity context;
     private boolean isLogin = true;
     private State mState = new StateImpl();
-
-    public StateWindows(Activity context) {
-        this.context = context;
-    }
+    private D d = D.getInstance();
 
     public PopupWindow showLogin() {
         isLogin = true;
-        return PopupUtil.showPopupWindowInCenter(context, R.layout.window_login, new PopupUtil.PopupWindowInit() {
+        return PopupUtil.showPopupWindowInCenter(R.layout.window_login, new PopupUtil.PopupWindowInit() {
             @Override
             public void init(View v, PopupWindow window) {
                 final EditText user = (EditText) v.findViewById(R.id.et_user);
@@ -60,9 +55,9 @@ public class StateWindows {
                                 if (isLogin) {
                                     if (e == null) {
                                         PopupUtil.closePopupWindow();
-                                        ((Miao) context).setUserMsg();
+                                        ((Miao) d.activeActivity).setUserMsg();
                                     } else {
-                                        ((Handled) context).handleError(e);
+                                        D.getInstance().activeActivity.handleError(e);
                                     }
                                 } else {
                                     ((Button) v).setText("登录");
@@ -99,10 +94,10 @@ public class StateWindows {
                                     isLogin = false;
                                 } else {
                                     if (e == null) {
-                                        ((Miao) context).setUserMsg();
+                                        ((Miao) d.activeActivity).setUserMsg();
                                         PopupUtil.closePopupWindow();
                                     } else {
-                                        ((Handled) context).handleError(e);
+                                        d.activeActivity.handleError(e);
                                     }
                                 }
                             }

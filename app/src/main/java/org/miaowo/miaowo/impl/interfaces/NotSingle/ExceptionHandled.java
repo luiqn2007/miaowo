@@ -5,6 +5,6 @@ package org.miaowo.miaowo.impl.interfaces.NotSingle;
  * Created by luqin on 17-1-1.
  */
 
-public interface Handled {
+public interface ExceptionHandled {
     void handleError(Exception e);
 }

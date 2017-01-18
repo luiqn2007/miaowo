@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.impl;
 
-import android.graphics.Path;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 

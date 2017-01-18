@@ -1,8 +1,9 @@
-package org.miaowo.miaowo.fragment;
+package org.miaowo.miaowo.fragment.square;
 
 import android.os.Bundle;
 
 import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.fragment.ListFragment;
 
 public class WaterFragment extends ListFragment {
 

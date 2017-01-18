@@ -35,10 +35,7 @@ public class C {
     final public static int LF_POSITION_DOWN = 2;
 
     // PopupWindow 类型
-    final public static String PW_USER = "user";
-    final public static String PW_LOGIN = "login";
-    final public static String PW_CHAT = "chat";
-    final public static String PW_CHAT_LIST = "chatList";
+    final public static int PW_CHAT = 1;
 
     // 广播
     final public static String BC_CHAT = "org.miaowo.chat";

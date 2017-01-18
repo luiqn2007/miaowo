@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_ask"
+    android:background="@drawable/bg_rect_deep_purple_300"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="15dp" >
+
+    <ImageView
+        android:id="@+id/iv_user"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/def_user"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/tv_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_alignTop="@id/iv_user"
+        android:layout_toRightOf="@id/iv_user"
+        android:text="流浪喵"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="问题标题"
+        android:layout_below="@id/tv_user"
+        android:layout_toRightOf="@id/iv_user"
+        android:textColor="#FF000000"
+        android:textSize="23sp"/>
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_title"
+        android:layout_below="@id/tv_title"
+        android:gravity="right"
+        android:text="0 回答, 0 浏览"/>
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_btn_blue"
+        android:text="回复"/>
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/tv_count"
+        android:layout_above="@id/btn_send"
+        android:textColor="#FF000000"
+        android:textSize="20sp"
+        android:text="问题详情"/>
+</RelativeLayout>

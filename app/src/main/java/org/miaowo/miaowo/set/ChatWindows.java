@@ -1,12 +1,7 @@
 package org.miaowo.miaowo.set;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +16,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
@@ -30,7 +24,6 @@ import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.impl.ChatImpl;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Chat;
-import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.PopupUtil;
@@ -48,16 +41,15 @@ public class ChatWindows {
 
     private ArrayList<User> mChatList;
     private ArrayList<ChatMessage> mMsgList;
-    private Activity context;
+    private ItemRecyclerAdapter<ChatMessage> mAdapter;
     private State mState;
     private Chat mChat;
-    private ItemRecyclerAdapter<ChatMessage> mAdapter;
+    private D d;
 
-    public ChatWindows(Activity context) {
-        this.context = context;
-
+    public ChatWindows() {
         mState = new StateImpl();
-        mChat = new ChatImpl(context);
+        mChat = new ChatImpl();
+        d = D.getInstance();
     }
 
     // 聊天列表
@@ -66,7 +58,7 @@ public class ChatWindows {
         // 判断是否登录
         if (mState.getLocalUser().getId() < 0) return null;
         // 显示对话选择列表
-        return PopupUtil.showPopupWindowInCenter(context, R.layout.window_chat_list,
+        return PopupUtil.showPopupWindowInCenter(R.layout.window_chat_list,
                 new PopupUtil.PopupWindowInit() {
                     @Override
                     public void init(View v, PopupWindow window) {
@@ -92,7 +84,7 @@ public class ChatWindows {
                             public View getView(int position, View convertView, ViewGroup parent) {
                                 if (convertView == null) {
                                     ViewHolder holder = new ViewHolder();
-                                    convertView = View.inflate(context, R.layout.list_chat, null);
+                                    convertView = View.inflate(d.activeActivity, R.layout.list_chat, null);
                                     View relView = convertView.findViewById(R.id.include);
                                     holder.iv_user = (ImageView) relView.findViewById(R.id.iv_user);
                                     holder.tv_user = (TextView) relView.findViewById(R.id.tv_user);
@@ -101,7 +93,7 @@ public class ChatWindows {
                                 ViewHolder holder = (ViewHolder) convertView.getTag();
                                 User u = (User) getItem(position);
                                 holder.tv_user.setText(u.getName());
-                                Picasso.with(context).load(u.getHeadImg())
+                                Picasso.with(d.activeActivity).load(u.getHeadImg())
                                         .transform(new CropCircleTransformation()).fit()
                                         .into(holder.iv_user);
                                 return convertView;
@@ -133,13 +125,13 @@ public class ChatWindows {
     }
 
     // 聊天窗口
-    PopupWindow showChatDialog(final User u) {
+    public PopupWindow showChatDialog(final User from) {
         // 当前账户
-        final User lU = mState.getLocalUser();
-        if (lU.getId() < 0) return null;
+        final User to = mState.getLocalUser();
+        if (to.getId() < 0) return null;
         mMsgList = new ArrayList<>();
-        D.getInstance().activeChatUser = u;
-        return PopupUtil.showPopupWindowInCenter(context, R.layout.window_chat, new PopupUtil.PopupWindowInit() {
+        D.getInstance().activeChatUser = from;
+        return PopupUtil.showPopupWindowInCenter(R.layout.window_chat, new PopupUtil.PopupWindowInit() {
                     @Override
                     public void init(View v, PopupWindow window) {
                         ImageView iv_user = (ImageView) v.findViewById(R.id.include).findViewById(R.id.iv_user);
@@ -148,25 +140,25 @@ public class ChatWindows {
                         Button btn_send = (Button) v.findViewById(R.id.btn_send);
                         final EditText et_msg = (EditText) v.findViewById(R.id.et_msg);
 
-                        Picasso.with(context).load(u.getHeadImg())
+                        Picasso.with(d.activeActivity).load(from.getHeadImg())
                                 .transform(new CropCircleTransformation()).fit()
                                 .into(iv_user);
-                        tv_user.setText(u.getName());
+                        tv_user.setText(from.getName());
                         mAdapter = new ItemRecyclerAdapter<>(
                                 mMsgList, new ItemRecyclerAdapter.ViewLoader<ChatMessage>() {
                             @Override
                             public ItemRecyclerAdapter.ViewHolder createHolder(ViewGroup parent, int viewType) {
                                 return new ItemRecyclerAdapter.ViewHolder(
-                                        LayoutInflater.from(context).inflate(R.layout.list_chat_message, parent, false));
+                                        LayoutInflater.from(d.activeActivity).inflate(R.layout.list_chat_message, parent, false));
                             }
 
                             @Override
                             public void bindView(ChatMessage item, ItemRecyclerAdapter.ViewHolder holder) {
                                 View v = holder.getView();
-                                if (lU.equals(item.getFrom())) {
-                                    v.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.bg_rect_indigo_100));
+                                if (to.equals(item.getFrom())) {
+                                    v.setBackgroundDrawable(d.activeActivity.getResources().getDrawable(R.drawable.bg_rect_indigo_100));
                                 } else {
-                                    v.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.bg_rect_red_100));
+                                    v.setBackgroundDrawable(d.activeActivity.getResources().getDrawable(R.drawable.bg_rect_red_100));
                                 }
                                 holder.getTextView(R.id.tv_msg).setText(item.getMessage());
                             }
@@ -179,8 +171,22 @@ public class ChatWindows {
                         list.setPullRefresher(new SwipeRefreshLayout.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
-                                //TODO 刷新
-                                list.scrollToPosition(0);
+                                mMsgList = mAdapter.getItems();
+                                new AsyncTask<ChatMessage, Void, ArrayList<ChatMessage>>() {
+                                    @Override
+                                    protected ArrayList<ChatMessage> doInBackground(ChatMessage... params) {
+                                        return mChat.getBeforeMessage(params[0]);
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(ArrayList<ChatMessage> chatMessages) {
+                                        chatMessages.addAll(mMsgList);
+                                        mMsgList = chatMessages;
+                                        mAdapter.updateDate(mMsgList);
+                                    }
+                                }.execute(mMsgList.size() == 0 
+                                        ? new ChatMessage(from, null, null) 
+                                        : mMsgList.get(mMsgList.size() - 1));
                                 list.loadOver();
                             }
                         });
@@ -195,8 +201,7 @@ public class ChatWindows {
                                         try {
                                             mChat.sendMessage(params[0]);
                                         } catch (Exception e) {
-                                            e.printStackTrace();
-                                            ((Handled) context).handleError(e);
+                                            d.activeActivity.handleError(e);
                                             return null;
                                         }
                                         return params[0];
@@ -211,7 +216,7 @@ public class ChatWindows {
                                             list.scrollToPosition(mMsgList.size() - 1);
                                         }
                                     }
-                                }.execute(new ChatMessage(lU, u, et_msg.getText().toString()));
+                                }.execute(new ChatMessage(to, from, et_msg.getText().toString()));
                             }
                         });
                     }
@@ -219,7 +224,7 @@ public class ChatWindows {
                 new PopupWindow.OnDismissListener() {
                     @Override
                     public void onDismiss() {
-                        D.getInstance().activeChatUser = null;
+                        d.activeChatUser = null;
                     }
                 });
     }

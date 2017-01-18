@@ -15,16 +15,18 @@ import org.miaowo.miaowo.impl.ChatImpl;
 import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.Message;
+import org.miaowo.miaowo.receiver.MessageReceiver;
 
 public class WebService extends Service {
-    private static final String TAG = "WebService";
 
+    private MessageReceiver mMsgReceiver;
     private Message mMessage;
     private Chat mChat;
 
     public WebService() {
         mMessage = new MsgImpl();
-        mChat = new ChatImpl(this);
+        mChat = new ChatImpl();
+        mMsgReceiver = new MessageReceiver(this);
     }
 
     @Override
@@ -35,12 +37,15 @@ public class WebService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand: Service Running");
-        
+        IntentFilter tfilter = new IntentFilter();
+        tfilter.addAction(T.BC_CHAT);
+        tfilter.addAction(T.BC_MSG);
+        registerReceiver(testReceiver, tfilter);
+
         IntentFilter filter = new IntentFilter();
-        filter.addAction(T.BC_CHAT);
-        filter.addAction(T.BC_MSG);
-        registerReceiver(testReceiver, filter);
+        filter.addAction(C.BC_MSG);
+        filter.addAction(C.BC_CHAT);
+        registerReceiver(mMsgReceiver, filter);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -68,7 +73,8 @@ public class WebService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy: Service Stoped!");
+        unregisterReceiver(mMsgReceiver);
+        unregisterReceiver(testReceiver);
         super.onDestroy();
     }
 }

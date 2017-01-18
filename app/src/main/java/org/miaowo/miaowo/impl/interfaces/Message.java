@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.impl.interfaces;
 
-import android.support.annotation.WorkerThread;
-
+import org.miaowo.miaowo.bean.Answer;
 import org.miaowo.miaowo.bean.Question;
 import org.miaowo.miaowo.bean.VersionMessage;
 
@@ -19,14 +18,25 @@ public interface Message {
      * @param type 获取列表的内容，存放于其实现类
      * @return 返回的列表
      */
-    @WorkerThread
     ArrayList<Question> checkQuestions(int type, int position, int count) throws Exception;
+
+    /**
+     * 发送问题
+     * @param question 提问问题
+     */
+    void sendQuestion(Question question) throws Exception;
+
+    /**
+     * 发送回答
+     * @param answer 回答
+     * @throws Exception
+     */
+    void sendAnswer(Answer answer) throws Exception;
 
     /**
      * 获取新版本信息
      * @param version 当前版本代号
      * @return 新版本信息
      */
-    @WorkerThread
     VersionMessage getUpdateMessage(int version);
 }

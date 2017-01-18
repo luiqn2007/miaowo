@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.set;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.util.TypedValue;
@@ -11,15 +10,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.util.PopupUtil;
+import org.miaowo.miaowo.view.BaseActivity;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -29,20 +28,20 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
  */
 
 public class UserWindows {
-    private Activity context;
     private Users mUsers;
     private State mState;
     private ChatWindows mChatWindows;
+    private BaseActivity context;
 
-    public UserWindows(Activity context) {
-        this.context = context;
+    public UserWindows() {
         mUsers = new UsersImpl();
         mState = new StateImpl();
-        mChatWindows = new ChatWindows(context);
+        mChatWindows = new ChatWindows();
+        context = D.getInstance().activeActivity;
     }
 
     public PopupWindow showUserWindow(final User u) {
-        return PopupUtil.showPopupWindowInCenter(context, R.layout.window_user, new PopupUtil.PopupWindowInit() {
+        return PopupUtil.showPopupWindowInCenter(R.layout.window_user, new PopupUtil.PopupWindowInit() {
             @Override
             public void init(final View v, final PopupWindow window) {
                 Picasso.with(context)
@@ -80,7 +79,7 @@ public class UserWindows {
                                     fillCount(v, R.id.tv_like, u.getFavorite());
                                     Snackbar.make(context.getWindow().getDecorView(), "操作成功", Snackbar.LENGTH_SHORT).show();
                                 } else {
-                                    ((Handled) context).handleError(e);
+                                    context.handleError(e);
                                 }
                             }
                         }.execute();
@@ -90,7 +89,7 @@ public class UserWindows {
                     @Override
                     public void onClick(View v) {
                         if (mState.getLocalUser().getId() < 0)
-                            ((Handled) context).handleError(Exceptions.E_NON_LOGIN);
+                            context.handleError(Exceptions.E_NON_LOGIN);
                         else mChatWindows.showChatDialog(u);
                     }
                 });

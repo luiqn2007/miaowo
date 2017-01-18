@@ -1,11 +1,7 @@
 package org.miaowo.miaowo.view;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,39 +10,36 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import org.miaowo.miaowo.C;
-import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.T;
-import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
-import org.miaowo.miaowo.bean.ChatMessage;
 import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.bean.VersionMessage;
-import org.miaowo.miaowo.fragment.AnnouncementFragment;
-import org.miaowo.miaowo.fragment.AskFragment;
-import org.miaowo.miaowo.fragment.DailyFragment;
-import org.miaowo.miaowo.fragment.WaterFragment;
+import org.miaowo.miaowo.fragment.HotFragment;
+import org.miaowo.miaowo.fragment.MiaoFragment;
+import org.miaowo.miaowo.fragment.NewestFragment;
+import org.miaowo.miaowo.fragment.SearchFragment;
+import org.miaowo.miaowo.fragment.SquareFragment;
+import org.miaowo.miaowo.fragment.TopicFragment;
+import org.miaowo.miaowo.fragment.UnreadFragment;
+import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.ChatWindows;
+import org.miaowo.miaowo.set.MessageWindows;
 import org.miaowo.miaowo.set.StateWindows;
-import org.miaowo.miaowo.ui.LoadMoreList;
-import org.miaowo.miaowo.util.PopupUtil;
+import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.util.ThemeUtil;
 
@@ -57,21 +50,19 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 // Android Studio自动生成的，用了一大堆支持库的东西，详见
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
 public class Miao extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Handled{
-    private static final String TAG = "Miao";
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     // 视图
-    private TextView tv_daily, tv_announcement, tv_ask, tv_water;
-    private Fragment fg_daily, fg_announcement, fg_ask, fg_water;
     private NavigationView navigationView;
+    private Fragment fg_square, fg_hot, fg_newest, fg_search, fg_topic, fg_unread, fg_user;
 
     // 组件
-    private FragmentManager fm;
     private State mState;
     private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
+    private MessageWindows mMessageWindows;
     private AlertDialog closeDialog;
-    private BroadcastReceiver mMsgReceiver;
+    private FragmentManager mManager;
 
     long lastExit = 0;
 
@@ -81,8 +72,9 @@ public class Miao extends BaseActivity
         super.onCreate(savedInstanceState);
 
         mState = new StateImpl();
-        mChatWindows = new ChatWindows(this);
-        mStateWindows = new StateWindows(this);
+        mChatWindows = new ChatWindows();
+        mStateWindows = new StateWindows();
+        mMessageWindows = new MessageWindows();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -104,9 +96,6 @@ public class Miao extends BaseActivity
                 finish();
             }
         });
-
-        // 绑定控件
-        initViews();
     }
 
     @Override
@@ -115,27 +104,24 @@ public class Miao extends BaseActivity
         super.onPostCreate(savedInstanceState);
         // 加载用户信息
         setUserMsg();
-        // 显示 每日 页面
-        onClick(findViewById(R.id.tv_daily));
         // 显示对话框
         showAppDialog();
+        // 绑定Fragment
+        initFragment();
     }
 
-    @Override
-    protected void onResume() {
-        mMsgReceiver = new ChatReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(C.BC_CHAT);
-        filter.addAction(C.BC_MSG);
-        registerReceiver(mMsgReceiver, filter);
+    private void initFragment() {
+        mManager = getSupportFragmentManager();
 
-        super.onResume();
-    }
+        fg_square = SquareFragment.newInstance();
+        fg_hot = HotFragment.newInstance();
+        fg_newest = NewestFragment.newInstance();
+        fg_search = SearchFragment.newInstance();
+        fg_topic = TopicFragment.newInstance();
+        fg_unread = UnreadFragment.newInstance();
+        fg_user = UserFragment.newInstance();
 
-    @Override
-    protected void onPause() {
-        unregisterReceiver(mMsgReceiver);
-        super.onPause();
+        FragmentUtil.showFragment(mManager, R.id.container, MiaoFragment.newInstance());
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -144,6 +130,34 @@ public class Miao extends BaseActivity
         // 侧栏的动作响应
         int id = item.getItemId();
         switch (id) {
+            case R.id.nav_square:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_square);
+                break;
+            case R.id.nav_newest:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_newest);
+                break;
+            case R.id.nav_hot:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_hot);
+                break;
+            case R.id.nav_search:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_search);
+                break;
+            case R.id.nav_topic:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_topic);
+                break;
+            case R.id.nav_unread:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_unread);
+                break;
+            case R.id.nav_user:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_user);
+                break;
             case R.id.nav_setting:
                 ThemeUtil.loadDefaultTheme(this);
                 break;
@@ -160,6 +174,15 @@ public class Miao extends BaseActivity
                 break;
             case R.id.nav_chat:
                 mChatWindows.showChatList(new ArrayList<User>());
+                break;
+            case R.id.nav_state:
+                break;
+            case R.id.nav_new:
+                try {
+                    mMessageWindows.showNewQuestion();
+                } catch (Exception e) {
+                    handleError(e);
+                }
                 break;
         }
 
@@ -189,7 +212,6 @@ public class Miao extends BaseActivity
     private void showAppDialog() {
         VersionMessage versionMessage = getIntent().getParcelableExtra(C.EXTRA_ITEM);
         if (SpUtil.getBoolean(Miao.this, C.SP_FIRST_UPDATE, true)) {
-            Log.i(TAG, "onPostExecute: here");
             AlertDialog.Builder builder = new AlertDialog.Builder(Miao.this);
             builder.setTitle(versionMessage.getVersionName());
             builder.setMessage(versionMessage.getMessage());
@@ -205,104 +227,6 @@ public class Miao extends BaseActivity
         } else {
             showFirstUseDialog();
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        // 处理点击事件， 跳转不同 碎片
-        // 关闭所有 Fragment
-        hideAllFragment();
-
-        // 加载相应的 Fragment
-        FragmentTransaction transaction = fm.beginTransaction();
-        switch (view.getId()) {
-            case R.id.tv_daily:
-                if (fg_daily == null) {
-                    fg_daily = DailyFragment.newInstance();
-                }
-                if(!fg_daily.isAdded()) {
-                    transaction.add(R.id.container, fg_daily);
-                }
-                transaction.show(fg_daily);
-                transaction.commit();
-                break;
-            case R.id.tv_announcement:
-                if (fg_announcement == null) {
-                    fg_announcement = AnnouncementFragment.newInstance();
-                }
-                if(!fg_announcement.isAdded()) {
-                    transaction.add(R.id.container, fg_announcement);
-                }
-                transaction.show(fg_announcement);
-                transaction.commit();
-                break;
-            case R.id.tv_ask:
-                if (fg_ask == null) {
-                    fg_ask = AskFragment.newInstance();
-                }
-                if(!fg_ask.isAdded()) {
-                    transaction.add(R.id.container, fg_ask);
-                }
-                transaction.show(fg_ask);
-                transaction.commit();
-                break;
-            case R.id.tv_water:
-                if (fg_water == null) {
-                    fg_water = WaterFragment.newInstance();
-                }
-                if(!fg_water.isAdded()) {
-                    transaction.add(R.id.container, fg_water);
-                }
-                transaction.show(fg_water);
-                transaction.commit();
-                break;
-            default:
-                transaction.commit();
-                break;
-        }
-        view.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_SELECTED_COLOR,
-                Color.rgb(255, 255, 255)));
-    }
-
-    // 隐藏所有 Fragment
-    private void hideAllFragment() {
-        FragmentTransaction transaction = fm.beginTransaction();
-        if (fg_daily != null) {
-            transaction.hide(fg_daily);
-        }
-        if (fg_announcement != null) {
-            transaction.hide(fg_announcement);
-        }
-        if (fg_ask != null) {
-            transaction.hide(fg_ask);
-        }
-        if (fg_water != null) {
-            transaction.hide(fg_water);
-        }
-        transaction.commit();
-
-        tv_daily.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
-                Color.argb(255, 255, 255, 255)));
-        tv_announcement.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
-                Color.argb(255, 255, 255, 255)));
-        tv_ask.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
-                Color.argb(255, 255, 255, 255)));
-        tv_water.setBackgroundColor(SpUtil.getInt(this, C.UI_BOTTOM_DEFAULT_COLOR,
-                Color.argb(255, 255, 255, 255)));
-    }
-
-    private void initViews() {
-        tv_daily = (TextView) findViewById(R.id.tv_daily);
-        tv_water = (TextView) findViewById(R.id.tv_water);
-        tv_ask = (TextView) findViewById(R.id.tv_ask);
-        tv_announcement = (TextView) findViewById(R.id.tv_announcement);
-
-        tv_daily.setOnClickListener(this);
-        tv_announcement.setOnClickListener(this);
-        tv_ask.setOnClickListener(this);
-        tv_water.setOnClickListener(this);
-
-        fm = getSupportFragmentManager();
     }
 
     @Override
@@ -327,14 +251,6 @@ public class Miao extends BaseActivity
         }
     }
 
-    @Override
-    public void handleError(Exception e) {
-        // 错误处理
-        e.printStackTrace();
-        Snackbar.make(getWindow().getDecorView(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
-
-    }
-
     public void setUserMsg() {
         new AsyncTask<Void, Void, User>() {
             @Override
@@ -351,8 +267,6 @@ public class Miao extends BaseActivity
                 TextView tv_user = (TextView) headerView.findViewById(R.id.tv_user);
                 TextView tv_summary = (TextView) headerView.findViewById(R.id.tv_summary);
 
-                Log.i(TAG, "onPostExecute: " + u.getName() + " / " + u.getSummary() + " / " + u.getHeadImg());
-
                 if (u.getId() == -1) {
                     Picasso.with(Miao.this).load(R.drawable.def_user)
                             .fit().transform(new CropCircleTransformation())
@@ -368,33 +282,5 @@ public class Miao extends BaseActivity
                 tv_user.setText(u.getName());
             }
         }.execute();
-    }
-
-    public class ChatReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                case C.BC_CHAT:
-                    setChatMsg((ChatMessage) intent.getParcelableExtra(C.EXTRA_ITEM));
-                    break;
-                case C.BC_MSG:
-                    break;
-            }
-        }
-
-        private void setChatMsg(ChatMessage msg) {
-            if (D.getInstance().activeChatUser != null && D.getInstance().activeChatUser.getId() == msg.getFrom().getId()) {
-                RelativeLayout chatView = (RelativeLayout) PopupUtil.thisPopWindow.getContentView();
-                LoadMoreList list = (LoadMoreList) chatView.findViewById(R.id.list);
-                ItemRecyclerAdapter adapter = (ItemRecyclerAdapter) list.getAdapter();
-                ArrayList items = adapter.getItems();
-                items.add(msg);
-                adapter.updateDate(items);
-                list.scrollToPosition(items.size() - 1);
-            } else {
-                Snackbar.make(getWindow().getDecorView(), "您有一条来自 " + msg.getFrom().getName() + " 的新消息", Snackbar.LENGTH_SHORT).show();
-            }
-        }
     }
 }

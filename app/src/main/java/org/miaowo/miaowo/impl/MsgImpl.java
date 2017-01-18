@@ -3,6 +3,7 @@ package org.miaowo.miaowo.impl;
 import android.support.annotation.WorkerThread;
 
 import org.miaowo.miaowo.T;
+import org.miaowo.miaowo.bean.Answer;
 import org.miaowo.miaowo.bean.Question;
 import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.bean.VersionMessage;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 public class MsgImpl implements Message {
 
     @Override
-    @WorkerThread
     public ArrayList<Question> checkQuestions(int type, int position, int count) throws Exception {
         ArrayList<Question> items = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -33,15 +33,24 @@ public class MsgImpl implements Message {
                     ),
                     "问题：" + type + " --- " + i,
                     "问题内容：----------------------" + i,
-                    null,
-                    "昨天"
+                    "昨天",
+                    i, 10 + i, 0
             ));
         }
         return items;
     }
 
     @Override
-    @WorkerThread
+    public void sendQuestion(Question question) throws Exception {
+
+    }
+
+    @Override
+    public void sendAnswer(Answer answer) throws Exception {
+
+    }
+
+    @Override
     public VersionMessage getUpdateMessage(int version) {
         String versionName, versionMessage;
         versionName = "好奇喵 7.2.0";

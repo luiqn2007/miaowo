@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 /**
  * 表示用户的bean类
- *
  * Created by lq2007 on 16-11-21.
  */
 

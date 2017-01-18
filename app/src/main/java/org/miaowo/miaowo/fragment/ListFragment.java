@@ -15,13 +15,14 @@ import android.view.ViewGroup;
 import com.squareup.picasso.Picasso;
 
 import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.Question;
 import org.miaowo.miaowo.bean.User;
 import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.impl.interfaces.Message;
-import org.miaowo.miaowo.impl.interfaces.NotSingle.Handled;
+import org.miaowo.miaowo.set.MessageWindows;
 import org.miaowo.miaowo.set.UserWindows;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.SpUtil;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-abstract public class ListFragment extends Fragment implements Handled {
+abstract public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
 
     private LoadMoreList mList;
@@ -39,12 +40,11 @@ abstract public class ListFragment extends Fragment implements Handled {
     private Message mMessage;
     private Exception e = null;
     private UserWindows mUserWindows;
+    private MessageWindows mMessageWindows;
 
     private int type;
 
     public ListFragment() {}
-
-    public int getType() { return C.LF_TYPE_DAILY; }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,8 @@ abstract public class ListFragment extends Fragment implements Handled {
         mList = (LoadMoreList) v.findViewById(R.id.list_item);
         mMessage = new MsgImpl();
         mItems = new ArrayList<>();
-        mUserWindows = new UserWindows(getActivity());
+        mUserWindows = new UserWindows();
+        mMessageWindows = new MessageWindows();
         initList();
 
         return v;
@@ -111,6 +112,8 @@ abstract public class ListFragment extends Fragment implements Handled {
                 holder.getTextView(R.id.tv_title).setText(item.getTitle());
                 holder.getTextView(R.id.tv_title)
                         .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
+                // 计数
+                holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
             }
 
             @Override
@@ -119,7 +122,11 @@ abstract public class ListFragment extends Fragment implements Handled {
             }
 
             private void jumpToQuestion(Question i) {
-                Log.i(TAG, "jumpToQuestion: " + i.getTitle());
+                try {
+                    mMessageWindows.showQuestion(i);
+                } catch (Exception e1) {
+                    D.getInstance().activeActivity.handleError(e1);
+                }
             }
 
         });
@@ -168,7 +175,6 @@ abstract public class ListFragment extends Fragment implements Handled {
                                     "更新了 " + (mItems.size() - lastCount) + " 条消息", Snackbar.LENGTH_SHORT).show();
                         }
                         mList.loadOver();
-                        mList.scrollToPosition(mItems.size() - 1);
                     }
                 }.execute();
             }
@@ -185,7 +191,7 @@ abstract public class ListFragment extends Fragment implements Handled {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    handleError(e);
+                    D.getInstance().activeActivity.handleError(e);
                 }
             });
         }
@@ -197,12 +203,4 @@ abstract public class ListFragment extends Fragment implements Handled {
         mItems = checkUpdate(C.LF_POSITION_UP);
         if (e == null) mAdapter.updateDate(mItems);
     }
-
-    // 错误处理
-    @Override
-    public void handleError(Exception e) {
-        e.printStackTrace();
-        Snackbar.make(getActivity().getWindow().getDecorView(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
-    }
-
 }

@@ -45,4 +45,14 @@
         android:layout_below="@id/tv_user"
         android:textSize="18sp"
         android:text="那么，你有没有爱上喵窝？"/>
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title"
+        android:layout_alignLeft="@id/tv_title"
+        android:text="2 帖子, 10 浏览"
+        android:textSize="13sp"/>
+
 </RelativeLayout>
