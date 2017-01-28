@@ -1,7 +1,8 @@
 package org.miaowo.miaowo;
 
-import org.miaowo.miaowo.bean.User;
-import org.miaowo.miaowo.view.BaseActivity;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.fragment.ListFragment;
+import org.miaowo.miaowo.root.view.BaseActivity;
 
 /**
  * D == Data
@@ -10,7 +11,10 @@ import org.miaowo.miaowo.view.BaseActivity;
  */
 public class D {
     private static D instance = null;
-    private D () {}
+    private D () {
+        guest = new User(-1, "流浪喵", "欢迎来到喵窝");
+        thisUser = guest;
+    }
     public static D getInstance() {
         if (instance == null) {
             instance = new D();
@@ -18,6 +22,8 @@ public class D {
         return instance;
     }
 
-    public User activeChatUser = null;
     public BaseActivity activeActivity = null;
+    public ListFragment shownFragment = null;
+    public User thisUser;
+    public User guest;
 }

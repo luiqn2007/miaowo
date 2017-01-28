@@ -7,50 +7,58 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.squareup.picasso.Picasso;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
-import org.miaowo.miaowo.bean.Question;
-import org.miaowo.miaowo.bean.User;
-import org.miaowo.miaowo.impl.MsgImpl;
-import org.miaowo.miaowo.impl.interfaces.Message;
-import org.miaowo.miaowo.set.MessageWindows;
-import org.miaowo.miaowo.set.UserWindows;
+import org.miaowo.miaowo.bean.data.Question;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.impl.QuestionsImpl;
+import org.miaowo.miaowo.impl.interfaces.Questions;
+import org.miaowo.miaowo.set.windows.MessageWindows;
+import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.ui.LoadMoreList;
+import org.miaowo.miaowo.util.FormatUtil;
+import org.miaowo.miaowo.util.ImageUtil;
+import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+public class ListFragment extends Fragment {
 
-abstract public class ListFragment extends Fragment {
-    private static final String TAG = "ListFragment";
+    public static String TAG_NAME = "name";
 
     private LoadMoreList mList;
     private ItemRecyclerAdapter<Question> mAdapter;
     private ArrayList<Question> mItems;
-    private Message mMessage;
+    private Questions mQuestions;
     private Exception e = null;
     private UserWindows mUserWindows;
     private MessageWindows mMessageWindows;
 
-    private int type;
+    private String name;
 
     public ListFragment() {}
+
+    public static ListFragment newInstance(String name) {
+        Bundle args = new Bundle();
+        args.putString(TAG_NAME, name);
+        ListFragment fragment = new ListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            type = getArguments().getInt(C.EXTRA_ITEM);
+            name = getArguments().getString(TAG_NAME);
         }
     }
 
@@ -60,7 +68,7 @@ abstract public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_list, container, false);
         mList = (LoadMoreList) v.findViewById(R.id.list_item);
-        mMessage = new MsgImpl();
+        mQuestions = new QuestionsImpl();
         mItems = new ArrayList<>();
         mUserWindows = new UserWindows();
         mMessageWindows = new MessageWindows();
@@ -83,29 +91,17 @@ abstract public class ListFragment extends Fragment {
 
             @Override
             public void bindView(final Question item, ItemRecyclerAdapter.ViewHolder holder) {
+                LogUtil.i("QuestionItem", item.toString());
                 // 用户
                 final User u = item.getUser();
-                holder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mUserWindows.showUserWindow(u);
-                    }
-                }, R.id.iv_user, R.id.tv_user);
-                holder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        jumpToQuestion(item);
-                    }
-                }, R.id.rl_item);
-                Picasso.with(getContext())
-                        .load(u.getHeadImg())
-                        .transform(new CropCircleTransformation()).fit()
-                        .into(holder.getImageView(R.id.iv_user));
+                holder.setOnClickListener((v) -> mUserWindows.showUserWindow(u), R.id.iv_user, R.id.tv_user);
+                holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
+                ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
                 holder.getTextView(R.id.tv_user).setText(u.getName());
                 holder.getTextView(R.id.tv_user)
                         .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
                 // 时间
-                holder.getTextView(R.id.tv_time).setText(item.getTime());
+                holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
                 holder.getTextView(R.id.tv_time)
                         .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
                 // 标题
@@ -121,41 +117,12 @@ abstract public class ListFragment extends Fragment {
                 return 0;
             }
 
-            private void jumpToQuestion(Question i) {
-                try {
-                    mMessageWindows.showQuestion(i);
-                } catch (Exception e1) {
-                    D.getInstance().activeActivity.handleError(e1);
-                }
-            }
-
         });
         mList.setAdapter(mAdapter);
-        mList.setPullRefresher(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new AsyncTask<Void, Void, Void>(){
-
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        mItems = checkUpdate(C.LF_POSITION_UP);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        if (e == null) {
-                            mAdapter.updateDate(mItems);
-                            Snackbar.make(getActivity().getWindow().getDecorView(), "更新完成", Snackbar.LENGTH_SHORT).show();
-                        }
-                        mList.loadOver();
-                        mList.scrollToPosition(0);
-                    }
-                }.execute();
-            }
-        });
+        mList.setPullRefresher(this::refresh);
         mList.setPushRefresher(new SwipeRefreshLayout.OnRefreshListener() {
             int lastCount = 0;
+
             @Override
             public void onRefresh() {
                 new AsyncTask<Void, Void, Void>(){
@@ -186,21 +153,63 @@ abstract public class ListFragment extends Fragment {
         ArrayList<Question> list = new ArrayList<>();
         try {
             e = null;
-            list = mMessage.checkQuestions(type, position,SpUtil.getInt(getContext(), C.UI_LIST_QUESTION_COUNT, 20));
+            Question[] questions = mQuestions.checkQuestions(name, position, SpUtil.getInt(getContext(), C.UI_LIST_QUESTION_COUNT, 20),
+                    mItems.size() == 0 ? 0 : mItems.get(mItems.size() - 1).getTime());
+            Collections.addAll(list, questions);
         } catch (final Exception e) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    D.getInstance().activeActivity.handleError(e);
-                }
-            });
+            getActivity().runOnUiThread(() -> D.getInstance().activeActivity.handleError(e));
         }
         return list;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mItems = checkUpdate(C.LF_POSITION_UP);
-        if (e == null) mAdapter.updateDate(mItems);
+        refresh();
+        D.getInstance().shownFragment = this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (this.equals(D.getInstance().shownFragment)) {
+            D.getInstance().shownFragment = null;
+        }
+        super.onDestroyView();
+    }
+
+    public void refresh() {
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                mItems = checkUpdate(C.LF_POSITION_UP);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (e == null) {
+                    mAdapter.updateDate(mItems);
+                }
+                mList.loadOver();
+                mList.scrollToPosition(0);
+            }
+        }.execute();
+    }
+
+    public void sort(int type) {
+        switch (type) {
+            case C.SORT_HOT:
+                Collections.sort(mItems, (o1, o2) -> o2.getReply() - o1.getReply());
+                break;
+            case C.SORT_NEW:
+                Collections.sort(mItems, (o1, o2) -> o1.getTime() - o2.getTime() > 0 ? 1 : -1);
+                break;
+        }
+
+        mAdapter.updateDate(mItems);
     }
 }

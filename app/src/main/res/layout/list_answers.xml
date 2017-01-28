@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@drawable/bg_rect_blue_300">
+
+    <ImageView
+        android:id="@+id/iv_user"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_margin="15dp"
+        android:src="@drawable/def_user"/>
+
+    <TextView
+        android:id="@+id/tv_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/iv_user"
+        android:layout_toRightOf="@id/iv_user"
+        android:text="用户名"
+        android:textColor="#FF000000"
+        android:textSize="25sp"/>
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_user"
+        android:layout_alignParentRight="true"
+        android:paddingRight="10dp"
+        android:text="0 回复"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/tv_answer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FF000000"
+        android:text="回复内容"
+        android:layout_below="@id/tv_count"
+        android:layout_alignLeft="@id/tv_user"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_reply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_answer">
+
+        <View
+            android:id="@+id/line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="10dp"
+            android:background="#9E9E9E" />
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_below="@id/line"/>
+    </RelativeLayout>
+</RelativeLayout>

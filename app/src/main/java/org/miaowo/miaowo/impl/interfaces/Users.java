@@ -3,7 +3,7 @@ package org.miaowo.miaowo.impl.interfaces;
 
 import android.support.annotation.WorkerThread;
 
-import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.bean.data.User;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,6 @@ public interface Users {
      * @param id 获取用户的ID
      * @return 返回的用户，若未登录则返回用户id为-1的用户(Guest)
      */
-    @WorkerThread
     User getUser(long id);
 
     /**
@@ -28,24 +27,14 @@ public interface Users {
      * @param userName 要搜索的用户名
      * @return 使用该昵称的用户集
      */
-    @WorkerThread
-    ArrayList<User> searchUsers(String userName);
+    User[] searchUsers(String userName) throws Exception;
 
     /**
      * 粉丝
      * 传入的 User 需要有效的 id, favorite 和 isFavorite
      * @param u 用户
+     * @param auto 自动反向操作
      * @throws Exception 申请失败返回结果
      */
-    @WorkerThread
-    void likeUser(User u) throws Exception;
-
-    /**
-     * 关注
-     * 传入的 User 需要有效的 id, focus 和 isFocus
-     * @param u 用户
-     * @throws Exception 申请失败返回结果
-     */
-    @WorkerThread
-    void focusUser(User u) throws Exception;
+    void focusUser(User u, boolean auto) throws Exception;
 }

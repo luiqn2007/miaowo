@@ -6,8 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,16 +75,17 @@ public class ItemRecyclerAdapter<E> extends RecyclerView.Adapter<ItemRecyclerAda
             mViews = new SparseArray<>();
         }
 
-        private <T extends View> T findViewById(int viewId) {
-            View view = mViews.get(viewId);
+        private View findViewById(int viewId) {
+            View view;
+            view = mViews.get(viewId);
             if (view == null) {
                 view = itemView.findViewById(viewId);
                 mViews.put(viewId, view);
             }
-            return (T) view;
+            return view;
         }
 
-        public View getView(int viewId) {
+        View getView(int viewId) {
             return findViewById(viewId);
         }
 
@@ -94,28 +93,8 @@ public class ItemRecyclerAdapter<E> extends RecyclerView.Adapter<ItemRecyclerAda
             return (TextView) getView(viewId);
         }
 
-        public Button getButton(int viewId) {
-            return (Button) getView(viewId);
-        }
-
         public ImageView getImageView(int viewId) {
             return (ImageView) getView(viewId);
-        }
-
-        public EditText getEditText(int viewId) {
-            return (EditText) getView(viewId);
-        }
-
-        public ViewHolder setText(int viewId, String value) {
-            TextView view = findViewById(viewId);
-            view.setText(value);
-            return this;
-        }
-
-        public ViewHolder setBackground(int viewId, int resId) {
-            View view = findViewById(viewId);
-            view.setBackgroundResource(resId);
-            return this;
         }
 
         // 重写了下，可以批量设置

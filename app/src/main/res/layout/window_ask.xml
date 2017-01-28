@@ -6,11 +6,20 @@
     android:layout_height="350dp"
     android:padding="15dp" >
 
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
     <android.support.design.widget.TextInputEditText
         android:id="@+id/et_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
+        android:layout_toLeftOf="@id/iv_close"
         android:hint="标题"/>
 
     <RadioGroup

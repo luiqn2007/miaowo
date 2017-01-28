@@ -11,17 +11,9 @@
             android:icon="@drawable/unread"
             android:title="未读" />
         <item
-            android:id="@+id/nav_newest"
-            android:icon="@drawable/newest"
-            android:title="最新" />
-        <item
             android:id="@+id/nav_topic"
             android:icon="@drawable/topic"
             android:title="话题" />
-        <item
-            android:id="@+id/nav_hot"
-            android:icon="@drawable/hot"
-            android:title="热门" />
         <item
             android:id="@+id/nav_user"
             android:icon="@drawable/user"

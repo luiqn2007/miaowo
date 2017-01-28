@@ -9,7 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.ChatMessage;
+import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.view.Miao;
 
 /**

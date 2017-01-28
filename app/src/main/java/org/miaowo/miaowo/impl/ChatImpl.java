@@ -1,19 +1,21 @@
 package org.miaowo.miaowo.impl;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
-import org.miaowo.miaowo.T;
-import org.miaowo.miaowo.bean.ChatMessage;
-import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Chat;
-import org.miaowo.miaowo.set.Exceptions;
+import org.miaowo.miaowo.test.ChatListDBHelper;
+import org.miaowo.miaowo.test.ChatMessageDBHelper;
+import org.miaowo.miaowo.test.DbUtil;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * 聊天实现类
@@ -21,8 +23,6 @@ import java.util.ArrayList;
  */
 
 public class ChatImpl implements Chat {
-    private static final String TAG = "ChatImpl";
-
     private Context context;
 
     public ChatImpl() {
@@ -30,18 +30,40 @@ public class ChatImpl implements Chat {
     }
 
     @Override
-    public ArrayList<User> getChatList() {
-        return T.createUsers(7);
+    public User[] getChatList() {
+        User[] users;
+        SQLiteDatabase chatListDb = (new ChatListDBHelper()).getReadableDatabase();
+        int id = D.getInstance().thisUser.getId();
+        Cursor cursor = chatListDb.query(ChatListDBHelper.table, ChatListDBHelper.getCumns,
+                ChatListDBHelper.ID + " = ? ",
+                new String[]{Integer.toString(id)}, null, null, null);
+        users = DbUtil.parseUser(cursor);
+        cursor.close();
+        chatListDb.close();
+        return users;
     }
 
     @Override
     public void sendMessage(ChatMessage msg) throws Exception {
-        if (msg == null || TextUtils.isEmpty(msg.getMessage())) throw Exceptions.E_WRONG_CHAT_MSG;
+        User[] chatList = getChatList();
+        if (Arrays.binarySearch(chatList, msg.getFrom()) < 0) {
+            SQLiteDatabase chatListDb = (new ChatListDBHelper()).getWritableDatabase();
+            int[] users = new int[chatList.length + 1];
+            for (int i = 0; i < chatList.length; i++) {
+                users[i] = chatList[i].getId();
+            }
+            users[users.length - 1] = msg.getFrom().getId();
+            ContentValues cv = new ContentValues();
+            cv.put(ChatListDBHelper.LIST, DbUtil.toString(users));
+            chatListDb.update(ChatListDBHelper.table, cv,
+                    ChatListDBHelper.ID + " = ? ",
+                    new String[]{Integer.toString(D.getInstance().thisUser.getId())});
+            chatListDb.close();
+        }
 
-        Intent intent = new Intent(T.BC_CHAT);
-        intent.putExtra(C.EXTRA_ITEM, msg);
-        Log.i(TAG, "sendMessage: " + context);
-        context.sendBroadcast(intent);
+        SQLiteDatabase chatMsgDb = (new ChatMessageDBHelper()).getWritableDatabase();
+        chatMsgDb.insert(ChatMessageDBHelper.table, ChatMessageDBHelper.ID, DbUtil.convert(msg));
+        chatMsgDb.close();
     }
 
     @Override
@@ -52,20 +74,25 @@ public class ChatImpl implements Chat {
     }
 
     @Override
-    public ArrayList<ChatMessage> getBeforeMessage(ChatMessage msg) {
-        ArrayList<ChatMessage> beforeMsg = new ArrayList<>();
-        User from = msg.getFrom();
-        User to = msg.getTo();
-        String before = "有获取：";
-        if (to == null) {
-            to = (new StateImpl()).getLocalUser();
-            before = "无获取：";
+    public ChatMessage[] getBeforeMessage(ChatMessage msg) {
+        SQLiteDatabase chatMsgDb = (new ChatMessageDBHelper()).getReadableDatabase();
+        Cursor cursorf = chatMsgDb.query(ChatMessageDBHelper.table, ChatMessageDBHelper.getCumns,
+                ChatMessageDBHelper.FROM + " = ? and " + ChatMessageDBHelper.TO + " = ? and " + ChatMessageDBHelper.TIME + " > ? ",
+                new String[]{Integer.toString(msg.getFrom().getId()), Integer.toString(msg.getTo().getId()), Long.toString(msg.getTime())},
+                null, null, null);
+        ChatMessage[] msgFrom = DbUtil.parseChatMessage(cursorf);
+        Cursor cursort = chatMsgDb.query(ChatMessageDBHelper.table, ChatMessageDBHelper.getCumns,
+                ChatMessageDBHelper.FROM + " = ? and " + ChatMessageDBHelper.TO + " = ? and " + ChatMessageDBHelper.TIME + " > ? ",
+                new String[]{Integer.toString(msg.getTo().getId()), Integer.toString(msg.getFrom().getId()), Long.toString(msg.getTime())},
+                null, null, null);
+        ChatMessage[] msgTo = DbUtil.parseChatMessage(cursort);
+        cursorf.close();
+        cursort.close();
+        chatMsgDb.close();
+        ChatMessage[] messages = Arrays.copyOf(msgFrom, msgFrom.length + msgTo.length);
+        for (int i = 0; i < msgTo.length; i++) {
+            messages[msgFrom.length + i] = msgTo[i];
         }
-
-        for (int i = 0; i < 5; i++) {
-            beforeMsg.add(new ChatMessage(from, to, before + i));
-            beforeMsg.add(new ChatMessage(to, from, "答复" + i));
-        }
-        return beforeMsg;
+        return messages;
     }
 }

@@ -2,8 +2,8 @@ package org.miaowo.miaowo.impl.interfaces;
 
 import android.support.annotation.WorkerThread;
 
-import org.miaowo.miaowo.bean.ChatMessage;
-import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.bean.data.User;
 
 import java.util.ArrayList;
 
@@ -18,15 +18,13 @@ public interface Chat {
      * 获取所有已打开聊天用户列表
      * @return 聊天用户列表
      */
-    @WorkerThread
-    ArrayList<User> getChatList();
+    User[] getChatList();
 
     /**
      * 向服务器发送一条聊天消息
      * @param msg 消息
      * @throws Exception 发送失败的信息
      */
-    @WorkerThread
     void sendMessage(ChatMessage msg) throws Exception;
 
     /**
@@ -41,6 +39,5 @@ public interface Chat {
      * @param msg 当前列表中最早的一条消息
      * @return 早于传入消息之前的若干条消息
      */
-    @WorkerThread
-    ArrayList<ChatMessage> getBeforeMessage(ChatMessage msg);
+    ChatMessage[] getBeforeMessage(ChatMessage msg);
 }

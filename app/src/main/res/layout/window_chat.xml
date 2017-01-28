@@ -6,6 +6,14 @@
     android:layout_height="wrap_content"
     android:padding="15dp" >
 
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
     <include
         android:id="@+id/include"
         layout="@layout/include_chat_head" />

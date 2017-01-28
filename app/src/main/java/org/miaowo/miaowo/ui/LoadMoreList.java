@@ -10,12 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-
-import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 
 /**
  * 原来用的 PullLoadMoreRecycleView 不能直接滑动到列表指定位置，弃之
@@ -51,15 +45,13 @@ public class LoadMoreList extends SwipeRefreshLayout {
         this.mPushRefresher = listener;
     }
 
-    public<T extends RecyclerView.ViewHolder> void setAdapter(RecyclerView.Adapter<T> adapter) {
+    public void setAdapter(RecyclerView.Adapter adapter) {
         mRecyclerView.setAdapter(adapter);
     }
     public void scrollToPosition(int position) {
         mRecyclerView.scrollToPosition(position);
     }
-    public void setLayoutManager(RecyclerView.LayoutManager manager) {
-        mRecyclerView.setLayoutManager(manager);
-    }
+
     public void loadOver() {
         setRefreshing(false);
     }

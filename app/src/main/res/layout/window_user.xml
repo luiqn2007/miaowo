@@ -8,6 +8,14 @@
     android:padding="20dp">
 
     <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
+    <ImageView
         android:id="@+id/iv_user"
         android:layout_width="75dp"
         android:layout_height="75dp"

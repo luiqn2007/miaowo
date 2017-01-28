@@ -1,12 +1,18 @@
 package org.miaowo.miaowo.impl;
 
 
-import org.miaowo.miaowo.T;
-import org.miaowo.miaowo.bean.User;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+
+import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.set.Exceptions;
+import org.miaowo.miaowo.test.DbUtil;
+import org.miaowo.miaowo.test.UserDBHelper;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -21,30 +27,83 @@ public class UsersImpl implements Users {
         if (id < 0) {
             return null;
         } else {
-            return new User(id, "实例用户", "的点点滴滴多多多多多多多多多多多多多多", 0, 1, 2, 3, true, 4, false, 500, T.getRadomImgUrl());
+            SQLiteDatabase userDb = (new UserDBHelper()).getReadableDatabase();
+            Cursor userCursor = userDb.query(UserDBHelper.table, UserDBHelper.getCumns,
+                    UserDBHelper.ID + " = ? ",
+                    new String[]{Long.toString(id)}, null, null, null);
+            User[] users = DbUtil.parseUser(userCursor);
+            userCursor.close();
+            userDb.close();
+            if (users.length == 0) return null;
+            else return users[0];
         }
     }
 
     @Override
-    public ArrayList<User> searchUsers(String userName) {
-        return null;
+    public User[] searchUsers(String userName) {
+        if (TextUtils.isEmpty(userName)) {
+            return new User[0];
+        } else {
+            SQLiteDatabase userDb = (new UserDBHelper()).getReadableDatabase();
+            Cursor userCursor = userDb.query(UserDBHelper.table, UserDBHelper.getCumns,
+                    UserDBHelper.NAME + " like ? ",
+                    new String[]{"%" + userName + "%"}, null, null, null);
+            User[] users = DbUtil.parseUser(userCursor);
+            userCursor.close();
+            userDb.close();
+            return users;
+        }
     }
 
     @Override
-    public void likeUser(User u) throws Exception {
+    public void focusUser(User u, boolean auto) throws Exception {
         User localUser = (new StateImpl()).getLocalUser();
         if (localUser.getId() < 0) {
             throw Exceptions.E_NON_LOGIN;
         }
-        u.setFavorite(!u.isFavorite());
-    }
-
-    @Override
-    public void focusUser(User u) throws Exception {
-        User localUser = (new StateImpl()).getLocalUser();
-        if (localUser.getId() < 0) {
-            throw Exceptions.E_NON_LOGIN;
+        int[] oldFocusMe = u.getFocusMe();
+        int[] oldFocus = localUser.getFocus();
+        int[] focusMe, focus;
+        Arrays.sort(oldFocus);
+        Arrays.sort(oldFocusMe);
+        int searchMe = Arrays.binarySearch(oldFocusMe, localUser.getId());
+        int search = Arrays.binarySearch(oldFocus, u.getId());
+        if (searchMe >= 0) {
+            if (auto) {
+                focusMe = new int[oldFocusMe.length - 1];
+                for (int i = 0; i < oldFocusMe.length; i++) {
+                    if (searchMe > i) {
+                        focusMe[i] = oldFocusMe[i];
+                    } else if (searchMe < i) {
+                        focusMe[i - 1] = oldFocusMe[i];
+                    }
+                }
+                focus = new int[oldFocus.length - 1];
+                for (int i = 0; i < oldFocus.length; i++) {
+                    if (search > i) {
+                        focus[i] = oldFocus[i];
+                    } else if (search < i) {
+                        focus[i - 1] = oldFocus[i];
+                    }
+                }
+            } else return;
+        } else {
+            focusMe = Arrays.copyOf(oldFocusMe, oldFocusMe.length + 1);
+            focusMe[focusMe.length - 1] = localUser.getId();
+            focus = Arrays.copyOf(oldFocus, oldFocus.length + 1);
+            focus[focus.length - 1] = u.getId();
         }
-        u.setFocus(!u.isFocus());
+
+        u.setFocusMe(focusMe);
+        localUser.setFocus(focus);
+
+        SQLiteDatabase userDb = (new UserDBHelper()).getWritableDatabase();
+        ContentValues cv1 = new ContentValues();
+        cv1.put(UserDBHelper.FOCUS_ME, DbUtil.toString(focusMe));
+        ContentValues cv2 = new ContentValues();
+        cv2.put(UserDBHelper.FOCUS, DbUtil.toString(focus));
+        userDb.update(UserDBHelper.table, cv1, UserDBHelper.ID + " = ? ", new String[]{String.valueOf(u.getId())});
+        userDb.update(UserDBHelper.table, cv2, UserDBHelper.ID + " = ? ", new String[]{String.valueOf(localUser.getId())});
+        userDb.close();
     }
 }

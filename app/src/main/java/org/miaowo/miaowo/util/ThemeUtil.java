@@ -39,7 +39,7 @@ public class ThemeUtil {
          */
         // 侧边栏
         SpUtil.putInt(context, C.UI_SLIDE_USERNAME_COLOR, Color.rgb(0, 0, 0));
-        SpUtil.putInt(context, C.UI_SLIDE_USERSUMMARY_COLOR, Color.rgb(0, 0, 0));
+        SpUtil.putInt(context, C.UI_SLIDE_USER_SUMMARY_COLOR, Color.rgb(0, 0, 0));
         // 广场 底部
         SpUtil.putInt(context, C.UI_BOTTOM_DEFAULT_COLOR, Color.rgb(255, 255, 255));
         SpUtil.putInt(context, C.UI_BOTTOM_SELECTED_COLOR, Color.rgb(238, 238, 238));

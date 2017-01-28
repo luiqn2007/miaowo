@@ -13,4 +13,7 @@ public class Exceptions {
     public static Exception E_NULL_USER = new Exception("系统内无用户");
     public static Exception E_WRONG_USER_PWD = new Exception("用户名或密码错误");
     public static Exception E_ILL_USER_PWD = new Exception("用户名或密码不合法");
+    public static Exception E_HAD_USER = new Exception("当前账户已被注册");
+
+    public static Exception E_NO_TYPE = new Exception("未知类别");
 }

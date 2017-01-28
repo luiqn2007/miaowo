@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.VersionMessage;
-import org.miaowo.miaowo.impl.MsgImpl;
+import org.miaowo.miaowo.bean.data.VersionMessage;
+import org.miaowo.miaowo.impl.QuestionsImpl;
+import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.util.ThemeUtil;
@@ -24,13 +25,11 @@ import java.util.TimerTask;
  * 等以后要加入检查更新
  */
 public class Splish extends BaseActivity {
-    private static final String TAG = "Splish";
     VersionMessage updateMessage = null;
 
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate: Splish");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.fragment_welcome);
 
         final View welcome_eyes = findViewById(R.id.welcome_eyes);
         final ObjectAnimator animator = ObjectAnimator.ofFloat(welcome_eyes, "scaleY", 0, 1);
@@ -46,13 +45,10 @@ public class Splish extends BaseActivity {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        animator.start();
-                        animator2.start();
-                        animator3.start();
-                    }
+                runOnUiThread(() -> {
+                    animator.start();
+                    animator2.start();
+                    animator3.start();
                 });
             }
         }, 0, 1000);
@@ -62,16 +58,24 @@ public class Splish extends BaseActivity {
     }
 
     private void start() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<Void, Void, Exception>() {
 
             @Override
-            protected Void doInBackground(Void... params) {
-                checkUpdate();
+            protected Exception doInBackground(Void... params) {
+                try {
+                    checkUpdate();
+                } catch (Exception e) {
+                    return e;
+                }
                 return null;
             }
 
             @Override
-            protected void onPostExecute(Void aVoid) {
+            protected void onPostExecute(Exception e) {
+                if (e != null) {
+                    handleError(e);
+                }
+
                 startService(new Intent(Splish.this, WebService.class));
                 Intent intent = new Intent(Splish.this, Miao.class);
                 intent.putExtra(C.EXTRA_ITEM, updateMessage);
@@ -83,23 +87,35 @@ public class Splish extends BaseActivity {
     }
 
     // 用于检查更新
-    private void checkUpdate() {
+    private void checkUpdate() throws Exception {
         PackageManager pm = getPackageManager();
-        try {
-            updateMessage = new MsgImpl().getUpdateMessage(pm.getPackageInfo(getPackageName(), 0).versionCode);
-        } catch (PackageManager.NameNotFoundException e) {
-            handleError(e);
-        }
+        updateMessage = new QuestionsImpl().getUpdateMessage(pm.getPackageInfo(getPackageName(), 0).versionCode);
     }
 
     // 用于第一次打开初始化参数
     private void firstInit() {
-        Log.i(TAG, "firstInit: init Theme");
         if (SpUtil.getBoolean(this, C.SP_FIRST_BOOT, false)) {
             return;
         }
         ThemeUtil.loadDefaultTheme(this);
         // 设置完毕
         SpUtil.putBoolean(this, C.SP_FIRST_BOOT, true);
+    }
+
+    @Override
+    public void handleError(Exception e) {
+        super.handleError(e);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("出现错误：");
+        builder.setMessage(e.getMessage());
+        builder.setNegativeButton("退出", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+        });
+        builder.setPositiveButton("重试", ((dialog, which) -> {
+            dialog.dismiss();
+            start();
+        }));
+        builder.show();
     }
 }

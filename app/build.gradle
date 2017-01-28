@@ -26,6 +26,9 @@ android {
         }
         // 开启矢量支持
         vectorDrawables.setUseSupportLibrary(true)
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
@@ -33,10 +36,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 apply plugin: 'com.bugtags.library.plugin'
-//Bugtags 插件配置
+//BugTags 插件配置
 bugtags {
     //自动上传符号表功能配置，如果需要根据 build varint 配置，请参考帮助中心->符号表->Android 符号表->配置自动上传符号表
     appKey "d49a368c1c57f42f2096cfd3222da4e7"  //这里是你的 appKey
@@ -45,7 +52,7 @@ bugtags {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

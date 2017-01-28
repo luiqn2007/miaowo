@@ -2,7 +2,7 @@ package org.miaowo.miaowo.impl.interfaces;
 
 import android.support.annotation.WorkerThread;
 
-import org.miaowo.miaowo.bean.User;
+import org.miaowo.miaowo.bean.data.User;
 
 /**
  * 用于注册和登录的相关操作

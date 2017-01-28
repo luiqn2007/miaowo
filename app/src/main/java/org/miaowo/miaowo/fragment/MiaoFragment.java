@@ -1,24 +1,12 @@
 package org.miaowo.miaowo.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.fragment.square.AnnouncementFragment;
-import org.miaowo.miaowo.fragment.square.AskFragment;
-import org.miaowo.miaowo.fragment.square.DailyFragment;
-import org.miaowo.miaowo.fragment.square.WaterFragment;
-import org.miaowo.miaowo.util.FragmentUtil;
-import org.miaowo.miaowo.util.SpUtil;
 
 /**
  * 一个典型的Fragment {@link Fragment}.
@@ -39,8 +27,7 @@ public class MiaoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // 为这个 Fragment 填充布局
-        View v = inflater.inflate(R.layout.activity_welcome, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_welcome, container, false);
     }
     public MiaoFragment() {
         // 需要空参构造

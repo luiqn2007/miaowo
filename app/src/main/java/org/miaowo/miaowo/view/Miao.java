@@ -18,16 +18,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.T;
-import org.miaowo.miaowo.bean.User;
-import org.miaowo.miaowo.bean.VersionMessage;
-import org.miaowo.miaowo.fragment.HotFragment;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.fragment.MiaoFragment;
-import org.miaowo.miaowo.fragment.NewestFragment;
 import org.miaowo.miaowo.fragment.SearchFragment;
 import org.miaowo.miaowo.fragment.SquareFragment;
 import org.miaowo.miaowo.fragment.TopicFragment;
@@ -35,17 +31,17 @@ import org.miaowo.miaowo.fragment.UnreadFragment;
 import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
+import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
-import org.miaowo.miaowo.set.ChatWindows;
-import org.miaowo.miaowo.set.MessageWindows;
-import org.miaowo.miaowo.set.StateWindows;
+import org.miaowo.miaowo.set.windows.ChatWindows;
+import org.miaowo.miaowo.set.windows.MessageWindows;
+import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
+import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
-
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 // Android Studio自动生成的，用了一大堆支持库的东西，详见
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
@@ -54,7 +50,7 @@ public class Miao extends BaseActivity
 
     // 视图
     private NavigationView navigationView;
-    private Fragment fg_square, fg_hot, fg_newest, fg_search, fg_topic, fg_unread, fg_user;
+    private Fragment fg_square, fg_search, fg_topic, fg_unread, fg_user;
 
     // 组件
     private State mState;
@@ -81,20 +77,14 @@ public class Miao extends BaseActivity
 
         closeDialog = (new AlertDialog.Builder(this)).create();
         closeDialog.setMessage("关闭后是否继续接收消息？");
-        closeDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "否", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                stopService(new Intent(Miao.this, WebService.class));
-                dialog.dismiss();
-                finish();
-            }
+        closeDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "否", (dialog, which) -> {
+            stopService(new Intent(Miao.this, WebService.class));
+            dialog.dismiss();
+            finish();
         });
-        closeDialog.setButton(DialogInterface.BUTTON_POSITIVE, "是", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                finish();
-            }
+        closeDialog.setButton(DialogInterface.BUTTON_POSITIVE, "是", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
         });
     }
 
@@ -114,8 +104,6 @@ public class Miao extends BaseActivity
         mManager = getSupportFragmentManager();
 
         fg_square = SquareFragment.newInstance();
-        fg_hot = HotFragment.newInstance();
-        fg_newest = NewestFragment.newInstance();
         fg_search = SearchFragment.newInstance();
         fg_topic = TopicFragment.newInstance();
         fg_unread = UnreadFragment.newInstance();
@@ -124,7 +112,6 @@ public class Miao extends BaseActivity
         FragmentUtil.showFragment(mManager, R.id.container, MiaoFragment.newInstance());
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // 侧栏的动作响应
@@ -133,14 +120,6 @@ public class Miao extends BaseActivity
             case R.id.nav_square:
                 FragmentUtil.hideAllFragment(mManager);
                 FragmentUtil.showFragment(mManager, R.id.container, fg_square);
-                break;
-            case R.id.nav_newest:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_newest);
-                break;
-            case R.id.nav_hot:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_hot);
                 break;
             case R.id.nav_search:
                 FragmentUtil.hideAllFragment(mManager);
@@ -162,7 +141,7 @@ public class Miao extends BaseActivity
                 ThemeUtil.loadDefaultTheme(this);
                 break;
             case R.id.nav_exit:
-                if (T.isLogin) {
+                if (D.getInstance().thisUser.getId() >= 0) {
                     mState.logout();
                     setUserMsg();
                 } else {
@@ -173,7 +152,7 @@ public class Miao extends BaseActivity
                 mStateWindows.showLogin();
                 break;
             case R.id.nav_chat:
-                mChatWindows.showChatList(new ArrayList<User>());
+                mChatWindows.showChatList(new ArrayList<>());
                 break;
             case R.id.nav_state:
                 break;
@@ -199,12 +178,9 @@ public class Miao extends BaseActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("人人都有\"萌\"的一面");
             builder.setMessage("\"聪明\"解决人类37%的问题；\n\"萌\"负责剩下的85%");
-            builder.setPositiveButton("我最萌(•‾̑⌣‾̑•)✧˖°", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    SpUtil.putBoolean(Miao.this, C.SP_FIRST_BOOT, false);
-                    dialogInterface.dismiss();
-                }
+            builder.setPositiveButton("我最萌(•‾̑⌣‾̑•)✧˖°", (dialogInterface, i) -> {
+                SpUtil.putBoolean(Miao.this, C.SP_FIRST_BOOT, false);
+                dialogInterface.dismiss();
             });
             builder.show();
         }
@@ -215,13 +191,10 @@ public class Miao extends BaseActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(Miao.this);
             builder.setTitle(versionMessage.getVersionName());
             builder.setMessage(versionMessage.getMessage());
-            builder.setPositiveButton("知道了(•‾̑⌣‾̑•)✧˖°", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    SpUtil.putBoolean(Miao.this, C.SP_FIRST_UPDATE, false);
-                    showFirstUseDialog();
-                    dialogInterface.dismiss();
-                }
+            builder.setPositiveButton("知道了(•‾̑⌣‾̑•)✧˖°", (dialogInterface, i) -> {
+                SpUtil.putBoolean(Miao.this, C.SP_FIRST_UPDATE, false);
+                showFirstUseDialog();
+                dialogInterface.dismiss();
             });
             builder.show();
         } else {
@@ -239,7 +212,7 @@ public class Miao extends BaseActivity
         } else {
             if (mState.getLocalUser().getId() < 0) {
                 long thisClick = System.currentTimeMillis();
-                if (thisClick - lastExit <= 500) {
+                if (thisClick - lastExit <= 1000) {
                     super.onBackPressed();
                 } else {
                     lastExit = thisClick;
@@ -267,17 +240,10 @@ public class Miao extends BaseActivity
                 TextView tv_user = (TextView) headerView.findViewById(R.id.tv_user);
                 TextView tv_summary = (TextView) headerView.findViewById(R.id.tv_summary);
 
-                if (u.getId() == -1) {
-                    Picasso.with(Miao.this).load(R.drawable.def_user)
-                            .fit().transform(new CropCircleTransformation())
-                            .into(iv_user);
-                    getMenuInflater().inflate(R.menu.inmenu_logout, navigationView.getMenu());
-                } else {
-                    Picasso.with(Miao.this).load(u.getHeadImg())
-                            .fit().transform(new CropCircleTransformation())
-                            .into(iv_user);
-                    getMenuInflater().inflate(R.menu.inmenu_login, navigationView.getMenu());
-                }
+                ImageUtil.fillImage(iv_user, u == null ? null : u);
+                if (u.getId() == -1) getMenuInflater().inflate(R.menu.inmenu_logout, navigationView.getMenu());
+                else getMenuInflater().inflate(R.menu.inmenu_login, navigationView.getMenu());
+
                 tv_summary.setText(u.getSummary());
                 tv_user.setText(u.getName());
             }

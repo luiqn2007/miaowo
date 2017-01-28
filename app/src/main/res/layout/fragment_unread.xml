@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 底部导航栏 -->
+    <LinearLayout
+        android:id="@+id/tab_bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#08000000"
+        android:orientation="horizontal">
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_question"
+            android:drawableTop="@drawable/ask"
+            android:text="问题"/>
+
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_answer"
+            android:text="回答"
+            android:drawableTop="@drawable/daily" />
+
+        <TextView
+            style="@style/tab_bottom_text"
+            android:id="@+id/tv_reply"
+            android:text="回复"
+            android:drawableTop="@drawable/state"/>
+    </LinearLayout>
+
+    <!-- 页面 -->
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tab_bottom"/>
+</RelativeLayout>

@@ -6,41 +6,41 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.util.Log;
 
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.T;
-import org.miaowo.miaowo.bean.ChatMessage;
+import org.miaowo.miaowo.bean.data.Answer;
+import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.bean.data.Question;
+import org.miaowo.miaowo.impl.AnswersImpl;
 import org.miaowo.miaowo.impl.ChatImpl;
-import org.miaowo.miaowo.impl.MsgImpl;
+import org.miaowo.miaowo.impl.interfaces.Answers;
 import org.miaowo.miaowo.impl.interfaces.Chat;
-import org.miaowo.miaowo.impl.interfaces.Message;
 import org.miaowo.miaowo.receiver.MessageReceiver;
 
 public class WebService extends Service {
 
     private MessageReceiver mMsgReceiver;
-    private Message mMessage;
+    private Answers mAnswers;
     private Chat mChat;
 
     public WebService() {
-        mMessage = new MsgImpl();
+        mAnswers = new AnswersImpl();
         mChat = new ChatImpl();
         mMsgReceiver = new MessageReceiver(this);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        IntentFilter tfilter = new IntentFilter();
-        tfilter.addAction(T.BC_CHAT);
-        tfilter.addAction(T.BC_MSG);
-        registerReceiver(testReceiver, tfilter);
+        IntentFilter tFilter = new IntentFilter();
+        tFilter.addAction(T.BC_CHAT);
+        tFilter.addAction(T.BC_MSG);
+        registerReceiver(testReceiver, tFilter);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(C.BC_MSG);
@@ -52,23 +52,24 @@ public class WebService extends Service {
     BroadcastReceiver testReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                case T.BC_CHAT:
-                    sendChat(T.getReply((ChatMessage) intent.getParcelableExtra(C.EXTRA_ITEM)));
-                    break;
-                case T.BC_MSG:
-                    sendMsg();
-                    break;
+            Object msg = intent.getParcelableExtra(C.EXTRA_ITEM) instanceof ChatMessage;
+            if (msg instanceof ChatMessage) {
+            } else if (msg instanceof Question) {
+            } else if (msg instanceof Answer) {
             }
         }
     };
 
-    private void sendMsg() {
+    private void sendMsg(Answer answer) {
+        try {
+            mAnswers.sendAnswer(answer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendChat(ChatMessage msg) {
         mChat.pushMessage(msg);
-        //TODO 发送至系统状态栏
     }
 
     @Override

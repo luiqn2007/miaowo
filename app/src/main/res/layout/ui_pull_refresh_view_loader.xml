@@ -17,7 +17,7 @@
         android:indeterminate="true" />
 
     <TextView
-        android:id="@+id/pull_to_refresh_loadmore_text"
+        android:id="@+id/pull_to_refresh_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
