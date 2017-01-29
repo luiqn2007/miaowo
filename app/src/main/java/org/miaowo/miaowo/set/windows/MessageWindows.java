@@ -30,7 +30,7 @@ import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.ViewFiller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * 有关消息，回复的弹窗集合
@@ -83,7 +83,7 @@ public class MessageWindows extends SetRoot {
         return view.defaultCloseButton().show();
     }
     public FloatView showTopic(final Question question) {
-        getArguments().putSerializable("answer_" + question.getId(), new HashMap<Answer, ArrayList<Answer>>());
+        getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
         FloatView view = new FloatView(R.layout.window_topic);
         View v = view.getView();
 
@@ -100,17 +100,17 @@ public class MessageWindows extends SetRoot {
             }
         });
         lv_answer.setAdapter(new BaseAdapter() {
-            HashMap<Answer, ArrayList<Answer>> answers;
+            ArrayList<Answer> answers;
 
             @Override
             public int getCount() {
-                answers = (HashMap<Answer, ArrayList<Answer>>) getArguments().getSerializable("answer_" + question.getId());
+                answers = (ArrayList<Answer>) getArguments().getSerializable("answer_" + question.getId());
                 return answers == null ? 0 : answers.size();
             }
 
             @Override
             public Object getItem(int position) {
-                return answers.keySet().toArray()[position];
+                return answers.get(position);
             }
 
             @Override
@@ -121,7 +121,7 @@ public class MessageWindows extends SetRoot {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 Answer answer = (Answer) getItem(position);
-                ViewFiller.fillAnswer(convertView, answer, answers.get(answer));
+                ViewFiller.fillAnswer(convertView, answer);
                 return convertView;
             }
         });
@@ -131,7 +131,8 @@ public class MessageWindows extends SetRoot {
             @Override
             protected Exception doInBackground(Question... params) {
                 try {
-                    HashMap<Answer, ArrayList<Answer>> answers = mAnswers.getAnswers(params[0]);
+                    ArrayList<Answer> answers = new ArrayList<>();
+                    Collections.addAll(answers, mAnswers.getAnswers(params[0]));
                     getArguments().putSerializable("answer_" + question.getId(), answers);
                 } catch (Exception e) {
                     return e;
@@ -152,26 +153,23 @@ public class MessageWindows extends SetRoot {
         return view.defaultCloseButton().show();
     }
     private FloatView showAnswers(Question question) {
-        getArguments().putSerializable("answer_" + question.getId(), new HashMap<Answer, ArrayList<Answer>>());
+        getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
         FloatView view = new FloatView(R.layout.window_normal_list);
         View v = view.getView();
 
         ListView list = (ListView) v.findViewById(R.id.list);
         mAdapter = new BaseAdapter() {
-            HashMap<Answer, ArrayList<Answer>> answers;
-            BaseAdapter[] inAdapters;
+            ArrayList<Answer> answers;
 
             @Override
             public int getCount() {
-                answers = (HashMap<Answer, ArrayList<Answer>>) getArguments().getSerializable("answer_" + question.getId());
-                int count = answers == null ? 0 : answers.size();
-                inAdapters = new BaseAdapter[count];
-                return count;
+                answers = (ArrayList<Answer>) getArguments().getSerializable("answer_" + question.getId());
+                return answers == null ? 0 : answers.size();
             }
 
             @Override
             public Object getItem(int position) {
-                return answers.keySet().toArray()[position];
+                return answers.get(position);
             }
 
             @Override
@@ -182,19 +180,8 @@ public class MessageWindows extends SetRoot {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 Answer answer = (Answer) getItem(position);
-                convertView = ViewFiller.fillAnswer(convertView, answer, answers.get(answer));
-                inAdapters[position] = (BaseAdapter) ((ViewFiller.AnswerHolder) convertView.getTag()).lv_replies.getAdapter();
+                convertView = ViewFiller.fillAnswer(convertView, answer);
                 return convertView;
-            }
-
-            @Override
-            public void notifyDataSetChanged() {
-                super.notifyDataSetChanged();
-                for (BaseAdapter inAdapter : inAdapters) {
-                    if (inAdapter != null) {
-                        inAdapter.notifyDataSetChanged();
-                    }
-                }
             }
         };
         list.setAdapter(mAdapter);
@@ -204,7 +191,8 @@ public class MessageWindows extends SetRoot {
             @Override
             protected Exception doInBackground(Question... params) {
                 try {
-                    HashMap<Answer, ArrayList<Answer>> answers = mAnswers.getAnswers(params[0]);
+                    ArrayList<Answer> answers = new ArrayList<>();
+                    Collections.addAll(answers, mAnswers.getAnswers(params[0]));
                     getArguments().putSerializable("answer_" + question.getId(), answers);
                 } catch (Exception e) {
                     return e;
@@ -326,7 +314,6 @@ public class MessageWindows extends SetRoot {
                     if (e != null) {
                         d.activeActivity.handleError(e);
                     } else {
-
                         Snackbar.make(D.getInstance().activeActivity.getWindow().getDecorView(),
                                 "发送成功", Snackbar.LENGTH_SHORT).show();
                         view.dismiss();
@@ -351,11 +338,8 @@ public class MessageWindows extends SetRoot {
         et_title.setText("正在回复: " + answer.getUser().getName());
         et_title.setEnabled(false);
         btn_send.setOnClickListener(v1 -> {
-
             Answer a = new Answer(0, mAnswers.getFinalAnswer(answer).getQuestion(), answer, et_content.getText().toString(), mState.getLocalUser(), System.currentTimeMillis());
-
             new AsyncTask<Answer, Void, Exception>() {
-
                 @Override
                 protected Exception doInBackground(Answer... params) {
                     try {
@@ -365,7 +349,6 @@ public class MessageWindows extends SetRoot {
                     }
                     return null;
                 }
-
                 @Override
                 protected void onPostExecute(Exception e) {
                     if (e != null) {

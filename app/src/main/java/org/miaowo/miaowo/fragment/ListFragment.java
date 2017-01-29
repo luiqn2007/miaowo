@@ -91,7 +91,7 @@ public class ListFragment extends Fragment {
 
             @Override
             public void bindView(final Question item, ItemRecyclerAdapter.ViewHolder holder) {
-                LogUtil.i("QuestionItem", item.toString());
+
                 // 用户
                 final User u = item.getUser();
                 holder.setOnClickListener((v) -> mUserWindows.showUserWindow(u), R.id.iv_user, R.id.tv_user);

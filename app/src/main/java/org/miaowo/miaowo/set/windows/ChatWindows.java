@@ -166,20 +166,25 @@ public class ChatWindows {
         });
         list.setPullRefresher(() -> {
             mMsgList = mAdapter.getItems();
-            new AsyncTask<ChatMessage, Void, ArrayList<ChatMessage>>() {
+            new AsyncTask<ChatMessage, Void, Exception>() {
                 @Override
-                protected ArrayList<ChatMessage> doInBackground(ChatMessage... params) {
-                    ArrayList<ChatMessage> chatMessages = new ArrayList<>();
-                    ChatMessage[] beforeMessage = mChat.getBeforeMessage(params[0]);
-                    Collections.addAll(chatMessages, beforeMessage);
-                    return chatMessages;
+                protected Exception doInBackground(ChatMessage... params) {
+                    try {
+                        ArrayList<ChatMessage> chatMessages = new ArrayList<>();
+                        ChatMessage[] beforeMessage = mChat.getBeforeMessage(params[0]);
+                        Collections.addAll(chatMessages, beforeMessage);
+                        chatMessages.addAll(mMsgList);
+                        mMsgList = chatMessages;
+                    } catch (Exception e) {
+                        return e;
+                    }
+                    return null;
                 }
 
                 @Override
-                protected void onPostExecute(ArrayList<ChatMessage> chatMessages) {
-                    chatMessages.addAll(mMsgList);
-                    mMsgList = chatMessages;
-                    mAdapter.updateDate(mMsgList);
+                protected void onPostExecute(Exception e) {
+                    if (e == null) mAdapter.updateDate(mMsgList);
+                    else D.getInstance().activeActivity.handleError(e);
                 }
             }.execute(mMsgList.size() == 0
                     ? new ChatMessage(-1, System.currentTimeMillis(), from, D.getInstance().thisUser, "")

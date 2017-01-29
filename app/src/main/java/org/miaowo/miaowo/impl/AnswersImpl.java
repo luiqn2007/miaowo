@@ -11,9 +11,6 @@ import org.miaowo.miaowo.test.AnswerDBHelper;
 import org.miaowo.miaowo.test.DbUtil;
 import org.miaowo.miaowo.test.QuestionDBHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * 回答/回复操作 实现类
  * Created by luqin on 17-1-26.
@@ -50,32 +47,15 @@ public class  AnswersImpl implements Answers {
     }
 
     @Override
-    public HashMap<Answer, ArrayList<Answer>> getAnswers(Question question) throws Exception {
+    public Answer[] getAnswers(Question question) throws Exception {
         SQLiteDatabase answerDb = (new AnswerDBHelper()).getReadableDatabase();
         Cursor cursor = answerDb.query(AnswerDBHelper.table, AnswerDBHelper.getCumns,
                 AnswerDBHelper.QUESTION + " = ? ",
                 new String[]{Integer.toString(question.getId())}, null, null, null);
-        Answer[] all = DbUtil.parseAnswers(cursor);
+        Answer[] answers = DbUtil.parseAnswers(cursor);
         cursor.close();
         answerDb.close();
-
-        ArrayList<Answer> answers = new ArrayList<>();
-        ArrayList<Answer> replies = new ArrayList<>();
-        for (Answer answer : all) {
-            if (answer.getReply() == null) answers.add(answer);
-            else replies.add(answer);
-        }
-        HashMap<Answer, ArrayList<Answer>> answerArrayListHashMap = new HashMap<>();
-        for (Answer answer : answers) {
-            answerArrayListHashMap.put(answer, new ArrayList<>());
-        }
-        for (Answer reply : replies) {
-            Answer finalAnswer = getFinalAnswer(reply);
-            ArrayList<Answer> answerArrayList = answerArrayListHashMap.get(finalAnswer);
-            answerArrayList.add(reply);
-            answerArrayListHashMap.put(finalAnswer, answerArrayList);
-        }
-        return answerArrayListHashMap;
+        return answers;
     }
 
     @Override

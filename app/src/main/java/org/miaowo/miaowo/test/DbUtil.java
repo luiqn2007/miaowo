@@ -65,7 +65,7 @@ public class DbUtil {
     public static User[] parseUser(Cursor cursor) {
         User[] users = new User[cursor.getCount()];
         int i = 0;
-        if (cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(UserDBHelper.ID));
             String name = cursor.getString(cursor.getColumnIndex(UserDBHelper.NAME));
             String pwd = cursor.getString(cursor.getColumnIndex(UserDBHelper.PWD));
@@ -89,7 +89,7 @@ public class DbUtil {
         if (count >= 1) relCount = relCount >= count ? count : relCount;
         Question[] questions = new Question[relCount];
         int i = 0;
-        if (cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(QuestionDBHelper.ID));
             String message = cursor.getString(cursor.getColumnIndex(QuestionDBHelper.MSG));
             int reply = cursor.getInt(cursor.getColumnIndex(QuestionDBHelper.REPLY));
@@ -112,7 +112,7 @@ public class DbUtil {
     public static Answer[] parseAnswers(Cursor cursor) {
         Answer[] answers = new Answer[cursor.getCount()];
         int i = 0;
-        if (cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(AnswerDBHelper.ID));
             String message = cursor.getString(cursor.getColumnIndex(AnswerDBHelper.MESSAGE));
             int questionId = cursor.getInt(cursor.getColumnIndex(AnswerDBHelper.QUESTION));
@@ -123,7 +123,7 @@ public class DbUtil {
             Question q = (new QuestionsImpl()).getQuestion(questionId);
             User u = (new UsersImpl()).getUser(userId);
             Answer a = null;
-            if (replyId >= 0) {
+            if (replyId > 0) {
                 a = (new AnswersImpl()).getAnswer(replyId);
             }
             answers[i] = new Answer(id, q, a, message, u, time);
@@ -134,7 +134,7 @@ public class DbUtil {
     public static ChatMessage[] parseChatMessage(Cursor cursor) {
         ChatMessage[] messages = new ChatMessage[cursor.getCount()];
         int i = 0;
-        if (cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(ChatMessageDBHelper.ID));
             int fromId = cursor.getInt(cursor.getColumnIndex(ChatMessageDBHelper.FROM));
             int toId = cursor.getInt(cursor.getColumnIndex(ChatMessageDBHelper.TO));

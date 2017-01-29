@@ -33,7 +33,7 @@ public interface Answers {
      * @return 问题的回答
      * @throws Exception 查询出错
      */
-    HashMap<Answer, ArrayList<Answer>> getAnswers(Question question) throws Exception;
+    Answer[] getAnswers(Question question) throws Exception;
 
     /**
      * 获取回复的根回答

@@ -18,7 +18,16 @@ public class LogUtil {
         Log.e(TAG, tag + " : " + errMsg);
     }
 
-    public static void i(String tag, String msg) {
+    public static void i(String tag, Object msg) {
         Log.i(TAG, tag + " : " + msg);
+    }
+
+    public static void i(String tag, Object[] msgs) {
+        StringBuilder sb = new StringBuilder(tag + " :\n");
+        for (Object msg : msgs) {
+            sb.append("\n\t");
+            sb.append(msg);
+        }
+        Log.i(TAG, sb.toString());
     }
 }

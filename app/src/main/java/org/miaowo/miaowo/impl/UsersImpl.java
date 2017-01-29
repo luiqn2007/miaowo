@@ -41,7 +41,7 @@ public class UsersImpl implements Users {
 
     @Override
     public User[] searchUsers(String userName) {
-        if (TextUtils.isEmpty(userName)) {
+        if (userName == null) {
             return new User[0];
         } else {
             SQLiteDatabase userDb = (new UserDBHelper()).getReadableDatabase();

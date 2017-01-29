@@ -14,6 +14,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         //在这里初始化
-        Bugtags.start("d49a368c1c57f42f2096cfd3222da4e7", this, Bugtags.BTGInvocationEventBubble);
+//        Bugtags.start("d49a368c1c57f42f2096cfd3222da4e7", this, Bugtags.BTGInvocationEventBubble);
     }
 }

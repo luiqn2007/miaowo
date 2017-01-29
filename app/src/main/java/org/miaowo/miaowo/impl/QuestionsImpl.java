@@ -25,7 +25,7 @@ public class QuestionsImpl implements Questions {
         switch (position) {
             case C.LF_POSITION_DOWN:
                 cursor = questionDb.query(QuestionDBHelper.table, QuestionDBHelper.getCumns,
-                        QuestionDBHelper.TYPE + " = ? and " + QuestionDBHelper.TIME + " >= ? ",
+                        QuestionDBHelper.TYPE + " = ? and " + QuestionDBHelper.TIME + " > ? ",
                         new String[]{type, Long.toString(time)}, null, null, null);
                 break;
             case C.LF_POSITION_UP:

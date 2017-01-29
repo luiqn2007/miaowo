@@ -118,22 +118,12 @@ public class Answer implements Parcelable {
 
         Answer answer = (Answer) o;
 
-        return id == answer.id
-                && time == answer.time
-                && (question != null ? question.equals(answer.question) : answer.question == null
-                && (reply != null ? reply.equals(answer.reply) : answer.reply == null
-                && message.equals(answer.message) && user.equals(answer.user)));
+        return id == answer.id;
 
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (question != null ? question.hashCode() : 0);
-        result = 31 * result + (reply != null ? reply.hashCode() : 0);
-        result = 31 * result + message.hashCode();
-        result = 31 * result + user.hashCode();
-        result = 31 * result + (int) (time ^ (time >>> 32));
-        return result;
+        return id;
     }
 }

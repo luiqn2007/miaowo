@@ -29,13 +29,13 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
         D.getInstance().activeActivity = this;
         FloatView.reShowAll();
         super.onResume();
-        Bugtags.onResume(this);
+//        Bugtags.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Bugtags.onPause(this);
+//        Bugtags.onPause(this);
     }
 
     @Override
@@ -46,7 +46,6 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
 
     @Override
     protected void onDestroy() {
-
         if (D.getInstance().activeActivity.equals(this)) {
             D.getInstance().activeActivity = null;
         }
@@ -55,7 +54,7 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        Bugtags.onDispatchTouchEvent(this, event);
+//        Bugtags.onDispatchTouchEvent(this, event);
         return super.dispatchTouchEvent(event);
     }
 
