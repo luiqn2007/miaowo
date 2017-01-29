@@ -90,9 +90,7 @@ public class ChatImpl implements Chat {
         cursort.close();
         chatMsgDb.close();
         ChatMessage[] messages = Arrays.copyOf(msgFrom, msgFrom.length + msgTo.length);
-        for (int i = 0; i < msgTo.length; i++) {
-            messages[msgFrom.length + i] = msgTo[i];
-        }
+        System.arraycopy(msgTo, 0, messages, msgFrom.length, msgTo.length);
         return messages;
     }
 }

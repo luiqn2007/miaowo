@@ -6,11 +6,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import com.bugtags.library.Bugtags;
-
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
-import org.miaowo.miaowo.ui.FloatView;
 
 /**
  * 创建的所有Activity的基类
@@ -27,7 +24,6 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
     @Override
     protected void onResume() {
         D.getInstance().activeActivity = this;
-        FloatView.reShowAll();
         super.onResume();
 //        Bugtags.onResume(this);
     }
@@ -40,7 +36,6 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
 
     @Override
     protected void onStop() {
-        FloatView.hideAll();
         super.onStop();
     }
 

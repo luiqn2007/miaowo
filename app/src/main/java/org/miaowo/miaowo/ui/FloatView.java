@@ -122,17 +122,13 @@ public class FloatView extends LinearLayout {
     }
 
     public FloatView dismiss() {
-        hide();
-        position = new Point(0, 0);
-        shownWindows.remove(this);
-        return this;
-    }
-
-    public void hide() {
         if (shownWindows.contains(this) && isShowing) {
             mManager.removeView(this);
+            shownWindows.remove(this);
         }
         isShowing = false;
+        position = new Point(0, 0);
+        return this;
     }
 
     public FloatView setCloseButton(@IdRes int id) {
@@ -145,14 +141,6 @@ public class FloatView extends LinearLayout {
 
     public FloatView defaultCloseButton() {
         return setCloseButton(R.id.iv_close);
-    }
-
-    public static void reShowAll() {
-        shownWindows.forEach(FloatView::show);
-    }
-
-    public static void hideAll() {
-        shownWindows.forEach(FloatView::hide);
     }
 
     public static FloatView isShowing(Object tag) {
