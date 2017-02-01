@@ -11,6 +11,9 @@ import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.AnswersImpl;
 import org.miaowo.miaowo.impl.QuestionsImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
+import org.miaowo.miaowo.util.LogUtil;
+
+import java.util.HashMap;
 
 /**
  * 数据库读写辅助类
@@ -163,8 +166,7 @@ public class DbUtil {
         }
         return sb.toString();
     }
-
-    private static int[] toIntArray(String str) {
+    public static int[] toIntArray(String str) {
         if (TextUtils.isEmpty(str)) {
             return new int[0];
         }

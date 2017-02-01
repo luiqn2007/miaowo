@@ -3,13 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
     android:background="@drawable/bg_rect_blue_300">
 
     <ImageView
         android:id="@+id/iv_user"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_margin="15dp"
         android:src="@drawable/def_user"/>
 
@@ -17,12 +19,11 @@
         android:id="@+id/tv_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/iv_user"
+        android:layout_alignTop="@id/iv_user"
         android:layout_toRightOf="@id/iv_user"
         android:layout_marginBottom="10dp"
         android:text="用户名"
-        android:textColor="#FF000000"
-        android:textSize="25sp"/>
+        android:textSize="15sp"/>
 
     <TextView
         android:id="@+id/tv_answer"
@@ -32,7 +33,7 @@
         android:text="回复内容"
         android:layout_below="@id/tv_user"
         android:layout_alignLeft="@id/tv_user"
-        android:textSize="25sp"
+        android:textSize="18sp"
         android:layout_marginBottom="10dp"/>
 
 </RelativeLayout>

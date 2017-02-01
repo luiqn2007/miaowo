@@ -3,9 +3,6 @@ package org.miaowo.miaowo.impl.interfaces;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.bean.data.Question;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * 回答/回复操作
  * Created by luqin on 17-1-26.

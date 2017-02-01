@@ -9,12 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.miaowo.miaowo.C;
-import org.miaowo.miaowo.fragment.ListFragment;
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * 带下方选择的Fragment
@@ -27,6 +26,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     public static String TAG_DEFAULT = "default";
     public static String TAG_LAYOUT = "layout";
     public static String TAG_FRAGMENTS = "fragments";
+    public static String TAG_CONTROLS = "controls";
 
     /* ================================================================================ */
     // 构造，创建，绑定及与 Activity 交互
@@ -39,7 +39,8 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
             container = getArguments().getInt(TAG_CONTAINER);
             defaultFg = getArguments().getInt(TAG_DEFAULT);
             layout = getArguments().getInt(TAG_LAYOUT);
-            fragments = (HashMap<Integer, ListFragment>) getArguments().getSerializable(TAG_FRAGMENTS);
+            controls = (ArrayList<Integer>) getArguments().getSerializable(TAG_CONTROLS);
+            fragments = (ArrayList<ListFragment>) getArguments().getSerializable(TAG_FRAGMENTS);
         }
     }
     @Override
@@ -53,16 +54,18 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     public ChooseFragment() { }
     /* ================================================================================ */
 
-    private HashMap<Integer, ListFragment> fragments;
+    private ArrayList<ListFragment> fragments;
+    private ArrayList<Integer> controls;
     private int container, defaultFg;
 
     private View root;
     private ListWindows mListWindows;
 
     private void loadFragment(int fragmentId) {
-        if (fragments.containsKey(fragmentId)) {
+        int index = controls.indexOf(fragmentId);
+        if (index >= 0) {
             hideAllFragment();
-            FragmentUtil.showFragment(getChildFragmentManager(), container, fragments.get(fragmentId));
+            FragmentUtil.showFragment(getChildFragmentManager(), container, fragments.get(index));
             root.findViewById(fragmentId).setBackgroundColor(SpUtil.getInt(getContext(), C.UI_BOTTOM_SELECTED_COLOR,
                     Color.rgb(255, 255, 255)));
         }
@@ -88,7 +91,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     private void initViews(View v) {
         root = v;
 
-        for (Integer id : fragments.keySet()) {
+        for (Integer id : controls) {
             v.findViewById(id).setOnClickListener(this);
             v.findViewById(id).setOnLongClickListener(this);
         }
@@ -100,7 +103,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     private void hideAllFragment() {
         FragmentUtil.hideAllFragment(getChildFragmentManager());
 
-        for (int id : fragments.keySet()) {
+        for (int id : controls) {
             root.findViewById(id).setBackgroundColor(SpUtil.getInt(getContext(), C.UI_BOTTOM_DEFAULT_COLOR,
                     Color.argb(255, 255, 255, 255)));
         }

@@ -1,8 +1,10 @@
-package org.miaowo.miaowo.fragment;
+package org.miaowo.miaowo.root.fragment;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -24,13 +26,12 @@ import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements Parcelable {
 
     public static String TAG_NAME = "name";
 
@@ -45,6 +46,34 @@ public class ListFragment extends Fragment {
     private String name;
 
     public ListFragment() {}
+
+    protected ListFragment(Parcel in) {
+        mItems = in.createTypedArrayList(Question.CREATOR);
+        name = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(mItems);
+        dest.writeString(name);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ListFragment> CREATOR = new Creator<ListFragment>() {
+        @Override
+        public ListFragment createFromParcel(Parcel in) {
+            return new ListFragment(in);
+        }
+
+        @Override
+        public ListFragment[] newArray(int size) {
+            return new ListFragment[size];
+        }
+    };
 
     public static ListFragment newInstance(String name) {
         Bundle args = new Bundle();

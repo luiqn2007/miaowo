@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.set.windows;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.ui.FloatView;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,11 +119,10 @@ public class ChatWindows {
         final User to = mState.getLocalUser();
         if (to.getId() < 0) return null;
         // 未显示
-        FloatView view = FloatView.isShowing(from);
-        if (FloatView.isShowing(from) != null) {
-            LogUtil.i("windowSearch", view.toString());
-            return view;
-        }
+        FloatView view = FloatView.searchByTag(from);
+        if (view != null) return view;
+        // 更新列表
+        mChat.refreshChatList(from);
 
         mMsgList = new ArrayList<>();
         view = new FloatView(R.layout.window_chat);
@@ -137,6 +134,7 @@ public class ChatWindows {
         final LoadMoreList list = (LoadMoreList) v.findViewById(R.id.list);
         Button btn_send = (Button) v.findViewById(R.id.btn_send);
         final EditText et_msg = (EditText) v.findViewById(R.id.et_msg);
+        et_msg.setText(Long.toString(System.currentTimeMillis()));
 
         ImageUtil.fillImage(iv_user, from);
         tv_user.setText(from.getName());
@@ -208,7 +206,7 @@ public class ChatWindows {
             @Override
             protected void onPostExecute(ChatMessage c) {
                 if (c != null) {
-                    et_msg.setText("");
+                    et_msg.setText(Long.toString(System.currentTimeMillis()));
                     mMsgList.add(c);
                     mAdapter.notifyDataSetChanged();
                     list.scrollToPosition(mMsgList.size() - 1);
@@ -225,7 +223,7 @@ public class ChatWindows {
     }
 
     public static boolean addChatMsg(final ChatMessage msg) {
-        FloatView view = FloatView.isShowing(msg.getFrom());
+        FloatView view = FloatView.searchByTag(msg.getFrom());
         if (view == null) {
             return false;
         }

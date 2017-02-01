@@ -25,7 +25,7 @@ public class ChatListDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table " + table + " (" +
-                        ID + " integer primary key autoincrement, " +
+                        ID + " integer primary key, " +
                         LIST  + " text);"
         );
     }

@@ -1,11 +1,7 @@
 package org.miaowo.miaowo.impl.interfaces;
 
-import android.support.annotation.WorkerThread;
-
 import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.bean.data.User;
-
-import java.util.ArrayList;
 
 /**
  * 聊天的有关方法
@@ -19,6 +15,12 @@ public interface Chat {
      * @return 聊天用户列表
      */
     User[] getChatList();
+
+    /**
+     * 刷新聊天用户列表。检查当前用户是否在列表中，在则添加。
+     * @param u 要检查的用户
+     */
+    void refreshChatList(User u);
 
     /**
      * 向服务器发送一条聊天消息

@@ -143,7 +143,7 @@ public class FloatView extends LinearLayout {
         return setCloseButton(R.id.iv_close);
     }
 
-    public static FloatView isShowing(Object tag) {
+    public static FloatView searchByTag(Object tag) {
         if (tag == null) {
             return null;
         }

@@ -7,13 +7,10 @@ package org.miaowo.miaowo.set;
 
 public class Exceptions {
     public static Exception E_NON_LOGIN = new Exception("请先登录");
-
-    public static Exception E_WRONG_CHAT_MSG = new Exception("无效聊天信息");
-
-    public static Exception E_NULL_USER = new Exception("系统内无用户");
     public static Exception E_WRONG_USER_PWD = new Exception("用户名或密码错误");
     public static Exception E_ILL_USER_PWD = new Exception("用户名或密码不合法");
     public static Exception E_HAD_USER = new Exception("当前账户已被注册");
 
     public static Exception E_NO_TYPE = new Exception("未知类别");
+    public static Exception E_EMPTY_MESSAGE = new Exception("内容不能为空");
 }

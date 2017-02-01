@@ -113,4 +113,15 @@ public class ChatMessage implements Parcelable {
     public int hashCode() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "id=" + id +
+                ", time=" + time +
+                ", from=" + from +
+                ", to=" + to +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

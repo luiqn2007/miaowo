@@ -8,7 +8,7 @@ import android.util.Log;
  */
 
 public class LogUtil {
-    private static final String TAG = "MiaoErr";
+    private static final String TAG = "MiaoLogs";
     
     public static void e(String tag, String errMsg, Exception e) {
         Log.e(TAG, tag + " : " + errMsg, e);

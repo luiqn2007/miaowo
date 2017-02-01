@@ -6,8 +6,9 @@ import android.support.v4.app.Fragment;
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.fragment.ChooseFragment;
+import org.miaowo.miaowo.root.fragment.ListFragment;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * 一个典型的Fragment {@link Fragment}.
@@ -20,22 +21,30 @@ import java.util.HashMap;
 public class SquareFragment extends ChooseFragment {
 
     public static SquareFragment newInstance() {
-        HashMap<Integer, Fragment> fragments;
+        ArrayList<Integer> controls;
+        ArrayList<ListFragment> fragments;
         int container, fragmentFg, layout;
 
         Bundle args = new Bundle();
         SquareFragment fragment = new SquareFragment();
 
-        fragments = new HashMap<>();
-        fragments.put(R.id.tv_daily, ListFragment.newInstance(C.NAME_DAILY));
-        fragments.put(R.id.tv_announcement, ListFragment.newInstance(C.NAME_ANNOUNCEMENT));
-        fragments.put(R.id.tv_ask, ListFragment.newInstance(C.NAME_QUESTION));
-        fragments.put(R.id.tv_water, ListFragment.newInstance(C.NAME_WATER));
+        fragments = new ArrayList<>();
+        fragments.add(ListFragment.newInstance(C.NAME_DAILY));
+        fragments.add(ListFragment.newInstance(C.NAME_ANNOUNCEMENT));
+        fragments.add(ListFragment.newInstance(C.NAME_QUESTION));
+        fragments.add(ListFragment.newInstance(C.NAME_WATER));
+        controls = new ArrayList<>();
+        controls.add(R.id.tv_daily);
+        controls.add(R.id.tv_announcement);
+        controls.add(R.id.tv_ask);
+        controls.add(R.id.tv_water);
+
         container = R.id.container;
         fragmentFg = R.id.tv_daily;
         layout = R.layout.fragment_square;
 
         args.putSerializable(ChooseFragment.TAG_FRAGMENTS, fragments);
+        args.putSerializable(ChooseFragment.TAG_CONTROLS, controls);
         args.putInt(ChooseFragment.TAG_CONTAINER, container);
         args.putInt(ChooseFragment.TAG_DEFAULT, fragmentFg);
         args.putInt(ChooseFragment.TAG_LAYOUT, layout);

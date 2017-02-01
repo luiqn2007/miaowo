@@ -6,8 +6,9 @@ import android.support.v4.app.Fragment;
 import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.fragment.ChooseFragment;
+import org.miaowo.miaowo.root.fragment.ListFragment;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * 一个典型的Fragment {@link Fragment}.
@@ -20,21 +21,28 @@ import java.util.HashMap;
 public class UnreadFragment extends ChooseFragment {
 
     public static UnreadFragment newInstance() {
-        HashMap<Integer, Fragment> fragments;
+        ArrayList<ListFragment> fragments;
+        ArrayList<Integer> controls;
         int container, fragmentFg, layout;
 
         Bundle args = new Bundle();
         UnreadFragment fragment = new UnreadFragment();
 
-        fragments = new HashMap<>();
-        fragments.put(R.id.tv_question, ListFragment.newInstance(C.NAME_U_QUESTION));
-        fragments.put(R.id.tv_answer, ListFragment.newInstance(C.NAME_U_ANSWER));
-        fragments.put(R.id.tv_reply, ListFragment.newInstance(C.NAME_U_REPLY));
+        fragments = new ArrayList<>();
+        fragments.add(ListFragment.newInstance(C.NAME_U_QUESTION));
+        fragments.add(ListFragment.newInstance(C.NAME_U_ANSWER));
+        fragments.add(ListFragment.newInstance(C.NAME_U_REPLY));
+        controls = new ArrayList<>();
+        controls.add(R.id.tv_question);
+        controls.add(R.id.tv_answer);
+        controls.add(R.id.tv_reply);
+
         container = R.id.container;
         fragmentFg = R.id.tv_question;
         layout = R.layout.fragment_unread;
 
         args.putSerializable(ChooseFragment.TAG_FRAGMENTS, fragments);
+        args.putSerializable(ChooseFragment.TAG_CONTROLS, controls);
         args.putInt(ChooseFragment.TAG_CONTAINER, container);
         args.putInt(ChooseFragment.TAG_DEFAULT, fragmentFg);
         args.putInt(ChooseFragment.TAG_LAYOUT, layout);

@@ -1,7 +1,7 @@
 package org.miaowo.miaowo;
 
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.fragment.ListFragment;
+import org.miaowo.miaowo.root.fragment.ListFragment;
 import org.miaowo.miaowo.root.view.BaseActivity;
 
 /**

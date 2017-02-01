@@ -3,6 +3,8 @@ package org.miaowo.miaowo.bean.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 /**
  * 表示用户的bean类
  * Created by lq2007 on 16-11-21.
@@ -199,5 +201,22 @@ public class User implements Parcelable {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", summary='" + summary + '\'' +
+                ", authority=" + authority +
+                ", question=" + question +
+                ", scan=" + scan +
+                ", focusMe=" + Arrays.toString(focusMe) +
+                ", focus=" + Arrays.toString(focus) +
+                ", pwd='" + pwd + '\'' +
+                ", age=" + age +
+                ", headImg='" + headImg + '\'' +
+                '}';
     }
 }
