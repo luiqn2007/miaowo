@@ -49,7 +49,7 @@ public class WebService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    BroadcastReceiver testReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver testReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Object msg = intent.getParcelableExtra(C.EXTRA_ITEM) instanceof ChatMessage;

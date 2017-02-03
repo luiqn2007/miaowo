@@ -16,13 +16,13 @@
             android:id="@+id/rb_newer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="最新"/>
+            android:text="@string/newer"/>
 
         <RadioButton
             android:id="@+id/rb_hotter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="热门"/>
+            android:text="@string/hot"/>
     </RadioGroup>
 
     <CheckBox
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/rg_type"
         android:layout_margin="10dp"
-        android:text="刷新"/>
+        android:text="@string/refresh"/>
 
     <Button
         android:id="@+id/btn_send"
@@ -41,7 +41,7 @@
         android:layout_alignRight="@id/cb_refresh"
         android:background="@drawable/bg_btn_red"
         android:layout_margin="10dp"
-        android:text="确定" />
+        android:text="@string/ok" />
 
     <Button
         android:id="@+id/btn_cancel"
@@ -50,5 +50,5 @@
         android:layout_below="@id/cb_refresh"
         android:background="@drawable/bg_btn_red"
         android:layout_margin="10dp"
-        android:text="取消" />
+        android:text="@string/cancel" />
 </RelativeLayout>

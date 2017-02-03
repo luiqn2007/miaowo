@@ -18,7 +18,6 @@
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="问题标题"
         android:textColor="#FF000000"
         android:textSize="23sp"/>
 
@@ -29,7 +28,7 @@
         android:background="@drawable/bg_btn_blue"
         android:layout_margin="5dp"
         android:layout_alignParentBottom="true"
-        android:text="回复"/>
+        android:text="@string/reply"/>
 
     <View
         android:id="@+id/line"

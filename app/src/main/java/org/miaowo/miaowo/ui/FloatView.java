@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -131,16 +130,12 @@ public class FloatView extends LinearLayout {
         return this;
     }
 
-    public FloatView setCloseButton(@IdRes int id) {
-        View close = findViewById(id);
+    public FloatView defaultCloseButton() {
+        View close = findViewById(R.id.iv_close);
         if (close != null) {
             close.setOnClickListener(view -> dismiss());
         }
         return this;
-    }
-
-    public FloatView defaultCloseButton() {
-        return setCloseButton(R.id.iv_close);
     }
 
     public static FloatView searchByTag(Object tag) {

@@ -1,11 +1,7 @@
 package org.miaowo.miaowo.impl.interfaces;
 
 
-import android.support.annotation.WorkerThread;
-
 import org.miaowo.miaowo.bean.data.User;
-
-import java.util.ArrayList;
 
 /**
  * 用于用户的查询，点赞等相关操作
@@ -33,8 +29,7 @@ public interface Users {
      * 粉丝
      * 传入的 User 需要有效的 id, favorite 和 isFavorite
      * @param u 用户
-     * @param auto 自动反向操作
      * @throws Exception 申请失败返回结果
      */
-    void focusUser(User u, boolean auto) throws Exception;
+    void focusUser(User u) throws Exception;
 }

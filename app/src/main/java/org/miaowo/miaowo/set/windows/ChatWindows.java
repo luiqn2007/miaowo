@@ -79,9 +79,8 @@ public class ChatWindows {
                 if (convertView == null) {
                     ViewHolder holder = new ViewHolder();
                     convertView = View.inflate(d.activeActivity, R.layout.list_chat, null);
-                    View relView = convertView.findViewById(R.id.include);
-                    holder.iv_user = (ImageView) relView.findViewById(R.id.iv_user);
-                    holder.tv_user = (TextView) relView.findViewById(R.id.tv_user);
+                    holder.iv_user = (ImageView) convertView.findViewById(R.id.iv_user);
+                    holder.tv_user = (TextView) convertView.findViewById(R.id.tv_user);
                     convertView.setTag(holder);
                 }
                 ViewHolder holder = (ViewHolder) convertView.getTag();
@@ -115,6 +114,10 @@ public class ChatWindows {
 
     // 聊天窗口
     FloatView showChatDialog(final User from) {
+        // 自己
+        if (from.equals(D.getInstance().thisUser)) {
+            return null;
+        }
         // 已登录
         final User to = mState.getLocalUser();
         if (to.getId() < 0) return null;
@@ -163,6 +166,7 @@ public class ChatWindows {
             }
         });
         list.setPullRefresher(() -> {
+            final int[] position = new int[]{0};
             mMsgList = mAdapter.getItems();
             new AsyncTask<ChatMessage, Void, Exception>() {
                 @Override
@@ -170,6 +174,7 @@ public class ChatWindows {
                     try {
                         ArrayList<ChatMessage> chatMessages = new ArrayList<>();
                         ChatMessage[] beforeMessage = mChat.getBeforeMessage(params[0]);
+                        position[0] = beforeMessage.length - 1;
                         Collections.addAll(chatMessages, beforeMessage);
                         chatMessages.addAll(mMsgList);
                         mMsgList = chatMessages;
@@ -181,12 +186,15 @@ public class ChatWindows {
 
                 @Override
                 protected void onPostExecute(Exception e) {
-                    if (e == null) mAdapter.updateDate(mMsgList);
+                    if (e == null) {
+                        mAdapter.updateDate(mMsgList);
+                        list.scrollToPosition(position[0]);
+                    }
                     else D.getInstance().activeActivity.handleError(e);
                 }
             }.execute(mMsgList.size() == 0
                     ? new ChatMessage(-1, System.currentTimeMillis(), from, D.getInstance().thisUser, "")
-                    : mMsgList.get(mMsgList.size() - 1));
+                    : mMsgList.get(0));
             list.loadOver();
         });
         list.setAdapter(mAdapter);

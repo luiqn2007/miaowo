@@ -4,7 +4,6 @@ package org.miaowo.miaowo.impl;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
@@ -56,7 +55,7 @@ public class UsersImpl implements Users {
     }
 
     @Override
-    public void focusUser(User u, boolean auto) throws Exception {
+    public void focusUser(User u) throws Exception {
         User localUser = (new StateImpl()).getLocalUser();
         if (localUser.getId() < 0) {
             throw Exceptions.E_NON_LOGIN;
@@ -69,24 +68,22 @@ public class UsersImpl implements Users {
         int searchMe = Arrays.binarySearch(oldFocusMe, localUser.getId());
         int search = Arrays.binarySearch(oldFocus, u.getId());
         if (searchMe >= 0) {
-            if (auto) {
-                focusMe = new int[oldFocusMe.length - 1];
-                for (int i = 0; i < oldFocusMe.length; i++) {
-                    if (searchMe > i) {
-                        focusMe[i] = oldFocusMe[i];
-                    } else if (searchMe < i) {
-                        focusMe[i - 1] = oldFocusMe[i];
-                    }
+            focusMe = new int[oldFocusMe.length - 1];
+            for (int i = 0; i < oldFocusMe.length; i++) {
+                if (searchMe > i) {
+                    focusMe[i] = oldFocusMe[i];
+                } else if (searchMe < i) {
+                    focusMe[i - 1] = oldFocusMe[i];
                 }
-                focus = new int[oldFocus.length - 1];
-                for (int i = 0; i < oldFocus.length; i++) {
-                    if (search > i) {
-                        focus[i] = oldFocus[i];
-                    } else if (search < i) {
-                        focus[i - 1] = oldFocus[i];
-                    }
+            }
+            focus = new int[oldFocus.length - 1];
+            for (int i = 0; i < oldFocus.length; i++) {
+                if (search > i) {
+                    focus[i] = oldFocus[i];
+                } else if (search < i) {
+                    focus[i - 1] = oldFocus[i];
                 }
-            } else return;
+            }
         } else {
             focusMe = Arrays.copyOf(oldFocusMe, oldFocusMe.length + 1);
             focusMe[focusMe.length - 1] = localUser.getId();

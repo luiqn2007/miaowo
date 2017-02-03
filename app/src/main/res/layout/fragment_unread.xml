@@ -16,18 +16,18 @@
             style="@style/tab_bottom_text"
             android:id="@+id/tv_question"
             android:drawableTop="@drawable/ask"
-            android:text="问题"/>
+            android:text="@string/question"/>
 
         <TextView
             style="@style/tab_bottom_text"
             android:id="@+id/tv_answer"
-            android:text="回答"
+            android:text="@string/answer"
             android:drawableTop="@drawable/daily" />
 
         <TextView
             style="@style/tab_bottom_text"
             android:id="@+id/tv_reply"
-            android:text="回复"
+            android:text="@string/reply"
             android:drawableTop="@drawable/state"/>
     </LinearLayout>
 

@@ -22,7 +22,6 @@ import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.QuestionsImpl;
 import org.miaowo.miaowo.impl.interfaces.Questions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
@@ -40,7 +39,6 @@ public class ListFragment extends Fragment implements Parcelable {
     private ArrayList<Question> mItems;
     private Questions mQuestions;
     private Exception e = null;
-    private UserWindows mUserWindows;
     private MessageWindows mMessageWindows;
 
     private String name;
@@ -99,7 +97,6 @@ public class ListFragment extends Fragment implements Parcelable {
         mList = (LoadMoreList) v.findViewById(R.id.list_item);
         mQuestions = new QuestionsImpl();
         mItems = new ArrayList<>();
-        mUserWindows = new UserWindows();
         mMessageWindows = new MessageWindows();
         initList();
 
@@ -123,7 +120,6 @@ public class ListFragment extends Fragment implements Parcelable {
 
                 // 用户
                 final User u = item.getUser();
-                holder.setOnClickListener((v) -> mUserWindows.showUserWindow(u), R.id.iv_user, R.id.tv_user);
                 holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
                 ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
                 holder.getTextView(R.id.tv_user).setText(u.getName());

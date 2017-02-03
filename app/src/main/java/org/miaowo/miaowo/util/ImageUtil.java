@@ -7,6 +7,7 @@ import com.squareup.picasso.Picasso;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.set.windows.UserWindows;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -18,6 +19,7 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 public class ImageUtil {
 
     public static void fillImage(ImageView iv, User u) {
+        UserWindows uv = new UserWindows();
         String urlHead = "imgUrl>>";
         if (iv == null) {
             return;
@@ -33,5 +35,6 @@ public class ImageUtil {
                     .transform(new CropCircleTransformation()).fit()
                     .into(iv);
         }
+        iv.setOnClickListener(v -> uv.showUserWindow(u));
     }
 }

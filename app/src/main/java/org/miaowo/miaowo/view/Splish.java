@@ -25,7 +25,7 @@ import java.util.TimerTask;
  * 等以后要加入检查更新
  */
 public class Splish extends BaseActivity {
-    VersionMessage updateMessage = null;
+    private VersionMessage updateMessage = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

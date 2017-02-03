@@ -19,24 +19,24 @@
             style="@style/tab_bottom_text"
             android:id="@+id/tv_daily"
             android:drawableTop="@drawable/daily"
-            android:text="每日"/>
+            android:text="@string/daily"/>
 
         <TextView
             style="@style/tab_bottom_text"
             android:id="@+id/tv_announcement"
-            android:text="公告"
+            android:text="@string/announcement"
             android:drawableTop="@drawable/announcement" />
 
         <TextView
             style="@style/tab_bottom_text"
             android:id="@+id/tv_ask"
-            android:text="提问"
+            android:text="@string/ask"
             android:drawableTop="@drawable/ask"/>
 
         <TextView
             style="@style/tab_bottom_text"
             android:id="@+id/tv_water"
-            android:text="灌水"
+            android:text="@string/water"
             android:drawableTop="@drawable/water"/>
     </LinearLayout>
 

@@ -12,10 +12,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.impl.QuestionsImpl;
-import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.Questions;
-import org.miaowo.miaowo.impl.interfaces.Users;
 
 import java.util.ArrayList;
 
@@ -25,9 +21,6 @@ public class SearchFragment extends Fragment {
     private FragmentPagerAdapter mAdapter;
 
     private SearchDisplyFragment[] fragments;
-
-    private Users mUsers;
-    private Questions mQuestions;
 
     public SearchFragment() {}
     public static SearchFragment newInstance() {
@@ -40,8 +33,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUsers = new UsersImpl();
-        mQuestions = new QuestionsImpl();
         fragments = new SearchDisplyFragment[] {
                 SearchDisplyFragment.newInstance(0, new ArrayList()),
                 SearchDisplyFragment.newInstance(1, new ArrayList()),

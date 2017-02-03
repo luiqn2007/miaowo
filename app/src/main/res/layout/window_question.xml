@@ -14,31 +14,10 @@
         android:layout_alignParentTop="true"
         android:src="@android:drawable/ic_menu_close_clear_cancel"/>
 
-    <ImageView
-        android:id="@+id/iv_user"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/def_user"
-        android:visibility="gone"
-        android:layout_margin="5dp"/>
-
-    <TextView
-        android:id="@+id/tv_user"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:visibility="gone"
-        android:layout_alignTop="@id/iv_user"
-        android:layout_toRightOf="@id/iv_user"
-        android:text="流浪喵"/>
-
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="问题标题"
-        android:layout_below="@id/tv_user"
-        android:layout_toRightOf="@id/iv_user"
         android:textColor="#FF000000"
         android:textSize="23sp"/>
 
@@ -48,8 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_title"
         android:layout_below="@id/tv_title"
-        android:gravity="right"
-        android:text="0 回答, 0 浏览"/>
+        android:gravity="right"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +41,7 @@
             android:layout_weight="1"
             android:background="@drawable/bg_btn_blue"
             android:layout_margin="5dp"
-            android:text="回复"/>
+            android:text="@string/reply"/>
 
         <Button
             android:id="@+id/btn_reply"
@@ -71,8 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bg_btn_blue"
-            android:layout_margin="5dp"
-            android:text="回答(0)"/>
+            android:layout_margin="5dp"/>
     </LinearLayout>
 
     <TextView
@@ -82,6 +59,5 @@
         android:layout_below="@id/tv_count"
         android:layout_above="@id/btn_send"
         android:textColor="#FF000000"
-        android:textSize="20sp"
-        android:text="问题详情"/>
+        android:textSize="20sp"/>
 </RelativeLayout>

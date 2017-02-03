@@ -35,14 +35,14 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="22sp"
-            android:text="用户名："/>
+            android:text="@string/user_name"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="22sp"
-            android:text="密码："/>
+            android:text="@string/user_pwd"/>
 
         <TextView
             android:id="@+id/tv_label1"
@@ -51,7 +51,7 @@
             android:layout_weight="1"
             android:textSize="22sp"
             android:visibility="gone"
-            android:text="简介："/>
+            android:text="@string/user_dst"/>
     </LinearLayout>
 
     <LinearLayout
@@ -70,7 +70,8 @@
             android:layout_weight="1"
             android:maxLines="1"
             android:ems="10"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:inputType="text" />
 
         <EditText
             android:id="@+id/et_password"
@@ -91,7 +92,8 @@
             android:maxLines="1"
             android:ems="10"
             android:visibility="gone"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:inputType="text" />
     </LinearLayout>
 
     <LinearLayout
@@ -107,7 +109,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_btn_red"
             android:layout_marginRight="5dp"
-            android:text="登录"/>
+            android:text="@string/login"/>
 
         <Button
             android:id="@+id/btn_regist"
@@ -115,7 +117,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_btn_red"
             android:layout_marginLeft="5dp"
-            android:text="注册"/>
+            android:text="@string/regist"/>
     </LinearLayout>
 
 </RelativeLayout>

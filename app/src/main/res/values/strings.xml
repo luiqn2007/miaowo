@@ -8,5 +8,43 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reply">回复</string>
+    <string name="square">广场</string>
+    <string name="unread">未读</string>
+    <string name="topic">话题</string>
+    <string name="user">会员</string>
+    <string name="search">搜索</string>
+    <string name="my">我的喵窝</string>
+    <string name="ask">提问</string>
+    <string name="chat">聊天</string>
+    <string name="setting">设置</string>
+    <string name="logout">登出</string>
+    <string name="exit">退出</string>
+    <string name="login">登录</string>
+    <string name="question">问题</string>
+    <string name="daily">每日</string>
+    <string name="announcement">公告</string>
+    <string name="water">灌水</string>
+    <string name="answer">回答</string>
+    <string name="user_name">用户名: </string>
+    <string name="guest_name">成功捕捉一只新喵</string>
+    <string name="guest_dst">欢迎光临！这里是喵们的栖息地！</string>
+    <string name="loading">加载中…</string>
+    <string name="hint_title">标题</string>
+    <string name="send">发送</string>
+    <string name="hint_content">提问正文</string>
+    <string name="newer">最新</string>
+    <string name="hot">热门</string>
+    <string name="refresh">刷新</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="user_pwd">密码:</string>
+    <string name="user_dst">简介:</string>
+    <string name="regist">注册</string>
+    <string name="authority">威望</string>
+    <string name="scan">浏览</string>
+    <string name="like">粉丝</string>
+    <string name="focus">关注</string>
+    <string name="post">帖子</string>
 
 </resources>

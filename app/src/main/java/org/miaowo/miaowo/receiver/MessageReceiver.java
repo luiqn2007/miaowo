@@ -18,7 +18,7 @@ import org.miaowo.miaowo.root.view.BaseActivity;
  */
 
 public class MessageReceiver extends BroadcastReceiver {
-    Context context;
+    private Context context;
 
     public MessageReceiver(Context context) {
         this.context = context;

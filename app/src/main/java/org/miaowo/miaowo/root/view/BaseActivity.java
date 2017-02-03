@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
-import org.miaowo.miaowo.ui.FloatView;
 
 /**
  * 创建的所有Activity的基类

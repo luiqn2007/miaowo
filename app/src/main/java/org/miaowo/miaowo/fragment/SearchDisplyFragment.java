@@ -26,7 +26,6 @@ import org.miaowo.miaowo.impl.interfaces.Questions;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.LogUtil;
@@ -49,7 +48,6 @@ public class SearchDisplyFragment extends Fragment {
 
     private Users mUsers;
     private Questions mQuestions;
-    private UserWindows mUserWindows;
     private MessageWindows mMessageWindows;
 
     public SearchDisplyFragment() {
@@ -75,7 +73,6 @@ public class SearchDisplyFragment extends Fragment {
 
         mQuestions = new QuestionsImpl();
         mUsers = new UsersImpl();
-        mUserWindows = new UserWindows();
         mMessageWindows = new MessageWindows();
     }
 
@@ -149,7 +146,6 @@ public class SearchDisplyFragment extends Fragment {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         User u = item.getUser();
-        holder.setOnClickListener((v) -> mUserWindows.showUserWindow(u), R.id.iv_user, R.id.tv_user);
         holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
         ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
         holder.getTextView(R.id.tv_user).setText(u.getName());
@@ -195,7 +191,6 @@ public class SearchDisplyFragment extends Fragment {
 
         holder.getTextView(R.id.tv_user).setText(item.getName());
         ImageUtil.fillImage(holder.getImageView(R.id.iv_user), item);
-        holder.setOnClickListener(v -> mUserWindows.showUserWindow(item), R.id.iv_user);
         return view;
     }
 

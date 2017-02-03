@@ -29,8 +29,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/iv_user"
         android:textSize="30sp"
-        android:textColor="#7E57C2"
-        android:text="XiaoBai"/>
+        android:textColor="#7E57C2"/>
 
     <TextView
         android:id="@+id/tv_summary"
@@ -39,8 +38,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/tv_user"
         android:textSize="17sp"
-        android:textColor="#7E57C2"
-        android:text=" @XiaoBai"/>
+        android:textColor="#7E57C2"/>
 
     <LinearLayout
         android:paddingTop="5dp"
@@ -87,8 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="35sp"
-                android:text="0"/>
+                android:textSize="35sp"/>
 
             <TextView
                 android:id="@+id/tv_ask"
@@ -96,8 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="35sp"
-                android:text="0"/>
+                android:textSize="35sp"/>
 
             <TextView
                 android:id="@+id/tv_scan"
@@ -105,8 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="35sp"
-                android:text="2"/>
+                android:textSize="35sp"/>
 
             <TextView
                 android:id="@+id/tv_like"
@@ -114,8 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="35sp"
-                android:text="0"/>
+                android:textSize="35sp"/>
 
             <TextView
                 android:id="@+id/tv_focus"
@@ -123,14 +117,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="35sp"
-                android:text="0"/>
+                android:textSize="35sp"/>
         </LinearLayout>
 
         <LinearLayout
             android:paddingTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal"
             android:gravity="center">
@@ -140,7 +133,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="威望"/>
+                android:text="@string/authority"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -148,7 +141,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="帖子"/>
+                android:text="@string/post"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -156,7 +149,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="浏览"/>
+                android:text="@string/scan"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -164,7 +157,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="粉丝"/>
+                android:text="@string/like"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -172,7 +165,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="关注"/>
+                android:text="@string/focus"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -183,7 +176,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
-        android:layout_below="@id/ll_detail">
+        android:layout_below="@id/ll_detail"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -195,7 +189,7 @@
                 android:id="@+id/btn_focus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="关注"/>
+                android:text="@string/focus"/>
         </LinearLayout>
 
         <LinearLayout
@@ -208,7 +202,7 @@
                 android:id="@+id/btn_chat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="聊天"/>
+                android:text="@string/chat"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

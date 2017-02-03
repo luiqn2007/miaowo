@@ -59,7 +59,7 @@ public class UserWindows {
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    mUsers.focusUser(u, true);
+                    mUsers.focusUser(u);
                 } catch (Exception e) {
                     return e;
                 }

@@ -38,7 +38,7 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/bg_btn_blue"
             android:textSize="18sp"
-            android:text="发送"/>
+            android:text="@string/send"/>
         <EditText
             android:id="@+id/et_msg"
             android:layout_width="match_parent"

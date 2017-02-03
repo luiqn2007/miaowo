@@ -60,7 +60,7 @@ public class Miao extends BaseActivity
     private AlertDialog closeDialog;
     private FragmentManager mManager;
 
-    long lastExit = 0;
+    private long lastExit = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,8 +153,6 @@ public class Miao extends BaseActivity
                 break;
             case R.id.nav_chat:
                 mChatWindows.showChatList(new ArrayList<>());
-                break;
-            case R.id.nav_state:
                 break;
             case R.id.nav_new:
                 try {
