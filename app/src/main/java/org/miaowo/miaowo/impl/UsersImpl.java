@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.set.Exceptions;
@@ -101,6 +102,23 @@ public class UsersImpl implements Users {
         cv2.put(UserDBHelper.FOCUS, DbUtil.toString(focus));
         userDb.update(UserDBHelper.table, cv1, UserDBHelper.ID + " = ? ", new String[]{String.valueOf(u.getId())});
         userDb.update(UserDBHelper.table, cv2, UserDBHelper.ID + " = ? ", new String[]{String.valueOf(localUser.getId())});
+        userDb.close();
+    }
+
+    @Override
+    public void updateUser(User u) throws Exception {
+        if (u.getPwd().isEmpty()) {
+            throw Exceptions.E_ILL_USER_PWD;
+        }
+        SQLiteDatabase userDb = (new UserDBHelper()).getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(UserDBHelper.NAME, u.getName());
+        cv.put(UserDBHelper.HEAD, u.getHeadImg());
+        cv.put(UserDBHelper.PWD, u.getPwd());
+        cv.put(UserDBHelper.SUMMARY, u.getSummary());
+        userDb.update(UserDBHelper.table, cv,
+                UserDBHelper.ID + " = ? ",
+                new String[]{Integer.toString(D.getInstance().thisUser.getId())});
         userDb.close();
     }
 }

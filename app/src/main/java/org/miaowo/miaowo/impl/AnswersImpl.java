@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.impl.interfaces.Answers;
@@ -65,6 +66,11 @@ public class  AnswersImpl implements Answers {
             finalAnswer = finalAnswer.getReply();
         }
         return finalAnswer;
+    }
+
+    @Override
+    public void pushAnswer(Answer answer) {
+        D.getInstance().activeActivity.handleError(new Exception("收到一条新问题"));
     }
 
 }

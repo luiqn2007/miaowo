@@ -3,14 +3,13 @@ package org.miaowo.miaowo.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.miaowo.miaowo.C;
-
 /**
  * 用于获取/修改配置信息
  * Created by lq2007 on 16-11-26.
  */
 
 public class SpUtil {
+    private final static String SpName = "miaowo";
 
     /**
      * 向配置文件传入 Boolean 参数
@@ -57,6 +56,6 @@ public class SpUtil {
 
     // 用于初始化 SharedPreferences
     private static SharedPreferences loadSp(Context context) {
-        return context.getSharedPreferences(C.SpName, Context.MODE_PRIVATE);
+        return context.getSharedPreferences(SpName, Context.MODE_PRIVATE);
     }
 }

@@ -7,13 +7,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.fragment.ListFragment;
+import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.ui.FloatView;
 import org.miaowo.miaowo.util.SpUtil;
-import org.miaowo.miaowo.root.view.BaseActivity;
 
 /**
  * 排序等对列表的操作
@@ -21,10 +20,23 @@ import org.miaowo.miaowo.root.view.BaseActivity;
  */
 
 public class ListWindows {
+    // 显示
+    final public static int SORT_NEW = 1;
+    final public static int SORT_HOT= 2;
+
+    private static ListWindows windows;
+
     private BaseActivity context;
 
     public ListWindows() {
         context = D.getInstance().activeActivity;
+    }
+
+    public static ListWindows getInstance() {
+        if (windows == null) {
+            windows = new ListWindows();
+        }
+        return windows;
     }
 
     public FloatView showListSortChooser() {
@@ -43,24 +55,24 @@ public class ListWindows {
         final CheckBox cb_refresh = (CheckBox) v.findViewById(R.id.cb_refresh);
         cb_refresh.setChecked(true);
         final RadioGroup rg_type = (RadioGroup) v.findViewById(R.id.rg_type);
-        int t = SpUtil.getInt(context, name, C.SORT_NEW);
-        rg_type.check(t == C.SORT_HOT ? R.id.rb_hotter : R.id.rb_newer);
+        int t = SpUtil.getInt(context, name, SORT_NEW);
+        rg_type.check(t == SORT_HOT ? R.id.rb_hotter : R.id.rb_newer);
 
         btn_cancel.setOnClickListener(v1 -> view.dismiss());
         btn_ok.setOnClickListener(v1 -> {
             switch (rg_type.getCheckedRadioButtonId()) {
                 case R.id.rb_newer:
-                    SpUtil.putInt(context, name, C.SORT_NEW);
+                    SpUtil.putInt(context, name, SORT_NEW);
                     break;
                 case R.id.rb_hotter:
-                    SpUtil.putInt(context, name, C.SORT_HOT);
+                    SpUtil.putInt(context, name, SORT_HOT);
                     break;
             }
 
             if (cb_refresh.isChecked()) {
                 lf.refresh();
             } else {
-                lf.sort(SpUtil.getInt(context, name, C.SORT_NEW));
+                lf.sort(SpUtil.getInt(context, name, SORT_NEW));
             }
 
             view.dismiss();

@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.SpUtil;
+import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,6 @@ import java.util.ArrayList;
  */
 
 public class ChooseFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
-
     public static String TAG_CONTAINER = "container";
     public static String TAG_DEFAULT = "default";
     public static String TAG_LAYOUT = "layout";
@@ -66,7 +65,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
         if (index >= 0) {
             hideAllFragment();
             FragmentUtil.showFragment(getChildFragmentManager(), container, fragments.get(index));
-            root.findViewById(fragmentId).setBackgroundColor(SpUtil.getInt(getContext(), C.UI_BOTTOM_SELECTED_COLOR,
+            root.findViewById(fragmentId).setBackgroundColor(SpUtil.getInt(getContext(), ThemeUtil.UI_BOTTOM_SELECTED_COLOR,
                     Color.rgb(255, 255, 255)));
         }
     }
@@ -104,7 +103,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
         FragmentUtil.hideAllFragment(getChildFragmentManager());
 
         for (int id : controls) {
-            root.findViewById(id).setBackgroundColor(SpUtil.getInt(getContext(), C.UI_BOTTOM_DEFAULT_COLOR,
+            root.findViewById(id).setBackgroundColor(SpUtil.getInt(getContext(), ThemeUtil.UI_BOTTOM_DEFAULT_COLOR,
                     Color.argb(255, 255, 255, 255)));
         }
     }

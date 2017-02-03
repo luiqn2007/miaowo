@@ -3,7 +3,7 @@ package org.miaowo.miaowo.impl;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.impl.interfaces.Questions;
@@ -23,12 +23,12 @@ public class QuestionsImpl implements Questions {
         SQLiteDatabase questionDb = (new QuestionDBHelper()).getReadableDatabase();
         Cursor cursor = null;
         switch (position) {
-            case C.LF_POSITION_DOWN:
+            case SEARCH_POSITION_DOWN:
                 cursor = questionDb.query(QuestionDBHelper.table, QuestionDBHelper.getCumns,
                         QuestionDBHelper.TYPE + " = ? and " + QuestionDBHelper.TIME + " > ? ",
                         new String[]{type, Long.toString(time)}, null, null, null);
                 break;
-            case C.LF_POSITION_UP:
+            case SEARCH_POSITION_UP:
                 cursor = questionDb.query(QuestionDBHelper.table, QuestionDBHelper.getCumns,
                         QuestionDBHelper.TYPE + " = ? ",
                         new String[]{type}, null, null, null);
@@ -85,6 +85,11 @@ public class QuestionsImpl implements Questions {
         questionDb.close();
         if (questions.length == 0) return null;
         return questions[0];
+    }
+
+    @Override
+    public void pushQuestion(Question question) {
+        D.getInstance().activeActivity.handleError(new Exception("收到一条新问题"));
     }
 
     @Override

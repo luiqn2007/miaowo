@@ -3,7 +3,7 @@ package org.miaowo.miaowo.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.fragment.ChooseFragment;
 import org.miaowo.miaowo.root.fragment.ListFragment;
@@ -29,10 +29,10 @@ public class SquareFragment extends ChooseFragment {
         SquareFragment fragment = new SquareFragment();
 
         fragments = new ArrayList<>();
-        fragments.add(ListFragment.newInstance(C.NAME_DAILY));
-        fragments.add(ListFragment.newInstance(C.NAME_ANNOUNCEMENT));
-        fragments.add(ListFragment.newInstance(C.NAME_QUESTION));
-        fragments.add(ListFragment.newInstance(C.NAME_WATER));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_DAILY));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_ANNOUNCEMENT));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_QUESTION));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_WATER));
         controls = new ArrayList<>();
         controls.add(R.id.tv_daily);
         controls.add(R.id.tv_announcement);

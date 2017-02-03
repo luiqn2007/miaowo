@@ -10,6 +10,9 @@ import com.bugtags.library.Bugtags;
  */
 
 public class MyApplication extends Application {
+    // 信息传递
+    final public static String EXTRA_ITEM = "extra_item";
+
     @Override
     public void onCreate() {
         super.onCreate();

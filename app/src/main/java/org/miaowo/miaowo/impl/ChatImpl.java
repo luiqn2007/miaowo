@@ -7,12 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.Users;
+import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.test.ChatListDBHelper;
 import org.miaowo.miaowo.test.ChatMessageDBHelper;
@@ -106,8 +107,8 @@ public class ChatImpl implements Chat {
 
     @Override
     public void pushMessage(ChatMessage msg) {
-        Intent intent = new Intent(C.BC_CHAT);
-        intent.putExtra(C.EXTRA_ITEM, msg);
+        Intent intent = new Intent(WebService.BC_CHAT);
+        intent.putExtra(MyApplication.EXTRA_ITEM, msg);
         context.sendBroadcast(intent);
     }
 

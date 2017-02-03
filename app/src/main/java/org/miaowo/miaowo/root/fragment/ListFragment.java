@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
@@ -21,11 +20,13 @@ import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.QuestionsImpl;
 import org.miaowo.miaowo.impl.interfaces.Questions;
+import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.ui.LoadMoreList;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.SpUtil;
+import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,15 +125,15 @@ public class ListFragment extends Fragment implements Parcelable {
                 ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
                 holder.getTextView(R.id.tv_user).setText(u.getName());
                 holder.getTextView(R.id.tv_user)
-                        .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
+                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
                 // 时间
                 holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
                 holder.getTextView(R.id.tv_time)
-                        .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
+                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
                 // 标题
                 holder.getTextView(R.id.tv_title).setText(item.getTitle());
                 holder.getTextView(R.id.tv_title)
-                        .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
+                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
                 // 计数
                 holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
             }
@@ -155,7 +156,7 @@ public class ListFragment extends Fragment implements Parcelable {
                     @Override
                     protected Void doInBackground(Void... params) {
                         lastCount = mItems.size();
-                        mItems.addAll(checkUpdate(C.LF_POSITION_DOWN));
+                        mItems.addAll(checkUpdate(Questions.SEARCH_POSITION_DOWN));
                         return null;
                     }
 
@@ -178,7 +179,7 @@ public class ListFragment extends Fragment implements Parcelable {
         ArrayList<Question> list = new ArrayList<>();
         try {
             e = null;
-            Question[] questions = mQuestions.checkQuestions(name, position, SpUtil.getInt(getContext(), C.UI_LIST_QUESTION_COUNT, 20),
+            Question[] questions = mQuestions.checkQuestions(name, position, SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_QUESTION_COUNT, 20),
                     mItems.size() == 0 ? 0 : mItems.get(mItems.size() - 1).getTime());
             Collections.addAll(list, questions);
         } catch (final Exception e) {
@@ -210,7 +211,7 @@ public class ListFragment extends Fragment implements Parcelable {
 
             @Override
             protected Void doInBackground(Void... params) {
-                mItems = checkUpdate(C.LF_POSITION_UP);
+                mItems = checkUpdate(Questions.SEARCH_POSITION_UP);
                 return null;
             }
 
@@ -227,10 +228,10 @@ public class ListFragment extends Fragment implements Parcelable {
 
     public void sort(int type) {
         switch (type) {
-            case C.SORT_HOT:
+            case ListWindows.SORT_HOT:
                 Collections.sort(mItems, (o1, o2) -> o2.getReply() - o1.getReply());
                 break;
-            case C.SORT_NEW:
+            case ListWindows.SORT_NEW:
                 Collections.sort(mItems, (o1, o2) -> o1.getTime() - o2.getTime() > 0 ? 1 : -1);
                 break;
         }

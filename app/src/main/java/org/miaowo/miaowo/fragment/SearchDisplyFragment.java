@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Question;
@@ -30,6 +29,7 @@ import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
+import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -150,15 +150,15 @@ public class SearchDisplyFragment extends Fragment {
         ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
         holder.getTextView(R.id.tv_user).setText(u.getName());
         holder.getTextView(R.id.tv_user)
-                .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
+                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
         // 时间
         holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
         holder.getTextView(R.id.tv_time)
-                .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
+                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
         // 标题
         holder.getTextView(R.id.tv_title).setText(item.getTitle());
         holder.getTextView(R.id.tv_title)
-                .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
+                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
         // 计数
         holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
 
@@ -176,7 +176,7 @@ public class SearchDisplyFragment extends Fragment {
         holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
         holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
         holder.getTextView(R.id.tv_time)
-                .setTextColor(SpUtil.getInt(getContext(), C.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
+                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
 
         view.setOnClickListener(v -> mMessageWindows.showTopic(item));
         return view;

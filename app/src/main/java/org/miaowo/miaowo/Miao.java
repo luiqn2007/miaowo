@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.view;
+package org.miaowo.miaowo;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,9 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.C;
-import org.miaowo.miaowo.D;
-import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.fragment.MiaoFragment;
@@ -31,15 +28,16 @@ import org.miaowo.miaowo.fragment.UnreadFragment;
 import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
+import org.miaowo.miaowo.root.MyApplication;
 import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
+import org.miaowo.miaowo.set.windows.SettingWindows;
 import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.SpUtil;
-import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
 
@@ -47,6 +45,14 @@ import java.util.ArrayList;
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
 public class Miao extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener{
+    final public static String FRAGMENT_DAILY = "daily";
+    final public static String FRAGMENT_ANNOUNCEMENT = "announcement";
+    final public static String FRAGMENT_QUESTION = "question";
+    final public static String FRAGMENT_WATER = "water";
+    final public static String FRAGMENT_TOPIC = "topic";
+    final public static String FRAGMENT_U_QUESTION = "u_question";
+    final public static String FRAGMENT_U_ANSWER = "u_answer";
+    final public static String FRAGMENT_U_REPLY = "u_reply";
 
     // 视图
     private NavigationView navigationView;
@@ -57,6 +63,7 @@ public class Miao extends BaseActivity
     private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
     private MessageWindows mMessageWindows;
+    private SettingWindows mSettingWindows;
     private AlertDialog closeDialog;
     private FragmentManager mManager;
 
@@ -71,6 +78,7 @@ public class Miao extends BaseActivity
         mChatWindows = new ChatWindows();
         mStateWindows = new StateWindows();
         mMessageWindows = new MessageWindows();
+        mSettingWindows = new SettingWindows();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -138,7 +146,9 @@ public class Miao extends BaseActivity
                 FragmentUtil.showFragment(mManager, R.id.container, fg_user);
                 break;
             case R.id.nav_setting:
-                ThemeUtil.loadDefaultTheme(this);
+                if (D.getInstance().thisUser.getId() >= 0) {
+                    mSettingWindows.showUserSetting();
+                }
                 break;
             case R.id.nav_exit:
                 if (D.getInstance().thisUser.getId() >= 0) {
@@ -155,11 +165,7 @@ public class Miao extends BaseActivity
                 mChatWindows.showChatList(new ArrayList<>());
                 break;
             case R.id.nav_new:
-                try {
-                    mMessageWindows.showNewQuestion();
-                } catch (Exception e) {
-                    handleError(e);
-                }
+                mMessageWindows.showNewQuestion();
                 break;
         }
 
@@ -172,25 +178,25 @@ public class Miao extends BaseActivity
     弹窗
      */
     private void showFirstUseDialog() {
-        if (!SpUtil.getBoolean(this, C.SP_FIRST_BOOT, true)) {
+        if (!SpUtil.getBoolean(this, Splish.SP_FIRST_BOOT, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("人人都有\"萌\"的一面");
             builder.setMessage("\"聪明\"解决人类37%的问题；\n\"萌\"负责剩下的85%");
             builder.setPositiveButton("我最萌(•‾̑⌣‾̑•)✧˖°", (dialogInterface, i) -> {
-                SpUtil.putBoolean(Miao.this, C.SP_FIRST_BOOT, false);
+                SpUtil.putBoolean(Miao.this, Splish.SP_FIRST_BOOT, false);
                 dialogInterface.dismiss();
             });
             builder.show();
         }
     }
     private void showAppDialog() {
-        VersionMessage versionMessage = getIntent().getParcelableExtra(C.EXTRA_ITEM);
-        if (SpUtil.getBoolean(Miao.this, C.SP_FIRST_UPDATE, true)) {
+        VersionMessage versionMessage = getIntent().getParcelableExtra(MyApplication.EXTRA_ITEM);
+        if (SpUtil.getBoolean(Miao.this, Splish.SP_FIRST_UPDATE, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Miao.this);
             builder.setTitle(versionMessage.getVersionName());
             builder.setMessage(versionMessage.getMessage());
             builder.setPositiveButton("知道了(•‾̑⌣‾̑•)✧˖°", (dialogInterface, i) -> {
-                SpUtil.putBoolean(Miao.this, C.SP_FIRST_UPDATE, false);
+                SpUtil.putBoolean(Miao.this, Splish.SP_FIRST_UPDATE, false);
                 showFirstUseDialog();
                 dialogInterface.dismiss();
             });

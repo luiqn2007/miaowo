@@ -34,15 +34,6 @@ public class User implements Parcelable {
     // 头像地址
     private String headImg;
 
-    // 用于测试
-    public User(int id, String name, String summary, String pwd, String headImg) {
-        this.id = id;
-        this.name = name;
-        this.summary = summary;
-        this.pwd = pwd;
-        this.headImg = headImg;
-    }
-
     // 用于注册
     public User(String name, String summary, String pwd) {
         this.name = name;

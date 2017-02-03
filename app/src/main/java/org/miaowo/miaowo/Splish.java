@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.view;
+package org.miaowo.miaowo;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -8,10 +8,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import org.miaowo.miaowo.C;
-import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.impl.QuestionsImpl;
+import org.miaowo.miaowo.root.MyApplication;
 import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.util.SpUtil;
@@ -25,6 +24,9 @@ import java.util.TimerTask;
  * 等以后要加入检查更新
  */
 public class Splish extends BaseActivity {
+    final public static String SP_FIRST_BOOT = "first_boot";
+    final public static String SP_FIRST_UPDATE = "first_update";
+
     private VersionMessage updateMessage = null;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,7 @@ public class Splish extends BaseActivity {
 
                 startService(new Intent(Splish.this, WebService.class));
                 Intent intent = new Intent(Splish.this, Miao.class);
-                intent.putExtra(C.EXTRA_ITEM, updateMessage);
+                intent.putExtra(MyApplication.EXTRA_ITEM, updateMessage);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(0, 0);
@@ -94,12 +96,12 @@ public class Splish extends BaseActivity {
 
     // 用于第一次打开初始化参数
     private void firstInit() {
-        if (SpUtil.getBoolean(this, C.SP_FIRST_BOOT, false)) {
+        if (SpUtil.getBoolean(this, SP_FIRST_BOOT, false)) {
             return;
         }
         ThemeUtil.loadDefaultTheme(this);
         // 设置完毕
-        SpUtil.putBoolean(this, C.SP_FIRST_BOOT, true);
+        SpUtil.putBoolean(this, SP_FIRST_BOOT, true);
     }
 
     @Override

@@ -12,8 +12,8 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.bean.data.Question;
@@ -72,13 +72,7 @@ public class MessageWindows extends SetRoot {
         tv_count.setText(question.getReply() + " 回复, " + question.getView() + " 浏览");
         btn_reply.setText("回答(" + question.getReply() + ")");
         btn_reply.setOnClickListener(v1 -> showAnswers(question));
-        btn_answer.setOnClickListener(v1 -> {
-            try {
-                showNewAnswer(question);
-            } catch (Exception e) {
-                d.activeActivity.handleError(e);
-            }
-        });
+        btn_answer.setOnClickListener(v1 -> showNewAnswer(question));
 
         return view.defaultCloseButton().show();
     }
@@ -92,13 +86,7 @@ public class MessageWindows extends SetRoot {
         ListView lv_answer = (ListView) v.findViewById(R.id.lv_answer);
 
         tv_title.setText(question.getTitle());
-        btn_answer.setOnClickListener(v1 -> {
-            try {
-                showNewAnswer(question);
-            } catch (Exception e) {
-                d.activeActivity.handleError(e);
-            }
-        });
+        btn_answer.setOnClickListener(v1 -> showNewAnswer(question));
         lv_answer.setAdapter(new BaseAdapter() {
             ArrayList<Answer> answers;
 
@@ -213,9 +201,9 @@ public class MessageWindows extends SetRoot {
         return view.defaultCloseButton().show();
     }
 
-    public FloatView showNewQuestion() throws Exception {
+    public FloatView showNewQuestion() {
         if (mState.getLocalUser().getId() < 0) {
-            throw Exceptions.E_NON_LOGIN;
+            d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
         }
 
         final FloatView view = new FloatView(R.layout.window_ask);
@@ -229,16 +217,16 @@ public class MessageWindows extends SetRoot {
             String name;
             switch (rg_type.getCheckedRadioButtonId()) {
                 case R.id.rb_ann:
-                    name = C.NAME_ANNOUNCEMENT;
+                    name = Miao.FRAGMENT_ANNOUNCEMENT;
                     break;
                 case R.id.rb_ask:
-                    name = C.NAME_QUESTION;
+                    name = Miao.FRAGMENT_QUESTION;
                     break;
                 case R.id.rb_daily:
-                    name = C.NAME_DAILY;
+                    name = Miao.FRAGMENT_DAILY;
                     break;
                 case R.id.rb_water:
-                    name = C.NAME_WATER;
+                    name = Miao.FRAGMENT_WATER;
                     break;
                 default:
                     name = null;
@@ -278,9 +266,9 @@ public class MessageWindows extends SetRoot {
 
         return view.defaultCloseButton().show();
     }
-    private FloatView showNewAnswer(final Question question) throws Exception {
+    private FloatView showNewAnswer(final Question question) {
         if (mState.getLocalUser().getId() < 0) {
-            throw Exceptions.E_NON_LOGIN;
+            d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
         }
 
         final FloatView view = new FloatView(R.layout.window_ask);
@@ -323,9 +311,9 @@ public class MessageWindows extends SetRoot {
         });
         return view.defaultCloseButton().show();
     }
-    public FloatView showNewReply(final Answer answer) throws Exception {
+    public FloatView showNewReply(final Answer answer) {
         if (mState.getLocalUser().getId() < 0) {
-            throw Exceptions.E_NON_LOGIN;
+            d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
         }
 
         final FloatView view = new FloatView(R.layout.window_ask);

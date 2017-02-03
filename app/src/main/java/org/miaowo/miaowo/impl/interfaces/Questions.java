@@ -11,6 +11,8 @@ import java.util.ArrayList;
  */
 
 public interface Questions {
+    int SEARCH_POSITION_UP = 1;
+    int SEARCH_POSITION_DOWN = 2;
 
     /**
      * 获取以前的问题列表，用于刷新
@@ -45,9 +47,15 @@ public interface Questions {
     /**
      * 根据 id 获取问题
      * @param id 问题ID
-     * @return
+     * @return 获取的问题
      */
     Question getQuestion(int id);
+
+    /**
+     * 向用户推送一条问题
+     * @param question 要推送的问题
+     */
+    void pushQuestion(Question question);
 
     /**
      * 获取新版本信息

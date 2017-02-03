@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 
-import org.miaowo.miaowo.C;
 import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.util.NotificationUtil;
 import org.miaowo.miaowo.root.view.BaseActivity;
@@ -27,10 +28,10 @@ public class MessageReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
-            case C.BC_CHAT:
-                setChatMsg(intent.getParcelableExtra(C.EXTRA_ITEM));
+            case WebService.BC_CHAT:
+                setChatMsg(intent.getParcelableExtra(MyApplication.EXTRA_ITEM));
                 break;
-            case C.BC_MSG:
+            case WebService.BC_MSG:
                 break;
         }
     }

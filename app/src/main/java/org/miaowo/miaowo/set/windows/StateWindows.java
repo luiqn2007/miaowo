@@ -11,7 +11,7 @@ import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.ui.FloatView;
-import org.miaowo.miaowo.view.Miao;
+import org.miaowo.miaowo.Miao;
 
 /**
  * 与用户登录状态有关的弹窗

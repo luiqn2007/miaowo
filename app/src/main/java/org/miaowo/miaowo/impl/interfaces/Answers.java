@@ -38,4 +38,10 @@ public interface Answers {
      * @return 回答
      */
     Answer getFinalAnswer(Answer answer);
+
+    /**
+     * 向用户推送一条回答
+     * @param answer 要推送的回答
+     */
+    void pushAnswer(Answer answer);
 }

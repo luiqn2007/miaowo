@@ -32,4 +32,10 @@ public interface Users {
      * @throws Exception 申请失败返回结果
      */
     void focusUser(User u) throws Exception;
+
+    /**
+     * 更新用户信息
+     * @param u 新用户信息
+     */
+    void updateUser(User u) throws Exception;
 }

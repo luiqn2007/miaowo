@@ -3,7 +3,7 @@ package org.miaowo.miaowo.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import org.miaowo.miaowo.C;
+import org.miaowo.miaowo.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.fragment.ChooseFragment;
 import org.miaowo.miaowo.root.fragment.ListFragment;
@@ -29,9 +29,9 @@ public class UnreadFragment extends ChooseFragment {
         UnreadFragment fragment = new UnreadFragment();
 
         fragments = new ArrayList<>();
-        fragments.add(ListFragment.newInstance(C.NAME_U_QUESTION));
-        fragments.add(ListFragment.newInstance(C.NAME_U_ANSWER));
-        fragments.add(ListFragment.newInstance(C.NAME_U_REPLY));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_U_QUESTION));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_U_ANSWER));
+        fragments.add(ListFragment.newInstance(Miao.FRAGMENT_U_REPLY));
         controls = new ArrayList<>();
         controls.add(R.id.tv_question);
         controls.add(R.id.tv_answer);
