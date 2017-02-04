@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.set.windows.MessageWindows;
@@ -39,7 +39,7 @@ public class ViewFiller {
             }
         });
         holder.tv_user.setText(answer.getUser().getName());
-        ImageUtil.fillImage(holder.iv_user, answer.getUser());
+        ImageUtil.fillUserImage(holder.iv_user, answer.getUser());
         return view;
     }
     private static class AnswerHolder {

@@ -15,7 +15,7 @@ public class PwdUtil {
      * @param key 组合密码的一部分
      * @return 经过加密后的密码
      */
-    public static String getMD5(String pwd, String key) {
+    public static String toPwd(String pwd, String key) {
         String relPwd = "mw_p=" + pwd + "&mw_n=" + key;
         MessageDigest md;
         try {

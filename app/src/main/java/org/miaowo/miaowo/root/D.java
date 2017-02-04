@@ -1,8 +1,7 @@
-package org.miaowo.miaowo;
+package org.miaowo.miaowo.root;
 
+import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.root.fragment.ListFragment;
-import org.miaowo.miaowo.root.view.BaseActivity;
 
 /**
  * D == Data
@@ -22,6 +21,7 @@ public class D {
         return instance;
     }
 
+    public Miao miaoActivity = null;
     public BaseActivity activeActivity = null;
     public ListFragment shownFragment = null;
     public User thisUser;

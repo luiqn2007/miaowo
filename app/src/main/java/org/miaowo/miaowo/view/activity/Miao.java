@@ -1,4 +1,4 @@
-package org.miaowo.miaowo;
+package org.miaowo.miaowo.view.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.fragment.MiaoFragment;
@@ -28,12 +29,12 @@ import org.miaowo.miaowo.fragment.UnreadFragment;
 import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
+import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.root.MyApplication;
-import org.miaowo.miaowo.root.view.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.set.windows.SettingWindows;
 import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.ImageUtil;
@@ -63,7 +64,6 @@ public class Miao extends BaseActivity
     private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
     private MessageWindows mMessageWindows;
-    private SettingWindows mSettingWindows;
     private AlertDialog closeDialog;
     private FragmentManager mManager;
 
@@ -78,7 +78,6 @@ public class Miao extends BaseActivity
         mChatWindows = new ChatWindows();
         mStateWindows = new StateWindows();
         mMessageWindows = new MessageWindows();
-        mSettingWindows = new SettingWindows();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -94,6 +93,8 @@ public class Miao extends BaseActivity
             dialog.dismiss();
             finish();
         });
+
+        D.getInstance().miaoActivity = this;
     }
 
     @Override
@@ -147,7 +148,7 @@ public class Miao extends BaseActivity
                 break;
             case R.id.nav_setting:
                 if (D.getInstance().thisUser.getId() >= 0) {
-                    mSettingWindows.showUserSetting();
+                    startActivity(new Intent(this, Setting.class));
                 }
                 break;
             case R.id.nav_exit:
@@ -244,7 +245,7 @@ public class Miao extends BaseActivity
                 TextView tv_user = (TextView) headerView.findViewById(R.id.tv_user);
                 TextView tv_summary = (TextView) headerView.findViewById(R.id.tv_summary);
 
-                ImageUtil.fillImage(iv_user, u == null ? null : u);
+                ImageUtil.fillUserImage(iv_user, u == null ? null : u);
                 if (u.getId() == -1) getMenuInflater().inflate(R.menu.inmenu_logout, navigationView.getMenu());
                 else getMenuInflater().inflate(R.menu.inmenu_login, navigationView.getMenu());
 
@@ -252,5 +253,10 @@ public class Miao extends BaseActivity
                 tv_user.setText(u.getName());
             }
         }.execute();
+    }
+
+    @Override
+    protected void destory() {
+        D.getInstance().miaoActivity = null;
     }
 }

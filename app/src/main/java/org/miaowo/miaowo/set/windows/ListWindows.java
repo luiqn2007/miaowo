@@ -7,11 +7,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.root.fragment.ListFragment;
-import org.miaowo.miaowo.root.view.BaseActivity;
-import org.miaowo.miaowo.ui.FloatView;
+import org.miaowo.miaowo.root.ListFragment;
+import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.view.FloatView;
 import org.miaowo.miaowo.util.SpUtil;
 
 /**

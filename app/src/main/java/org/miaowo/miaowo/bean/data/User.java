@@ -34,11 +34,12 @@ public class User implements Parcelable {
     // 头像地址
     private String headImg;
 
-    // 用于注册
-    public User(String name, String summary, String pwd) {
+    // 用于注册及修改
+    public User(String name, String summary, String pwd, String img) {
         this.name = name;
         this.summary = summary;
         this.pwd = pwd;
+        this.headImg = img;
     }
 
     // 用于登录
@@ -134,6 +135,10 @@ public class User implements Parcelable {
         return summary;
     }
 
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
     public int getAuthority() {
         return authority;
     }
@@ -170,12 +175,20 @@ public class User implements Parcelable {
         return pwd;
     }
 
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
     public long getAge() {
         return age;
     }
 
     public String getHeadImg() {
         return headImg;
+    }
+
+    public void setHeadImg(String headImg) {
+        this.headImg = headImg;
     }
 
     @Override

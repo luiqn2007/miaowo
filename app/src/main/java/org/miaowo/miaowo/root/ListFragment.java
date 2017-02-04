@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.root.fragment;
+package org.miaowo.miaowo.root;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.Question;
@@ -22,7 +21,7 @@ import org.miaowo.miaowo.impl.QuestionsImpl;
 import org.miaowo.miaowo.impl.interfaces.Questions;
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.ui.LoadMoreList;
+import org.miaowo.miaowo.view.LoadMoreList;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.SpUtil;
@@ -122,7 +121,7 @@ public class ListFragment extends Fragment implements Parcelable {
                 // 用户
                 final User u = item.getUser();
                 holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-                ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
+                ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), u);
                 holder.getTextView(R.id.tv_user).setText(u.getName());
                 holder.getTextView(R.id.tv_user)
                         .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));

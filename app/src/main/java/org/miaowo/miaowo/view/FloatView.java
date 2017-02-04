@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.ui;
+package org.miaowo.miaowo.view;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -13,11 +13,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.root.view.BaseActivity;
+import org.miaowo.miaowo.root.BaseActivity;
 
 import java.util.ArrayList;
+
 /**
  * 悬浮窗
  * Created by luqin on 17-1-21.
@@ -33,6 +34,7 @@ public class FloatView extends LinearLayout {
     private View v;
     private boolean isShowing = false;
     private Point position;
+    private BaseActivity bindActivity;
 
     public FloatView(@LayoutRes int layout) {
         super(D.getInstance().activeActivity);
@@ -40,23 +42,49 @@ public class FloatView extends LinearLayout {
         setLayout(layout);
         init();
     }
-
     public FloatView(Context context) {
         super(context);
         init();
     }
-
     public FloatView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
-
     public FloatView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
+    public FloatView show(int gravity, Point position) {
+        if (position != null) {
+            this.position = position;
+        }
+
+        if (bindActivity == null) {
+            return null;
+        }
+
+        WindowManager.LayoutParams params = buildLayoutParams(gravity);
+        shownWindows.add(this);
+        isShowing = true;
+        bindActivity.getWindowManager().addView(this, params);
+        return this;
+    }
+    public FloatView show() {
+        return show(Gravity.CENTER, null);
+    }
+    public FloatView dismiss() {
+        if (isShowing) {
+            mManager.removeView(this);
+            shownWindows.remove(this);
+            isShowing = false;
+            position = new Point(0, 0);
+        }
+        return this;
+    }
+
     private void init() {
+        bindActivity = D.getInstance().activeActivity;
         mManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
     }
 
@@ -89,16 +117,15 @@ public class FloatView extends LinearLayout {
         return true;
     }
 
-    public FloatView show(int gravity, Point position) {
-        if (position != null) {
-            this.position = position;
+    public FloatView defaultCloseButton() {
+        View close = findViewById(R.id.iv_close);
+        if (close != null) {
+            close.setOnClickListener(view -> dismiss());
         }
+        return this;
+    }
 
-        BaseActivity context = D.getInstance().activeActivity;
-        if (context == null) {
-            return null;
-        }
-
+    private WindowManager.LayoutParams buildLayoutParams(int gravity) {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -110,41 +137,16 @@ public class FloatView extends LinearLayout {
         params.y = this.position.y;
         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        shownWindows.add(this);
-        isShowing = true;
-        context.getWindowManager().addView(this, params);
-        return this;
-    }
-
-    public FloatView show() {
-        return show(Gravity.CENTER, null);
-    }
-
-    public FloatView dismiss() {
-        if (shownWindows.contains(this) && isShowing) {
-            mManager.removeView(this);
-            shownWindows.remove(this);
-        }
-        isShowing = false;
-        position = new Point(0, 0);
-        return this;
-    }
-
-    public FloatView defaultCloseButton() {
-        View close = findViewById(R.id.iv_close);
-        if (close != null) {
-            close.setOnClickListener(view -> dismiss());
-        }
-        return this;
+        return params;
     }
 
     public static FloatView searchByTag(Object tag) {
         if (tag == null) {
             return null;
         }
-        for (FloatView shownWindow : shownWindows) {
-            if (tag.equals(shownWindow.getTag())) {
-                return shownWindow;
+        for (FloatView floatView : shownWindows) {
+            if (tag.equals(floatView)) {
+                return floatView;
             }
         }
         return null;

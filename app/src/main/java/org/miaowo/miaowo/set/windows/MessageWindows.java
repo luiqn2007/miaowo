@@ -12,8 +12,8 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.D;
-import org.miaowo.miaowo.Miao;
+import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.bean.data.Question;
@@ -23,9 +23,9 @@ import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Answers;
 import org.miaowo.miaowo.impl.interfaces.Questions;
 import org.miaowo.miaowo.impl.interfaces.State;
-import org.miaowo.miaowo.root.set.SetRoot;
+import org.miaowo.miaowo.root.SetRoot;
 import org.miaowo.miaowo.set.Exceptions;
-import org.miaowo.miaowo.ui.FloatView;
+import org.miaowo.miaowo.view.FloatView;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.ViewFiller;
 
@@ -65,7 +65,7 @@ public class MessageWindows extends SetRoot {
         Button btn_answer = (Button) v.findViewById(R.id.btn_send);
         Button btn_reply = (Button) v.findViewById(R.id.btn_reply);
 
-        ImageUtil.fillImage(iv_user, question.getUser());
+        ImageUtil.fillUserImage(iv_user, question.getUser());
         tv_user.setText(question.getUser().getName());
         tv_title.setText(question.getTitle());
         tv_question.setText(question.getMessage());

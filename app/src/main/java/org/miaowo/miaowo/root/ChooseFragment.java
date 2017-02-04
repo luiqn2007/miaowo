@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.root.fragment;
+package org.miaowo.miaowo.root;
 
 import android.graphics.Color;
 import android.os.Bundle;

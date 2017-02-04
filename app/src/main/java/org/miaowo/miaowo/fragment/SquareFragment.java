@@ -3,10 +3,10 @@ package org.miaowo.miaowo.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import org.miaowo.miaowo.Miao;
+import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.root.fragment.ChooseFragment;
-import org.miaowo.miaowo.root.fragment.ListFragment;
+import org.miaowo.miaowo.root.ChooseFragment;
+import org.miaowo.miaowo.root.ListFragment;
 
 import java.util.ArrayList;
 

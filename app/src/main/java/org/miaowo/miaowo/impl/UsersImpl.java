@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.set.Exceptions;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 public class UsersImpl implements Users {
 
     @Override
-    public User getUser(long id) {
+    public User getUser(int id) {
         if (id < 0) {
             return null;
         } else {
@@ -120,5 +120,13 @@ public class UsersImpl implements Users {
                 UserDBHelper.ID + " = ? ",
                 new String[]{Integer.toString(D.getInstance().thisUser.getId())});
         userDb.close();
+
+        D.getInstance().thisUser.setName(u.getName());
+        D.getInstance().thisUser.setHeadImg(u.getHeadImg());
+        D.getInstance().thisUser.setSummary(u.getSummary());
+        D.getInstance().thisUser.setPwd(u.getPwd());
+        if (D.getInstance().miaoActivity != null) {
+            D.getInstance().miaoActivity.setUserMsg();
+        }
     }
 }

@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.User;
@@ -147,7 +147,7 @@ public class SearchDisplyFragment extends Fragment {
 
         User u = item.getUser();
         holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-        ImageUtil.fillImage(holder.getImageView(R.id.iv_user), u);
+        ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), u);
         holder.getTextView(R.id.tv_user).setText(u.getName());
         holder.getTextView(R.id.tv_user)
                 .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
@@ -190,7 +190,7 @@ public class SearchDisplyFragment extends Fragment {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.getTextView(R.id.tv_user).setText(item.getName());
-        ImageUtil.fillImage(holder.getImageView(R.id.iv_user), item);
+        ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), item);
         return view;
     }
 

@@ -7,15 +7,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.impl.interfaces.Users;
-import org.miaowo.miaowo.root.view.BaseActivity;
-import org.miaowo.miaowo.ui.FloatView;
+import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.view.FloatView;
 import org.miaowo.miaowo.util.ImageUtil;
 
 /**
@@ -40,15 +40,15 @@ public class UserWindows {
         FloatView view = new FloatView(R.layout.window_user);
         final View v = view.getView();
 
-        ImageUtil.fillImage((ImageView) v.findViewById(R.id.iv_user), u);
+        ImageUtil.fillUserImage((ImageView) v.findViewById(R.id.iv_user), u);
         ((TextView) v.findViewById(R.id.tv_user)).setText(u.getName());
         ((TextView) v.findViewById(R.id.tv_summary)).setText(u.getSummary());
         ((TextView) v.findViewById(R.id.tv_regist_time)).setText("大约 11 小时之前");
         fillCount(v, R.id.tv_authority, u.getAuthority());
         fillCount(v, R.id.tv_ask, u.getQuestion());
         fillCount(v, R.id.tv_scan, u.getScan());
-        fillCount(v, R.id.tv_like, u.getFocusMe().length);
-        fillCount(v, R.id.tv_focus, u.getFocus().length);
+        fillCount(v, R.id.tv_like, u.getFocusMe() == null ? 0 : u.getFocusMe().length);
+        fillCount(v, R.id.tv_focus, u.getFocus() == null ? 0 : u.getFocus().length);
         v.findViewById(R.id.btn_chat).setOnClickListener(v1 -> {
             if (mState.getLocalUser().getId() >= 0) {
                 mChatWindows.showChatDialog(u);

@@ -13,4 +13,6 @@ public class Exceptions {
 
     public static Exception E_NO_TYPE = new Exception("未知类别");
     public static Exception E_EMPTY_MESSAGE = new Exception("内容不能为空");
+
+    public static Exception E_BAD_CAMERA = new Exception("无法打开摄像头应用");
 }

@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.ChatMessage;
@@ -20,8 +20,8 @@ import org.miaowo.miaowo.impl.ChatImpl;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.State;
-import org.miaowo.miaowo.ui.FloatView;
-import org.miaowo.miaowo.ui.LoadMoreList;
+import org.miaowo.miaowo.view.FloatView;
+import org.miaowo.miaowo.view.LoadMoreList;
 import org.miaowo.miaowo.util.ImageUtil;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class ChatWindows {
                 ViewHolder holder = (ViewHolder) convertView.getTag();
                 User u = (User) getItem(position);
                 holder.tv_user.setText(u.getName());
-                ImageUtil.fillImage(holder.iv_user, u);
+                ImageUtil.fillUserImage(holder.iv_user, u);
                 return convertView;
             }
         };
@@ -139,7 +139,7 @@ public class ChatWindows {
         final EditText et_msg = (EditText) v.findViewById(R.id.et_msg);
         et_msg.setText(Long.toString(System.currentTimeMillis()));
 
-        ImageUtil.fillImage(iv_user, from);
+        ImageUtil.fillUserImage(iv_user, from);
         tv_user.setText(from.getName());
         mAdapter = new ItemRecyclerAdapter<>(
                 mMsgList, new ItemRecyclerAdapter.ViewLoader<ChatMessage>() {

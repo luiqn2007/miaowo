@@ -1,4 +1,4 @@
-package org.miaowo.miaowo;
+package org.miaowo.miaowo.view.activity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -8,10 +8,11 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
+import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.impl.QuestionsImpl;
 import org.miaowo.miaowo.root.MyApplication;
-import org.miaowo.miaowo.root.view.BaseActivity;
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.util.ThemeUtil;

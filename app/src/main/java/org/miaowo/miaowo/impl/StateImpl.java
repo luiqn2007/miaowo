@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.set.Exceptions;
@@ -23,7 +23,7 @@ public class StateImpl implements State {
     public void login(User u) throws Exception {
         checkUser(u);
 
-        String pwd = PwdUtil.getMD5(u.getPwd(), u.getName());
+        String pwd = PwdUtil.toPwd(u.getPwd(), u.getName());
         SQLiteDatabase userDb = (new UserDBHelper()).getReadableDatabase();
         Cursor query = userDb.query(UserDBHelper.table, UserDBHelper.getCumns,
                 UserDBHelper.NAME + " = ? and " + UserDBHelper.PWD + " = ?",
@@ -52,7 +52,7 @@ public class StateImpl implements State {
         SQLiteDatabase userDb = userDBHelper.getWritableDatabase();
 
         checkUser(u);
-        String pwd = PwdUtil.getMD5(u.getPwd(), u.getName());
+        String pwd = PwdUtil.toPwd(u.getPwd(), u.getName());
         User usr = new User(0, u.getName(), pwd, u.getSummary(), 0, 0, 0, new int[0], new int[0], System.currentTimeMillis(), "default");
 
         Cursor query = userDb.query(UserDBHelper.table, UserDBHelper.getCumns,
@@ -84,7 +84,7 @@ public class StateImpl implements State {
     private void checkUser(User u) throws Exception {
         if (TextUtils.isEmpty(u.getName()))
             throw Exceptions.E_ILL_USER_PWD;
-        if (TextUtils.isEmpty(u.getPwd()) || PwdUtil.getMD5("", u.getName()).equals(u.getPwd()))
+        if (TextUtils.isEmpty(u.getPwd()) || PwdUtil.toPwd("", u.getName()).equals(u.getPwd()))
             throw Exceptions.E_ILL_USER_PWD;
     }
 }

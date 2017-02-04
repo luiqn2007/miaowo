@@ -5,13 +5,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
-import org.miaowo.miaowo.ui.FloatView;
-import org.miaowo.miaowo.Miao;
+import org.miaowo.miaowo.view.FloatView;
+import org.miaowo.miaowo.view.activity.Miao;
 
 /**
  * 与用户登录状态有关的弹窗
@@ -69,7 +69,7 @@ public class StateWindows {
             protected Exception doInBackground(String... params) {
                 if (!isLogin) {
                     try {
-                        mState.regist(new User(params[0], params[1], params[2]));
+                        mState.regist(new User(params[0], params[1], params[2], ""));
                     } catch (final Exception e) {
                         return e;
                     }

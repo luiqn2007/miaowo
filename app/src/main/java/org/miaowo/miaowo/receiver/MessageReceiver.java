@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.root.MyApplication;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.util.NotificationUtil;
-import org.miaowo.miaowo.root.view.BaseActivity;
+import org.miaowo.miaowo.root.BaseActivity;
 
 /**
  * 用于接收信息，分发信息

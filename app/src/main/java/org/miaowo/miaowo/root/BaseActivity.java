@@ -1,13 +1,17 @@
-package org.miaowo.miaowo.root.view;
+package org.miaowo.miaowo.root;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import org.miaowo.miaowo.D;
 import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 创建的所有Activity的基类
@@ -16,9 +20,12 @@ import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
 
 public class BaseActivity extends AppCompatActivity implements ExceptionHandled {
 
+    private HashMap<Integer, Runnable> runs;
+
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+        runs = new HashMap<>();
     }
 
     @Override
@@ -39,6 +46,7 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
         if (D.getInstance().activeActivity.equals(this)) {
             D.getInstance().activeActivity = null;
         }
+        destory();
         super.onDestroy();
     }
 
@@ -53,4 +61,9 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
         e.printStackTrace();
         Snackbar.make(getWindow().getDecorView(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
     }
+
+    /**
+     * 由于 onDestory 被复写了，新建一个 destory 代替之
+     */
+    protected void destory() {}
 }

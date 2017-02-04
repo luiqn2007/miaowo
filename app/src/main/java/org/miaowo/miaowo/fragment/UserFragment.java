@@ -5,14 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.User;
@@ -67,7 +66,7 @@ public class UserFragment extends Fragment {
                 holder.getView().setOnClickListener(v -> mUserWindows.showUserWindow(item));
                 ImageView iv_user = holder.getImageView(R.id.iv_user);
                 iv_user.setContentDescription("用户：" + item.getName());
-                ImageUtil.fillImage(iv_user, item);
+                ImageUtil.fillUserImage(iv_user, item);
                 holder.getTextView(R.id.tv_user).setText(item.getName());
             }
 

@@ -15,7 +15,7 @@ public interface Users {
      * @param id 获取用户的ID
      * @return 返回的用户，若未登录则返回用户id为-1的用户(Guest)
      */
-    User getUser(long id);
+    User getUser(int id);
 
     /**
      * 根据用户名获取用户信息

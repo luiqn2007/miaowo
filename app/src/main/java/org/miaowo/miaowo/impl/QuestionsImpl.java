@@ -3,7 +3,7 @@ package org.miaowo.miaowo.impl;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.miaowo.miaowo.D;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.impl.interfaces.Questions;
