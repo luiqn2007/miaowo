@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,7 @@ import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.PwdUtil;
@@ -141,7 +143,8 @@ public class Setting extends BaseActivity {
         if (!dir.isDirectory()) {
             dir.mkdirs();
         }
-        dst = Uri.fromFile(new File(dir, "head_" + D.getInstance().thisUser.getId()));
+        File img = new File(dir, "head_" + D.getInstance().thisUser.getId());
+        dst = FileProvider.getUriForFile(this, MyApp.FILE_PROVIDER_URI, img);
         UCrop.of(src, dst).withAspectRatio(1, 1).start(this);
     }
 
@@ -151,10 +154,15 @@ public class Setting extends BaseActivity {
 
         v.findViewById(R.id.btn_camera).setOnClickListener(v1 -> {
             try {
-                src = Uri.fromFile(new File(getCacheDir(), Integer.toString(D.getInstance().thisUser.getId())));
+                File srcFile = new File(getCacheDir(), Integer.toString(D.getInstance().thisUser.getId()));
+                if (srcFile.isDirectory()) {
+                    srcFile.mkdirs();
+                }
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                src = FileProvider.getUriForFile(this, MyApp.FILE_PROVIDER_URI, srcFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, src);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivityForResult(intent, IMG_CAMERA);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -170,6 +178,7 @@ public class Setting extends BaseActivity {
             }
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("image/*");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, IMG_ALBUM);
         });
         v.findViewById(R.id.btn_cancel).setOnClickListener(v1 -> view.dismiss());

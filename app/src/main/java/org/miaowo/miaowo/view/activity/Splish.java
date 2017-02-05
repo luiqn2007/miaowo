@@ -11,7 +11,7 @@ import android.view.View;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.impl.QuestionsImpl;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.util.SpUtil;
@@ -81,7 +81,7 @@ public class Splish extends BaseActivity {
 
                 startService(new Intent(Splish.this, WebService.class));
                 Intent intent = new Intent(Splish.this, Miao.class);
-                intent.putExtra(MyApplication.EXTRA_ITEM, updateMessage);
+                intent.putExtra(MyApp.EXTRA_ITEM, updateMessage);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(0, 0);

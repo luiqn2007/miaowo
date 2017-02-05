@@ -17,7 +17,7 @@ import org.miaowo.miaowo.impl.interfaces.Answers;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.Questions;
 import org.miaowo.miaowo.receiver.MessageReceiver;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 
 public class WebService extends Service {
     // 广播
@@ -61,7 +61,7 @@ public class WebService extends Service {
     private BroadcastReceiver testReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Object msg = intent.getParcelableExtra(MyApplication.EXTRA_ITEM) instanceof ChatMessage;
+            Object msg = intent.getParcelableExtra(MyApp.EXTRA_ITEM) instanceof ChatMessage;
             if (msg instanceof ChatMessage) {
                 sendChat((ChatMessage) msg);
             } else if (msg instanceof Question) {

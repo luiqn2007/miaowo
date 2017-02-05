@@ -12,7 +12,7 @@ import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.Users;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.test.ChatListDBHelper;
@@ -108,7 +108,7 @@ public class ChatImpl implements Chat {
     @Override
     public void pushMessage(ChatMessage msg) {
         Intent intent = new Intent(WebService.BC_CHAT);
-        intent.putExtra(MyApplication.EXTRA_ITEM, msg);
+        intent.putExtra(MyApp.EXTRA_ITEM, msg);
         context.sendBroadcast(intent);
     }
 

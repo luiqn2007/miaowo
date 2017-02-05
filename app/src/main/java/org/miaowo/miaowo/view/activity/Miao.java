@@ -31,7 +31,7 @@ import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.D;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
@@ -191,7 +191,7 @@ public class Miao extends BaseActivity
         }
     }
     private void showAppDialog() {
-        VersionMessage versionMessage = getIntent().getParcelableExtra(MyApplication.EXTRA_ITEM);
+        VersionMessage versionMessage = getIntent().getParcelableExtra(MyApp.EXTRA_ITEM);
         if (SpUtil.getBoolean(Miao.this, Splish.SP_FIRST_UPDATE, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Miao.this);
             builder.setTitle(versionMessage.getVersionName());

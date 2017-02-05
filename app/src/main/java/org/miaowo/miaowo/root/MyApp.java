@@ -9,9 +9,10 @@ import com.bugtags.library.Bugtags;
  * Created by luqin on 16-12-28.
  */
 
-public class MyApplication extends Application {
+public class MyApp extends Application {
     // 信息传递
     final public static String EXTRA_ITEM = "extra_item";
+    final public static String FILE_PROVIDER_URI = "org.miaowo.miaowo.fileProvider";
 
     @Override
     public void onCreate() {

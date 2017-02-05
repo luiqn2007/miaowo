@@ -7,7 +7,7 @@ import android.support.design.widget.Snackbar;
 
 import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.bean.data.ChatMessage;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.util.NotificationUtil;
@@ -29,7 +29,7 @@ public class MessageReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
             case WebService.BC_CHAT:
-                setChatMsg(intent.getParcelableExtra(MyApplication.EXTRA_ITEM));
+                setChatMsg(intent.getParcelableExtra(MyApp.EXTRA_ITEM));
                 break;
             case WebService.BC_MSG:
                 break;

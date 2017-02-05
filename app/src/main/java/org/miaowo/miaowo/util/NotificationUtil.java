@@ -10,7 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.ChatMessage;
-import org.miaowo.miaowo.root.MyApplication;
+import org.miaowo.miaowo.root.MyApp;
 
 /**
  * 向系统状态栏发送消息
@@ -26,7 +26,7 @@ public class NotificationUtil {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(context, Miao.class);
-        intent.putExtra(MyApplication.EXTRA_ITEM, PW_CHAT);
+        intent.putExtra(MyApp.EXTRA_ITEM, PW_CHAT);
         chatDialog = PendingIntent.getActivity(context, 0, intent, 0);
 
         chatLockNoti = new NotificationCompat.Builder(context)
