@@ -1,17 +1,14 @@
 package org.miaowo.miaowo.root;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
+import com.bugtags.library.Bugtags;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
 
 /**
  * 创建的所有Activity的基类
@@ -20,25 +17,22 @@ import java.util.HashMap;
 
 public class BaseActivity extends AppCompatActivity implements ExceptionHandled {
 
-    private HashMap<Integer, Runnable> runs;
-
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        runs = new HashMap<>();
     }
 
     @Override
     protected void onResume() {
         D.getInstance().activeActivity = this;
         super.onResume();
-//        Bugtags.onResume(this);
+        Bugtags.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        Bugtags.onPause(this);
+        Bugtags.onPause(this);
     }
 
     @Override
@@ -52,7 +46,7 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-//        Bugtags.onDispatchTouchEvent(this, event);
+        Bugtags.onDispatchTouchEvent(this, event);
         return super.dispatchTouchEvent(event);
     }
 
