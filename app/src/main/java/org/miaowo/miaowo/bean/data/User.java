@@ -35,7 +35,8 @@ public class User implements Parcelable {
     private String headImg;
 
     // 用于注册及修改
-    public User(String name, String summary, String pwd, String img) {
+    public User(int id, String name, String summary, String pwd, String img) {
+        this.id = id;
         this.name = name;
         this.summary = summary;
         this.pwd = pwd;
@@ -46,13 +47,6 @@ public class User implements Parcelable {
     public User(String name, String pwd) {
         this.name = name;
         this.pwd = pwd;
-    }
-
-    // 用于界面显示，为当前登录账户
-    public User(int id, String name, String summary) {
-        this.id = id;
-        this.name = name;
-        this.summary = summary;
     }
 
     public User(int id, String name, String pwd, String summary, int authority, int question, int scan, int[] focusMe, int[] focus, long age, String headImg) {

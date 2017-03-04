@@ -36,7 +36,7 @@ public class UserWindows {
         context = D.getInstance().activeActivity;
     }
 
-    public View showUserWindow(final User u) {
+    public FloatView showUserWindow(final User u) {
         FloatView view = new FloatView(R.layout.window_user);
         final View v = view.getView();
 
@@ -77,7 +77,7 @@ public class UserWindows {
             }
         }.execute());
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 
 

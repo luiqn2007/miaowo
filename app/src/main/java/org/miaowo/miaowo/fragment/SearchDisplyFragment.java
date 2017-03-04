@@ -147,7 +147,7 @@ public class SearchDisplyFragment extends Fragment {
 
         User u = item.getUser();
         holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-        ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), u);
+        ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), u);
         holder.getTextView(R.id.tv_user).setText(u.getName());
         holder.getTextView(R.id.tv_user)
                 .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
@@ -190,7 +190,7 @@ public class SearchDisplyFragment extends Fragment {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.getTextView(R.id.tv_user).setText(item.getName());
-        ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), item);
+        ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), item);
         return view;
     }
 
@@ -238,15 +238,12 @@ public class SearchDisplyFragment extends Fragment {
                 try {
                     switch (type) {
                         case TYPE_QUESTION:
-                            LogUtil.i("s_question", params[0]);
                             Collections.addAll(result, mQuestions.searchQuestion(params[0]));
                             break;
                         case TYPE_TOPIC:
-                            LogUtil.i("s_topic", params[0]);
                             Collections.addAll(result, mQuestions.searchTopic(params[0]));
                             break;
                         case TYPE_USER:
-                            LogUtil.i("s_user", params[0]);
                             Collections.addAll(result, mUsers.searchUsers(params[0]));
                             break;
                         default:

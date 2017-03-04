@@ -86,7 +86,7 @@ public class ChatWindows {
                 ViewHolder holder = (ViewHolder) convertView.getTag();
                 User u = (User) getItem(position);
                 holder.tv_user.setText(u.getName());
-                ImageUtil.fillUserImage(holder.iv_user, u);
+                ImageUtil.setUserImage(holder.iv_user, u);
                 return convertView;
             }
         };
@@ -109,7 +109,7 @@ public class ChatWindows {
             }
         }.execute();
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 
     // 聊天窗口
@@ -139,7 +139,7 @@ public class ChatWindows {
         final EditText et_msg = (EditText) v.findViewById(R.id.et_msg);
         et_msg.setText(Long.toString(System.currentTimeMillis()));
 
-        ImageUtil.fillUserImage(iv_user, from);
+        ImageUtil.setUserImage(iv_user, from);
         tv_user.setText(from.getName());
         mAdapter = new ItemRecyclerAdapter<>(
                 mMsgList, new ItemRecyclerAdapter.ViewLoader<ChatMessage>() {
@@ -222,7 +222,7 @@ public class ChatWindows {
             }
         }.execute(new ChatMessage(-1, System.currentTimeMillis(), from, to, et_msg.getText().toString())));
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 
     private class ViewHolder {

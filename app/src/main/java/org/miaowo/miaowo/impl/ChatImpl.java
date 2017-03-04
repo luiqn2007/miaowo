@@ -114,7 +114,6 @@ public class ChatImpl implements Chat {
 
     @Override
     public ChatMessage[] getBeforeMessage(ChatMessage msg) {
-        LogUtil.i("lastMsg", msg);
         SQLiteDatabase chatMsgDb = (new ChatMessageDBHelper()).getReadableDatabase();
         Cursor cursorf = chatMsgDb.query(ChatMessageDBHelper.table, ChatMessageDBHelper.getCumns,
                 ChatMessageDBHelper.FROM + " = ? and " + ChatMessageDBHelper.TO + " = ? and " + ChatMessageDBHelper.TIME + " < " + msg.getTime(),

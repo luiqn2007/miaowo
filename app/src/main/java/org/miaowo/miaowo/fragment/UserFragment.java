@@ -66,7 +66,7 @@ public class UserFragment extends Fragment {
                 holder.getView().setOnClickListener(v -> mUserWindows.showUserWindow(item));
                 ImageView iv_user = holder.getImageView(R.id.iv_user);
                 iv_user.setContentDescription("用户：" + item.getName());
-                ImageUtil.fillUserImage(iv_user, item);
+                ImageUtil.setUserImage(iv_user, item);
                 holder.getTextView(R.id.tv_user).setText(item.getName());
             }
 

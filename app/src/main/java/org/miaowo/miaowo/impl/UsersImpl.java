@@ -126,7 +126,7 @@ public class UsersImpl implements Users {
         D.getInstance().thisUser.setSummary(u.getSummary());
         D.getInstance().thisUser.setPwd(u.getPwd());
         if (D.getInstance().miaoActivity != null) {
-            D.getInstance().miaoActivity.setUserMsg();
+            D.getInstance().miaoActivity.runOnUiThread(() -> D.getInstance().miaoActivity.loadUserMsg());
         }
     }
 }

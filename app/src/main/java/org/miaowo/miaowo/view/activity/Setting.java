@@ -84,7 +84,7 @@ public class Setting extends BaseActivity {
     private void reloadUser() {
         User localUser = D.getInstance().thisUser;
         if (newUser == null) {
-            newUser = new User(localUser.getName(), localUser.getSummary(), localUser.getPwd(), localUser.getHeadImg());
+            newUser = new User(localUser.getId(), localUser.getName(), localUser.getSummary(), localUser.getPwd(), localUser.getHeadImg());
         } else {
             newUser.setHeadImg(localUser.getHeadImg());
             newUser.setName(localUser.getName());
@@ -95,7 +95,7 @@ public class Setting extends BaseActivity {
 
     private void clearUser() {
         if (newUser == null) {
-            newUser = new User("", "", "", "");
+            newUser = new User(-1, "", "", "", "");
         } else {
             newUser.setHeadImg("");
             newUser.setName("");
@@ -108,7 +108,7 @@ public class Setting extends BaseActivity {
         et_name.setText(newUser.getName());
         et_pwd.setText("");
         et_summary.setText(newUser.getSummary());
-        ImageUtil.fillImage(iv_head, newUser.getHeadImg());
+        ImageUtil.fillUserImage(iv_head, newUser);
     }
 
     private void send() {
@@ -198,7 +198,7 @@ public class Setting extends BaseActivity {
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
                     dst = UCrop.getOutput(data);
-                    ImageUtil.fillImage(iv_head, "imgPath>>" + dst.getPath());
+                    ImageUtil.fillImage(iv_head, dst.getPath());
                 } else {
                     handleError(new Exception(UCrop.getError(data)));
                 }

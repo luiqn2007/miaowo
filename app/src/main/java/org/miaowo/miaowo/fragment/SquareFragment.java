@@ -2,6 +2,7 @@ package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.TextView;
 
 import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.R;

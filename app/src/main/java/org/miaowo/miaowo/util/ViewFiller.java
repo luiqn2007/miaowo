@@ -39,7 +39,7 @@ public class ViewFiller {
             }
         });
         holder.tv_user.setText(answer.getUser().getName());
-        ImageUtil.fillUserImage(holder.iv_user, answer.getUser());
+        ImageUtil.setUserImage(holder.iv_user, answer.getUser());
         return view;
     }
     private static class AnswerHolder {

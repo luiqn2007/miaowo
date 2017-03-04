@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
@@ -60,11 +60,13 @@ dependencies {
     // okHttp & okIO 网络访问
     // Picasso & PicassoTransformation 图片显示
     // PullLoadMoreRecycleView 列表加载
+    // 图片引用 uCrop
+    // 文字图标 textDrawable
     // BugTags Bug反馈
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
-    compile 'com.android.support:support-v4:25.1.1'
-    compile 'com.android.support:support-vector-drawable:25.1.1'
+    compile 'com.android.support:appcompat-v7:25+'
+    compile 'com.android.support:design:25+'
+    compile 'com.android.support:support-v4:25+'
+    compile 'com.android.support:support-vector-drawable:25+'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okio:okio:1.11.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -72,6 +74,12 @@ dependencies {
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'com.bugtags.library:bugtags-lib:latest.integration'
     compile 'com.yalantis:ucrop:2.2.0'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile('com.mikepenz:materialdrawer:5.8.1@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz:fontawesome-typeface:4.7.0.0@aar'
+    compile "com.mikepenz:crossfadedrawerlayout:1.0.0@aar"
     testCompile 'junit:junit:4.12'
 }
 

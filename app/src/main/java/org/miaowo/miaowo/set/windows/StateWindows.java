@@ -51,7 +51,7 @@ public class StateWindows {
             protected void onPostExecute(Exception e) {
                 if (isLogin) {
                     if (e == null) {
-                        ((Miao) d.activeActivity).setUserMsg();
+                        ((Miao) d.activeActivity).loadUserMsg();
                         view.dismiss();
                     } else {
                         D.getInstance().activeActivity.handleError(e);
@@ -69,7 +69,7 @@ public class StateWindows {
             protected Exception doInBackground(String... params) {
                 if (!isLogin) {
                     try {
-                        mState.regist(new User(params[0], params[1], params[2], ""));
+                        mState.regist(new User(-1, params[0], params[1], params[2], ""));
                     } catch (final Exception e) {
                         return e;
                     }
@@ -86,7 +86,7 @@ public class StateWindows {
                     isLogin = false;
                 } else {
                     if (e == null) {
-                        ((Miao) d.activeActivity).setUserMsg();
+                        ((Miao) d.activeActivity).loadUserMsg();
                         view.dismiss();
                     } else {
                         d.activeActivity.handleError(e);
@@ -95,6 +95,6 @@ public class StateWindows {
             }
         }.execute(user.getText().toString(), summary.getText().toString(), pwd.getText().toString()));
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 }

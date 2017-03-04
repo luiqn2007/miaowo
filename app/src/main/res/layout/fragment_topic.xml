@@ -4,9 +4,10 @@
     android:layout_height="match_parent"
     tools:context="org.miaowo.miaowo.fragment.TopicFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageView
+        android:id="@+id/test"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@color/colorAccent"/>
 
 </FrameLayout>

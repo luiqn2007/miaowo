@@ -65,7 +65,7 @@ public class MessageWindows extends SetRoot {
         Button btn_answer = (Button) v.findViewById(R.id.btn_send);
         Button btn_reply = (Button) v.findViewById(R.id.btn_reply);
 
-        ImageUtil.fillUserImage(iv_user, question.getUser());
+        ImageUtil.setUserImage(iv_user, question.getUser());
         tv_user.setText(question.getUser().getName());
         tv_title.setText(question.getTitle());
         tv_question.setText(question.getMessage());
@@ -74,7 +74,7 @@ public class MessageWindows extends SetRoot {
         btn_reply.setOnClickListener(v1 -> showAnswers(question));
         btn_answer.setOnClickListener(v1 -> showNewAnswer(question));
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
     public FloatView showTopic(final Question question) {
         getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
@@ -138,7 +138,7 @@ public class MessageWindows extends SetRoot {
             }
         }.execute(question);
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
     private FloatView showAnswers(Question question) {
         getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
@@ -198,7 +198,7 @@ public class MessageWindows extends SetRoot {
             }
         }.execute(question);
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 
     public FloatView showNewQuestion() {
@@ -264,7 +264,7 @@ public class MessageWindows extends SetRoot {
             }.execute(q);
         });
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
     private FloatView showNewAnswer(final Question question) {
         if (mState.getLocalUser().getId() < 0) {
@@ -309,7 +309,7 @@ public class MessageWindows extends SetRoot {
                 }
             }.execute(a);
         });
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
     public FloatView showNewReply(final Answer answer) {
         if (mState.getLocalUser().getId() < 0) {
@@ -349,6 +349,6 @@ public class MessageWindows extends SetRoot {
             }.execute(a);
         });
 
-        return view.defaultCloseButton().show();
+        return view.defaultBar().show();
     }
 }

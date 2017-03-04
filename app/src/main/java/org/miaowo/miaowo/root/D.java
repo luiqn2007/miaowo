@@ -11,7 +11,7 @@ import org.miaowo.miaowo.bean.data.User;
 public class D {
     private static D instance = null;
     private D () {
-        guest = new User(-1, "流浪喵", "欢迎来到喵窝");
+        guest = new User(-1, "流浪喵", "欢迎来到喵窝", "", "default");
         thisUser = guest;
     }
     public static D getInstance() {

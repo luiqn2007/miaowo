@@ -2,21 +2,34 @@ package org.miaowo.miaowo.view.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.ViewGroup;
+
+import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.MiniDrawer;
+import com.mikepenz.materialdrawer.interfaces.ICrossfader;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.DrawerUIUtils;
+import com.mikepenz.materialize.util.UIUtils;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
@@ -38,14 +51,14 @@ import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.ImageUtil;
+import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
 import java.util.ArrayList;
 
 // Android Studio自动生成的，用了一大堆支持库的东西，详见
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
-public class Miao extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListener {
     final public static String FRAGMENT_DAILY = "daily";
     final public static String FRAGMENT_ANNOUNCEMENT = "announcement";
     final public static String FRAGMENT_QUESTION = "question";
@@ -56,7 +69,8 @@ public class Miao extends BaseActivity
     final public static String FRAGMENT_U_REPLY = "u_reply";
 
     // 视图
-    private NavigationView navigationView;
+    private Drawer drawer = null;
+    private CrossfadeDrawerLayout cdl;
     private Fragment fg_square, fg_search, fg_topic, fg_unread, fg_user;
 
     // 组件
@@ -64,51 +78,110 @@ public class Miao extends BaseActivity
     private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
     private MessageWindows mMessageWindows;
-    private AlertDialog closeDialog;
     private FragmentManager mManager;
 
+    // 数据
     private long lastExit = 0;
+    private AccountHeader userHeader = null;
+    private ProfileDrawerItem guestMsg = null;
+    private ProfileDrawerItem userMsg = null;
+    private IDrawerItem[] loginItems = null;
+    private IDrawerItem[] logoutItems = null;
+    private IDrawerItem[] fragmentItems = null;
 
+    // 加载
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_miao);
         super.onCreate(savedInstanceState);
-
-        mState = new StateImpl();
-        mChatWindows = new ChatWindows();
-        mStateWindows = new StateWindows();
-        mMessageWindows = new MessageWindows();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        closeDialog = (new AlertDialog.Builder(this)).create();
-        closeDialog.setMessage("关闭后是否继续接收消息？");
-        closeDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "否", (dialog, which) -> {
-            stopService(new Intent(Miao.this, WebService.class));
-            dialog.dismiss();
-            finish();
-        });
-        closeDialog.setButton(DialogInterface.BUTTON_POSITIVE, "是", (dialog, which) -> {
-            dialog.dismiss();
-            finish();
-        });
-
-        D.getInstance().miaoActivity = this;
+        prepareValues();
+        loadUserMsg();
+        initDrawer(savedInstanceState);
     }
-
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         // 这里是在 Activity 完全加载后调用
         super.onPostCreate(savedInstanceState);
-        // 加载用户信息
-        setUserMsg();
         // 显示对话框
         showAppDialog();
         // 绑定Fragment
         initFragment();
     }
+    private void prepareValues() {
+        D.getInstance().miaoActivity = this;
+        mState = new StateImpl();
+        mChatWindows = new ChatWindows();
+        mStateWindows = new StateWindows();
+        mMessageWindows = new MessageWindows();
 
+        cdl = new CrossfadeDrawerLayout(this);
+
+        loginItems = new IDrawerItem[] {
+                new SecondaryDrawerItem().withName(R.string.ask).withIcon(FontAwesome.Icon.faw_plus).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SecondaryDrawerItem().withName(R.string.chat).withIcon(FontAwesome.Icon.faw_comment_o).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SecondaryDrawerItem().withName(R.string.setting).withIcon(FontAwesome.Icon.faw_cog).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SecondaryDrawerItem().withName(R.string.logout).withIcon(FontAwesome.Icon.faw_sign_out).withSelectedColor(getResources().getColor(R.color.md_amber_A400))};
+        logoutItems = new IDrawerItem[] {
+                new SecondaryDrawerItem().withName(R.string.login).withIcon(FontAwesome.Icon.faw_user_circle).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SecondaryDrawerItem().withName(R.string.setting).withIcon(FontAwesome.Icon.faw_cog).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SecondaryDrawerItem().withName(R.string.exit).withIcon(FontAwesome.Icon.faw_sign_out).withSelectedColor(getResources().getColor(R.color.md_amber_A400))};
+        fragmentItems = new IDrawerItem[] {
+                new PrimaryDrawerItem().withName(R.string.square).withIcon(FontAwesome.Icon.faw_calendar_check_o).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new PrimaryDrawerItem().withName(R.string.unread).withIcon(FontAwesome.Icon.faw_inbox).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new PrimaryDrawerItem().withName(R.string.topic).withIcon(FontAwesome.Icon.faw_tags).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new PrimaryDrawerItem().withName(R.string.user).withIcon(FontAwesome.Icon.faw_github_alt).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new PrimaryDrawerItem().withName(R.string.search).withIcon(FontAwesome.Icon.faw_search).withSelectedColor(getResources().getColor(R.color.md_amber_A400)),
+                new SectionDrawerItem().withDivider(true).withName("其他")};
+        User guest = D.getInstance().guest;
+        userMsg = new ProfileDrawerItem();
+        guestMsg = new ProfileDrawerItem().withName(guest.getName()).withEmail(guest.getSummary()).withIcon(ImageUtil.getDrawable(guest.getHeadImg()));
+        userHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withCompactStyle(true)
+                .withHeaderBackground(R.drawable.side_nav_bar)
+                .withTextColor(Color.BLACK)
+                .withProfileImagesClickable(false)
+                .withSelectionListEnabled(false)
+                .build();
+        userHeader.addProfile(guestMsg, 0);
+        userHeader.addProfile(userMsg, 1);
+        userHeader.setActiveProfile(guestMsg);
+    }
+    private void initDrawer(Bundle savedInstanceState) {
+        drawer = new DrawerBuilder().withActivity(this)
+                .withOnDrawerItemClickListener(this)
+                .withSavedInstance(savedInstanceState)
+                .withAccountHeader(userHeader)
+                .withDrawerLayout(cdl)
+                .withDrawerWidthDp(72)
+                .withHasStableIds(true)
+                .withGenerateMiniDrawer(true)
+                .withSliderBackgroundColorRes(R.color.md_amber_100)
+                .withShowDrawerOnFirstLaunch(true)
+                .addDrawerItems(fragmentItems)
+                .build();
+        setMenu();
+        cdl.setMaxWidthPx(DrawerUIUtils.getOptimalDrawerWidth(this));
+        MiniDrawer miniResult = drawer.getMiniDrawer();
+        View view = miniResult.build(this);
+        view.setBackgroundColor(UIUtils.getThemeColorFromAttrOrRes(this, com.mikepenz.materialdrawer.R.attr.material_drawer_background, R.color.md_amber_A400));
+        cdl.getSmallView().addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        miniResult.withCrossFader(new ICrossfader() {
+            @Override
+            public void crossfade() {
+                cdl.crossfade(400);
+                //only close the drawer if we were already faded and want to close it now
+                if (isCrossfaded()) {
+                    drawer.getDrawerLayout().closeDrawer(GravityCompat.START);
+                }
+            }
+
+            @Override
+            public boolean isCrossfaded() {
+                return cdl.isCrossfaded();
+            }
+        });
+    }
     private void initFragment() {
         mManager = getSupportFragmentManager();
 
@@ -118,66 +191,36 @@ public class Miao extends BaseActivity
         fg_unread = UnreadFragment.newInstance();
         fg_user = UserFragment.newInstance();
 
-        FragmentUtil.showFragment(mManager, R.id.container, MiaoFragment.newInstance());
+        onItemClick(null, 1, null);
     }
 
+    // 退出
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // 侧栏的动作响应
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.nav_square:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_square);
-                break;
-            case R.id.nav_search:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_search);
-                break;
-            case R.id.nav_topic:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_topic);
-                break;
-            case R.id.nav_unread:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_unread);
-                break;
-            case R.id.nav_user:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_user);
-                break;
-            case R.id.nav_setting:
-                if (D.getInstance().thisUser.getId() >= 0) {
-                    startActivity(new Intent(this, Setting.class));
-                }
-                break;
-            case R.id.nav_exit:
-                if (D.getInstance().thisUser.getId() >= 0) {
-                    mState.logout();
-                    setUserMsg();
+    public void onBackPressed() {
+        // 返回键
+        // 有侧滑打开，则关闭
+        if (drawer.isDrawerOpen()) {
+            drawer.closeDrawer();
+        } else {
+            if (mState.getLocalUser().getId() < 0) {
+                long thisClick = System.currentTimeMillis();
+                if (thisClick - lastExit <= 1000) {
+                    super.onBackPressed();
                 } else {
-                    finish();
+                    lastExit = thisClick;
+                    Snackbar.make(getWindow().getDecorView(), "再按一次返回键退出", Snackbar.LENGTH_SHORT).show();
                 }
-                break;
-            case R.id.nav_login:
-                mStateWindows.showLogin();
-                break;
-            case R.id.nav_chat:
-                mChatWindows.showChatList(new ArrayList<>());
-                break;
-            case R.id.nav_new:
-                mMessageWindows.showNewQuestion();
-                break;
+            } else {
+                buildCloseDialog().show();
+            }
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    }
+    @Override
+    protected void destory() {
+        D.getInstance().miaoActivity = null;
     }
 
-    /*
-    弹窗
-     */
+    // 弹窗
     private void showFirstUseDialog() {
         if (!SpUtil.getBoolean(this, Splish.SP_FIRST_BOOT, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -206,57 +249,108 @@ public class Miao extends BaseActivity
             showFirstUseDialog();
         }
     }
+    private AlertDialog buildCloseDialog() {
+        AlertDialog ad = (new AlertDialog.Builder(this)).create();
+        ad.setMessage("关闭后是否继续接收消息？");
+        ad.setButton(DialogInterface.BUTTON_NEGATIVE, "否", (dialog, which) -> {
+            stopService(new Intent(Miao.this, WebService.class));
+            dialog.dismiss();
+            finish();
+        });
+        ad.setButton(DialogInterface.BUTTON_POSITIVE, "是", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+        });
+        return ad;
+    }
 
+    // 边栏
     @Override
-    public void onBackPressed() {
-        // 返回键
-        // 有侧滑打开，则关闭
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+        LogUtil.i(position + "");
+        switch (position) {
+            case 1:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_square);
+                break;
+            case 2:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_unread);
+                break;
+            case 3:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_topic);
+                break;
+            case 4:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_user);
+                break;
+            case 5:
+                FragmentUtil.hideAllFragment(mManager);
+                FragmentUtil.showFragment(mManager, R.id.container, fg_search);
+                break;
+            default:
+                doAction(position - 7);
+        }
+        drawer.closeDrawer();
+        return true;
+    }
+    public void loadUserMsg() {
+        User u = mState.getLocalUser();
+        setMenu();
+        if (u.getId() < 0) {
+            userHeader.setActiveProfile(guestMsg);
+            return;
+        }
+        userMsg.withName(u.getName()).withEmail(u.getSummary());
+        Drawable headIcon = ImageUtil.getDrawable(u.getHeadImg());
+        if (headIcon == null) userMsg.withIcon(Uri.parse(u.getHeadImg()));
+        else userMsg.withIcon(headIcon);
+        userHeader.updateProfile(userMsg);
+        userHeader.setActiveProfile(userMsg);
+    }
+    private void setMenu() {
+        if (drawer == null) {
+            return;
+        }
+        for (IDrawerItem item : logoutItems) {
+            drawer.removeItem(item.getIdentifier());
+        }
+        for (IDrawerItem item : loginItems) {
+            drawer.removeItem(item.getIdentifier());
+        }
+
+        if (mState.getLocalUser().getId() >= 0) drawer.addItems(loginItems);
+        else drawer.addItems(logoutItems);
+    }
+    private void doAction(int position) {
+        if (mState.getLocalUser().getId() >= 0) {
+            switch (position) {
+                case 0:
+                    mMessageWindows.showNewQuestion();
+                    break;
+                case 1:
+                    mChatWindows.showChatList(new ArrayList<>());
+                    break;
+                case 2:
+                    startActivity(new Intent(this, Setting.class));
+                    break;
+                case 3:
+                    mState.logout();
+                    loadUserMsg();
+                    break;
+            }
         } else {
-            if (mState.getLocalUser().getId() < 0) {
-                long thisClick = System.currentTimeMillis();
-                if (thisClick - lastExit <= 1000) {
-                    super.onBackPressed();
-                } else {
-                    lastExit = thisClick;
-                    Snackbar.make(getWindow().getDecorView(), "再按一次返回键退出", Snackbar.LENGTH_SHORT).show();
-                }
-            } else {
-                closeDialog.show();
+            switch (position) {
+                case 0:
+                    mStateWindows.showLogin();
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    finish();
+                    break;
             }
         }
-    }
-
-    public void setUserMsg() {
-        new AsyncTask<Void, Void, User>() {
-            @Override
-            protected User doInBackground(Void... params) {
-                return mState.getLocalUser();
-            }
-
-            @Override
-            protected void onPostExecute(User u) {
-                View headerView = navigationView.getHeaderView(0);
-                navigationView.getMenu().clear();
-                navigationView.inflateMenu(R.menu.activity_main_drawer);
-                ImageView iv_user = (ImageView) headerView.findViewById(R.id.iv_user);
-                TextView tv_user = (TextView) headerView.findViewById(R.id.tv_user);
-                TextView tv_summary = (TextView) headerView.findViewById(R.id.tv_summary);
-
-                ImageUtil.fillUserImage(iv_user, u == null ? null : u);
-                if (u.getId() == -1) getMenuInflater().inflate(R.menu.inmenu_logout, navigationView.getMenu());
-                else getMenuInflater().inflate(R.menu.inmenu_login, navigationView.getMenu());
-
-                tv_summary.setText(u.getSummary());
-                tv_user.setText(u.getName());
-            }
-        }.execute();
-    }
-
-    @Override
-    protected void destory() {
-        D.getInstance().miaoActivity = null;
     }
 }

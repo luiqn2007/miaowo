@@ -13,9 +13,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.D;
 
 import java.util.ArrayList;
 
@@ -88,7 +88,7 @@ public class FloatView extends LinearLayout {
         mManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
     }
 
-    public void setLayout(@LayoutRes int layout) {
+    private void setLayout(@LayoutRes int layout) {
         v = LayoutInflater.from(getContext()).inflate(layout, this);
     }
 
@@ -117,7 +117,7 @@ public class FloatView extends LinearLayout {
         return true;
     }
 
-    public FloatView defaultCloseButton() {
+    public FloatView defaultBar() {
         View close = findViewById(R.id.iv_close);
         if (close != null) {
             close.setOnClickListener(view -> dismiss());

@@ -121,7 +121,7 @@ public class ListFragment extends Fragment implements Parcelable {
                 // 用户
                 final User u = item.getUser();
                 holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-                ImageUtil.fillUserImage(holder.getImageView(R.id.iv_user), u);
+                ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), u);
                 holder.getTextView(R.id.tv_user).setText(u.getName());
                 holder.getTextView(R.id.tv_user)
                         .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));

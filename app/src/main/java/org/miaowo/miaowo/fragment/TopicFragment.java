@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Question;
+import org.miaowo.miaowo.util.ImageUtil;
+import org.miaowo.miaowo.util.LogUtil;
 
 import java.util.ArrayList;
 
@@ -36,5 +40,8 @@ public class TopicFragment extends Fragment {
     /* ================================================================ */
 
     private void initView(View view) {
+        ImageView test = (ImageView) view.findViewById(R.id.test);
+        test.setImageDrawable(ImageUtil.getText("试"));
+        test.setOnClickListener(v -> LogUtil.i("Click!"));
     }
 }

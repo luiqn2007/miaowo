@@ -10,23 +10,31 @@ import android.util.Log;
 public class LogUtil {
     private static final String TAG = "MiaoLogs";
     
-    public static void e(String tag, String errMsg, Exception e) {
-        Log.e(TAG, tag + " : " + errMsg, e);
+    public static void e(String errMsg, Exception e) {
+        Log.e(TAG, "Error : " + errMsg, e);
     }
     
-    public static void e(String tag, String errMsg) {
-        Log.e(TAG, tag + " : " + errMsg);
+    public static void e(String errMsg) {
+        Log.e(TAG, "Error : " + errMsg);
     }
 
-    public static void i(String tag, Object msg) {
-        Log.i(TAG, tag + " : " + msg);
+    public static void i(Object msg) {
+        Log.i(TAG, msg == null ? "null" : msg.toString());
     }
 
-    public static void i(String tag, Object[] msgs) {
-        StringBuilder sb = new StringBuilder(tag + " :\n");
-        for (Object msg : msgs) {
-            sb.append("\n\t");
-            sb.append(msg);
+    public static void i(Object[] msgs) {
+        if (msgs == null) {
+            Log.i(TAG, "null");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Information :\n");
+        if (msgs.length == 0) {
+            sb.append("Empty!");
+        } else {
+            for (Object msg : msgs) {
+                sb.append("\n\t");
+                sb.append(msg);
+            }
         }
         Log.i(TAG, sb.toString());
     }
