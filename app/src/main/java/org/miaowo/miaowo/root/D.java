@@ -1,6 +1,6 @@
 package org.miaowo.miaowo.root;
 
-import org.miaowo.miaowo.view.activity.Miao;
+import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.bean.data.User;
 
 /**
@@ -11,7 +11,11 @@ import org.miaowo.miaowo.bean.data.User;
 public class D {
     private static D instance = null;
     private D () {
-        guest = new User(-1, "流浪喵", "欢迎来到喵窝", "", "default");
+        guest = new User();
+        guest.username = "流浪喵";
+        guest.uid = 0;
+        guest.picture = "default";
+        guest.email = "";
         thisUser = guest;
     }
     public static D getInstance() {

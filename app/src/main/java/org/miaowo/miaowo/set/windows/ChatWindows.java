@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.set.windows;
 
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.ChatMessage;
@@ -20,12 +18,12 @@ import org.miaowo.miaowo.impl.ChatImpl;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Chat;
 import org.miaowo.miaowo.impl.interfaces.State;
+import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.view.FloatView;
 import org.miaowo.miaowo.view.LoadMoreList;
-import org.miaowo.miaowo.util.ImageUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * 聊天窗口集合
@@ -39,19 +37,18 @@ public class ChatWindows {
     private ItemRecyclerAdapter<ChatMessage> mAdapter;
     private State mState;
     private Chat mChat;
-    private D d;
 
-    public ChatWindows() {
+    private ChatWindows() {
         mState = new StateImpl();
         mChat = new ChatImpl();
-        d = D.getInstance();
     }
+    public static ChatWindows windows() { return new ChatWindows(); }
 
     // 聊天列表
     public FloatView showChatList(ArrayList<User> chatList) {
         mChatList = chatList;
         // 判断是否登录
-        if (mState.getLocalUser().getId() < 0) return null;
+        if (!mState.isLogin()) return null;
         // 显示对话选择列表
         FloatView view = new FloatView(R.layout.window_normal_list);
         View v = view.getView();
@@ -78,36 +75,20 @@ public class ChatWindows {
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     ViewHolder holder = new ViewHolder();
-                    convertView = View.inflate(d.activeActivity, R.layout.list_chat, null);
+                    convertView = View.inflate(D.getInstance().activeActivity, R.layout.list_chat, null);
                     holder.iv_user = (ImageView) convertView.findViewById(R.id.iv_user);
                     holder.tv_user = (TextView) convertView.findViewById(R.id.tv_user);
                     convertView.setTag(holder);
                 }
                 ViewHolder holder = (ViewHolder) convertView.getTag();
                 User u = (User) getItem(position);
-                holder.tv_user.setText(u.getName());
-                ImageUtil.setUserImage(holder.iv_user, u);
+                holder.tv_user.setText(u.username);
+                ImageUtil.utils().setUser(holder.iv_user, u, true);
                 return convertView;
             }
         };
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, view1, position, id) -> showChatDialog((User) adapter.getItem(position)));
-
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                User[] users = mChat.getChatList();
-                mChatList = new ArrayList<>();
-                Collections.addAll(mChatList, users);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                adapter.notifyDataSetChanged();
-            }
-        }.execute();
 
         return view.defaultBar().show();
     }
@@ -119,13 +100,13 @@ public class ChatWindows {
             return null;
         }
         // 已登录
-        final User to = mState.getLocalUser();
-        if (to.getId() < 0) return null;
+        if (!mState.isLogin()) return null;
+        User to = D.getInstance().thisUser;
         // 未显示
         FloatView view = FloatView.searchByTag(from);
         if (view != null) return view;
         // 更新列表
-        mChat.refreshChatList(from);
+        mChat.loadList();
 
         mMsgList = new ArrayList<>();
         view = new FloatView(R.layout.window_chat);
@@ -139,23 +120,23 @@ public class ChatWindows {
         final EditText et_msg = (EditText) v.findViewById(R.id.et_msg);
         et_msg.setText(Long.toString(System.currentTimeMillis()));
 
-        ImageUtil.setUserImage(iv_user, from);
-        tv_user.setText(from.getName());
+        ImageUtil.utils().setUser(iv_user, from, true);
+        tv_user.setText(from.username);
         mAdapter = new ItemRecyclerAdapter<>(
                 mMsgList, new ItemRecyclerAdapter.ViewLoader<ChatMessage>() {
             @Override
             public ItemRecyclerAdapter.ViewHolder createHolder(ViewGroup parent, int viewType) {
                 return new ItemRecyclerAdapter.ViewHolder(
-                        LayoutInflater.from(d.activeActivity).inflate(R.layout.list_chat_message, parent, false));
+                        LayoutInflater.from(D.getInstance().activeActivity).inflate(R.layout.list_chat_message, parent, false));
             }
 
             @Override
             public void bindView(ChatMessage item, ItemRecyclerAdapter.ViewHolder holder) {
                 View v = holder.getView();
                 if (to.equals(item.getFrom())) {
-                    v.setBackgroundDrawable(d.activeActivity.getResources().getDrawable(R.drawable.bg_rect_indigo_100));
+                    v.setBackgroundDrawable(D.getInstance().activeActivity.getResources().getDrawable(R.drawable.bg_rect_indigo_100));
                 } else {
-                    v.setBackgroundDrawable(d.activeActivity.getResources().getDrawable(R.drawable.bg_rect_red_100));
+                    v.setBackgroundDrawable(D.getInstance().activeActivity.getResources().getDrawable(R.drawable.bg_rect_red_100));
                 }
                 holder.getTextView(R.id.tv_msg).setText(item.getMessage());
             }
@@ -165,63 +146,10 @@ public class ChatWindows {
                 return 0;
             }
         });
-        list.setPullRefresher(() -> {
-            final int[] position = new int[]{0};
-            mMsgList = mAdapter.getItems();
-            new AsyncTask<ChatMessage, Void, Exception>() {
-                @Override
-                protected Exception doInBackground(ChatMessage... params) {
-                    try {
-                        ArrayList<ChatMessage> chatMessages = new ArrayList<>();
-                        ChatMessage[] beforeMessage = mChat.getBeforeMessage(params[0]);
-                        position[0] = beforeMessage.length - 1;
-                        Collections.addAll(chatMessages, beforeMessage);
-                        chatMessages.addAll(mMsgList);
-                        mMsgList = chatMessages;
-                    } catch (Exception e) {
-                        return e;
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Exception e) {
-                    if (e == null) {
-                        mAdapter.updateDate(mMsgList);
-                        list.scrollToPosition(position[0]);
-                    }
-                    else D.getInstance().activeActivity.handleError(e);
-                }
-            }.execute(mMsgList.size() == 0
-                    ? new ChatMessage(-1, System.currentTimeMillis(), from, D.getInstance().thisUser, "")
-                    : mMsgList.get(0));
-            list.loadOver();
-        });
+        list.setPullRefresher(() -> mChat.loadBefore());
         list.setAdapter(mAdapter);
-        btn_send.setOnClickListener(v1 -> new AsyncTask<ChatMessage, Void, ChatMessage>() {
-
-            @Override
-            protected ChatMessage doInBackground(ChatMessage... params) {
-                try {
-                    mChat.sendMessage(params[0]);
-                } catch (Exception e) {
-                    d.activeActivity.handleError(e);
-                    return null;
-                }
-                return params[0];
-            }
-
-            @Override
-            protected void onPostExecute(ChatMessage c) {
-                if (c != null) {
-                    et_msg.setText(Long.toString(System.currentTimeMillis()));
-                    mMsgList.add(c);
-                    mAdapter.notifyDataSetChanged();
-                    list.scrollToPosition(mMsgList.size() - 1);
-                }
-            }
-        }.execute(new ChatMessage(-1, System.currentTimeMillis(), from, to, et_msg.getText().toString())));
-
+        btn_send.setOnClickListener(v1 ->
+                mChat.sendMessage(new ChatMessage(-1, System.currentTimeMillis(), from, to, et_msg.getText().toString())));
         return view.defaultBar().show();
     }
 

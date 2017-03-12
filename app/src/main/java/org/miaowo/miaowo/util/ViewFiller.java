@@ -19,7 +19,7 @@ public class ViewFiller {
 
     public static View fillAnswer(View view, Answer answer) {
         if (mMessageWindows == null) {
-            mMessageWindows = new MessageWindows();
+            mMessageWindows = MessageWindows.windows();
         }
         if (view == null) {
             view = View.inflate(D.getInstance().activeActivity, R.layout.list_answers, null);
@@ -30,16 +30,9 @@ public class ViewFiller {
             view.setTag(holder);
         }
         AnswerHolder holder = (AnswerHolder) view.getTag();
-        holder.tv_answer.setText(answer.getMessage());
-        holder.tv_answer.setOnClickListener(v -> {
-            try {
-                mMessageWindows.showNewReply(answer);
-            } catch (Exception e) {
-                D.getInstance().activeActivity.handleError(e);
-            }
-        });
-        holder.tv_user.setText(answer.getUser().getName());
-        ImageUtil.setUserImage(holder.iv_user, answer.getUser());
+        holder.tv_answer.setText(answer.content);
+        holder.tv_user.setText(answer.user.username);
+        ImageUtil.utils().setUser(holder.iv_user, answer.user, true);
         return view;
     }
     private static class AnswerHolder {

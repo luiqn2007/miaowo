@@ -1,17 +1,15 @@
-package org.miaowo.miaowo.view.activity;
+package org.miaowo.miaowo.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,8 +30,8 @@ import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.bean.config.VersionMessage;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.bean.data.VersionMessage;
 import org.miaowo.miaowo.fragment.MiaoFragment;
 import org.miaowo.miaowo.fragment.SearchFragment;
 import org.miaowo.miaowo.fragment.SquareFragment;
@@ -43,8 +41,8 @@ import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.BaseApp;
 import org.miaowo.miaowo.root.D;
-import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
@@ -78,10 +76,9 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
     private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
     private MessageWindows mMessageWindows;
-    private FragmentManager mManager;
+    private FragmentUtil mManager;
 
     // 数据
-    private long lastExit = 0;
     private AccountHeader userHeader = null;
     private ProfileDrawerItem guestMsg = null;
     private ProfileDrawerItem userMsg = null;
@@ -102,17 +99,19 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         // 这里是在 Activity 完全加载后调用
         super.onPostCreate(savedInstanceState);
-        // 显示对话框
-        showAppDialog();
         // 绑定Fragment
         initFragment();
+        // 显示对话框
+        showAppDialog();
     }
     private void prepareValues() {
         D.getInstance().miaoActivity = this;
+        D.getInstance().activeActivity = this;
         mState = new StateImpl();
-        mChatWindows = new ChatWindows();
-        mStateWindows = new StateWindows();
-        mMessageWindows = new MessageWindows();
+        mChatWindows = ChatWindows.windows();
+        mStateWindows = StateWindows.windows();
+        mMessageWindows = MessageWindows.windows();
+        mManager = FragmentUtil.manager(getSupportFragmentManager());
 
         cdl = new CrossfadeDrawerLayout(this);
 
@@ -134,7 +133,7 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
                 new SectionDrawerItem().withDivider(true).withName("其他")};
         User guest = D.getInstance().guest;
         userMsg = new ProfileDrawerItem();
-        guestMsg = new ProfileDrawerItem().withName(guest.getName()).withEmail(guest.getSummary()).withIcon(ImageUtil.getDrawable(guest.getHeadImg()));
+        guestMsg = new ProfileDrawerItem().withName(guest.username).withEmail(guest.email).withIcon(ImageUtil.utils().textIcon("default", null));
         userHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withCompactStyle(true)
@@ -183,15 +182,13 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         });
     }
     private void initFragment() {
-        mManager = getSupportFragmentManager();
-
         fg_square = SquareFragment.newInstance();
         fg_search = SearchFragment.newInstance();
         fg_topic = TopicFragment.newInstance();
         fg_unread = UnreadFragment.newInstance();
         fg_user = UserFragment.newInstance();
 
-        onItemClick(null, 1, null);
+        mManager.showOnly(R.id.container, MiaoFragment.newInstance());
     }
 
     // 退出
@@ -202,17 +199,7 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         if (drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
-            if (mState.getLocalUser().getId() < 0) {
-                long thisClick = System.currentTimeMillis();
-                if (thisClick - lastExit <= 1000) {
-                    super.onBackPressed();
-                } else {
-                    lastExit = thisClick;
-                    Snackbar.make(getWindow().getDecorView(), "再按一次返回键退出", Snackbar.LENGTH_SHORT).show();
-                }
-            } else {
-                buildCloseDialog().show();
-            }
+            buildCloseDialog().show();
         }
     }
     @Override
@@ -228,13 +215,14 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
             builder.setMessage("\"聪明\"解决人类37%的问题；\n\"萌\"负责剩下的85%");
             builder.setPositiveButton("我最萌(•‾̑⌣‾̑•)✧˖°", (dialogInterface, i) -> {
                 SpUtil.putBoolean(Miao.this, Splish.SP_FIRST_BOOT, false);
+                mStateWindows.showLogin();
                 dialogInterface.dismiss();
             });
             builder.show();
         }
     }
     private void showAppDialog() {
-        VersionMessage versionMessage = getIntent().getParcelableExtra(MyApp.EXTRA_ITEM);
+        VersionMessage versionMessage = getIntent().getParcelableExtra(BaseApp.EXTRA_ITEM);
         if (SpUtil.getBoolean(Miao.this, Splish.SP_FIRST_UPDATE, true)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Miao.this);
             builder.setTitle(versionMessage.getVersionName());
@@ -270,24 +258,19 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         LogUtil.i(position + "");
         switch (position) {
             case 1:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_square);
+                mManager.showOnly(R.id.container, fg_square);
                 break;
             case 2:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_unread);
+                mManager.showOnly(R.id.container, fg_unread);
                 break;
             case 3:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_topic);
+                mManager.showOnly(R.id.container, fg_topic);
                 break;
             case 4:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_user);
+                mManager.showOnly(R.id.container, fg_user);
                 break;
             case 5:
-                FragmentUtil.hideAllFragment(mManager);
-                FragmentUtil.showFragment(mManager, R.id.container, fg_search);
+                mManager.showOnly(R.id.container, fg_search);
                 break;
             default:
                 doAction(position - 7);
@@ -296,16 +279,15 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         return true;
     }
     public void loadUserMsg() {
-        User u = mState.getLocalUser();
+        User u = D.getInstance().thisUser;
         setMenu();
-        if (u.getId() < 0) {
+        if (u.uid <= 0) {
             userHeader.setActiveProfile(guestMsg);
             return;
         }
-        userMsg.withName(u.getName()).withEmail(u.getSummary());
-        Drawable headIcon = ImageUtil.getDrawable(u.getHeadImg());
-        if (headIcon == null) userMsg.withIcon(Uri.parse(u.getHeadImg()));
-        else userMsg.withIcon(headIcon);
+        userMsg.withName(u.username).withEmail(u.email);
+        if (!TextUtils.isEmpty(u.picture)) userMsg.withIcon(Uri.parse(u.picture));
+        else userMsg.withIcon(ImageUtil.utils().textIcon(u));
         userHeader.updateProfile(userMsg);
         userHeader.setActiveProfile(userMsg);
     }
@@ -320,11 +302,11 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
             drawer.removeItem(item.getIdentifier());
         }
 
-        if (mState.getLocalUser().getId() >= 0) drawer.addItems(loginItems);
+        if (mState.isLogin()) drawer.addItems(loginItems);
         else drawer.addItems(logoutItems);
     }
     private void doAction(int position) {
-        if (mState.getLocalUser().getId() >= 0) {
+        if (mState.isLogin()) {
             switch (position) {
                 case 0:
                     mMessageWindows.showNewQuestion();

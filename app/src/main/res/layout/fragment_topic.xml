@@ -4,10 +4,23 @@
     android:layout_height="match_parent"
     tools:context="org.miaowo.miaowo.fragment.TopicFragment">
 
-    <ImageView
-        android:id="@+id/test"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="@color/colorAccent"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/test"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/colorAccent"/>
 
+        <ScrollView
+            android:layout_below="@id/test"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/msg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </ScrollView>
+    </RelativeLayout>
 </FrameLayout>

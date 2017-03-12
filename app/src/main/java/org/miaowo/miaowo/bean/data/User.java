@@ -1,188 +1,61 @@
 package org.miaowo.miaowo.bean.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.Arrays;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * 表示用户的bean类
  * Created by lq2007 on 16-11-21.
  */
 
-public class User implements Parcelable {
-    // id
-    private int id;
-    // 用户名
-    private String name;
-    // 个性签名
-    private String summary;
-    // 威望
-    private int authority;
-    // 帖子
-    private int question;
-    // 浏览
-    private int scan;
-    // 粉丝
-    private int[] focusMe;
-    // 关注
-    private int[] focus;
-    // 密码
-    private String pwd;
-    // 喵龄
-    private long age;
-    // 头像地址
-    private String headImg;
+public class User {
+    public long joindate;
+    public long lastonline;
+    public long lastposttime;
+    public String username;
+    public String userslug;
+    public String email;
+    public String picture;
+    public String status;
+    public String signature;
+    @SerializedName("icon:text")
+    public String iconText;
+    @SerializedName("icon:bgColor")
+    public String iconBgColor;
+    public int reputation;
+    public int uid;
+    public int postcount;
+    public int banned;
+    public int profileviews;
+    public int followerCount;
+    public int followingCount;
+    @SerializedName("email:confirmed")
+    public boolean emailConfirmed;
+    public boolean isAdmin;
+    public boolean isGlobalMod;
+    public boolean isMod;
+    public boolean isEmailConfirmSent;
 
-    // 用于注册及修改
-    public User(int id, String name, String summary, String pwd, String img) {
-        this.id = id;
-        this.name = name;
-        this.summary = summary;
-        this.pwd = pwd;
-        this.headImg = img;
-    }
+    public String password;
 
-    // 用于登录
-    public User(String name, String pwd) {
-        this.name = name;
-        this.pwd = pwd;
-    }
-
-    public User(int id, String name, String pwd, String summary, int authority, int question, int scan, int[] focusMe, int[] focus, long age, String headImg) {
-        this.id = id;
-        this.name = name;
-        this.pwd = pwd;
-        this.summary = summary;
-        this.authority = authority;
-        this.question = question;
-        this.scan = scan;
-        this.focusMe = focusMe;
-        this.focus = focus;
-        this.age = age;
-        this.headImg = headImg;
-    }
-
-    protected User(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        summary = in.readString();
-        authority = in.readInt();
-        question = in.readInt();
-        scan = in.readInt();
-        focusMe = in.createIntArray();
-        focus = in.createIntArray();
-        pwd = in.readString();
-        age = in.readLong();
-        headImg = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(summary);
-        dest.writeInt(authority);
-        dest.writeInt(question);
-        dest.writeInt(scan);
-        dest.writeIntArray(focusMe);
-        dest.writeIntArray(focus);
-        dest.writeString(pwd);
-        dest.writeLong(age);
-        dest.writeString(headImg);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public int getAuthority() {
-        return authority;
-    }
-
-    public int getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(int question) {
-        this.question = question;
-    }
-
-    public int getScan() {
-        return scan;
-    }
-
-    public int[] getFocusMe() {
-        return focusMe;
-    }
-
-    public void setFocusMe(int[] focusMe) {
-        this.focusMe = focusMe;
-    }
-
-    public int[] getFocus() {
-        return focus;
-    }
-
-    public void setFocus(int[] focus) {
-        this.focus = focus;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-    public long getAge() {
-        return age;
-    }
-
-    public String getHeadImg() {
-        return headImg;
-    }
-
-    public void setHeadImg(String headImg) {
-        this.headImg = headImg;
+    public User() {}
+    public User(User u) {
+        this.username = u.username;
+        this.userslug = u.userslug;
+        this.email = u.email;
+        this.picture = u.picture;
+        this.status = u.status;
+        this.signature = u.signature;
+        this.iconText = u.iconText;
+        this.iconBgColor = u.iconBgColor;
+        this.reputation = u.reputation;
+        this.uid = u.uid =
+        this.postcount = u.postcount;
+        this.banned = u.banned;
+        this.emailConfirmed = u.emailConfirmed;
+        this.isAdmin = u.isAdmin;
+        this.isGlobalMod = u.isGlobalMod;
+        this.isMod = u.isMod;
+        this.isEmailConfirmSent = u.isEmailConfirmSent;
     }
 
     @Override
@@ -192,29 +65,35 @@ public class User implements Parcelable {
 
         User user = (User) o;
 
-        return id == user.id;
+        if (uid != user.uid) return false;
+        return username != null ? username.equals(user.username) : user.username == null;
 
     }
 
     @Override
     public int hashCode() {
-        return id;
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + uid;
+        return result;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", summary='" + summary + '\'' +
-                ", authority=" + authority +
-                ", question=" + question +
-                ", scan=" + scan +
-                ", focusMe=" + Arrays.toString(focusMe) +
-                ", focus=" + Arrays.toString(focus) +
-                ", pwd='" + pwd + '\'' +
-                ", age=" + age +
-                ", headImg='" + headImg + '\'' +
+                "username='" + username + '\'' +
+                ", userslug='" + userslug + '\'' +
+                ", email='" + email + '\'' +
+                ", picture='" + picture + '\'' +
+                ", status='" + status + '\'' +
+                ", iconText='" + iconText + '\'' +
+                ", iconBgColor='" + iconBgColor + '\'' +
+                ", reputation=" + reputation +
+                ", uid=" + uid +
+                ", emailConfirmed=" + emailConfirmed +
+                ", isAdmin=" + isAdmin +
+                ", isGlobalMod=" + isGlobalMod +
+                ", isMod=" + isMod +
+                ", isEmailConfirmSent=" + isEmailConfirmSent +
                 '}';
     }
 }

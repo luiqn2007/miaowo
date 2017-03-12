@@ -1,8 +1,6 @@
 package org.miaowo.miaowo.view;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.widget.Toast;
+
+import com.sdsmdg.tastytoast.TastyToast;
 
 /**
  * 原来用的 PullLoadMoreRecycleView 不能直接滑动到列表指定位置，弃之
@@ -21,7 +22,7 @@ public class LoadMoreList extends SwipeRefreshLayout {
     private OnRefreshListener mPushRefresher;
 
     private float startY;
-    private Snackbar snackbar;
+    private Toast loading;
 
     public LoadMoreList(Context context) {
         super(context);
@@ -34,7 +35,7 @@ public class LoadMoreList extends SwipeRefreshLayout {
     private void init(Context context) {
         mRecyclerView = new RecyclerView(context);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        snackbar = Snackbar.make(((Activity) context).getWindow().getDecorView(), "加载中...", Snackbar.LENGTH_INDEFINITE);
+        loading = TastyToast.makeText(context, "加载中......", TastyToast.LENGTH_SHORT, TastyToast.INFO);
         addView(mRecyclerView);
     }
 
@@ -73,14 +74,12 @@ public class LoadMoreList extends SwipeRefreshLayout {
         return super.dispatchTouchEvent(ev);
     }
     private void loadData() {
-        snackbar.show();
+        loading.show();
         mPushRefresher.onRefresh();
     }
 
     private boolean needLoad(float lastY) {
-        return
-                startY - lastY >= 300
-                &&isEnd();
+        return startY - lastY >= 300 &&isEnd();
     }
     private boolean isEnd() {
         // 获取总大小;
@@ -105,13 +104,13 @@ public class LoadMoreList extends SwipeRefreshLayout {
 
     @Override
     public void setRefreshing(boolean refreshing) {
-        if (refreshing) snackbar.show();
-        else snackbar.dismiss();
+        if (refreshing) loading.show();
+        else loading.cancel();
         super.setRefreshing(refreshing);
     }
     @Override
     public boolean isRefreshing() {
-        return super.isRefreshing() || snackbar.isShown();
+        return super.isRefreshing();
     }
 
     public RecyclerView.Adapter getAdapter() {

@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.fragment;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,24 +14,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.QuestionsImpl;
+import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.Questions;
+import org.miaowo.miaowo.impl.interfaces.Messages;
 import org.miaowo.miaowo.impl.interfaces.Users;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
-import org.miaowo.miaowo.util.SpUtil;
-import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class SearchDisplyFragment extends Fragment {
     final private static String TAG_TYPE = "layout";
@@ -47,7 +42,7 @@ public class SearchDisplyFragment extends Fragment {
     private int type;
 
     private Users mUsers;
-    private Questions mQuestions;
+    private Messages mMessages;
     private MessageWindows mMessageWindows;
 
     public SearchDisplyFragment() {
@@ -71,9 +66,9 @@ public class SearchDisplyFragment extends Fragment {
             result = (ArrayList) getArguments().getSerializable(TAG_RESULT);
         }
 
-        mQuestions = new QuestionsImpl();
+        mMessages = new MsgImpl();
         mUsers = new UsersImpl();
-        mMessageWindows = new MessageWindows();
+        mMessageWindows = MessageWindows.windows();
     }
 
     @Override
@@ -145,22 +140,13 @@ public class SearchDisplyFragment extends Fragment {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        User u = item.getUser();
+        User u = item.user;
         holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-        ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), u);
-        holder.getTextView(R.id.tv_user).setText(u.getName());
-        holder.getTextView(R.id.tv_user)
-                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
-        // 时间
-        holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
-        holder.getTextView(R.id.tv_time)
-                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
-        // 标题
-        holder.getTextView(R.id.tv_title).setText(item.getTitle());
-        holder.getTextView(R.id.tv_title)
-                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
-        // 计数
-        holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
+        ImageUtil.utils().setUser(holder.getImageView(R.id.iv_user), u, true);
+        holder.getTextView(R.id.tv_user).setText(u.username);
+        holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.timestamp));
+        holder.getTextView(R.id.tv_title).setText(item.titleRaw);
+        holder.getTextView(R.id.tv_count).setText(item.postcount+ " 帖子, " + item.viewcount + " 浏览");
 
         return view;
     }
@@ -172,12 +158,9 @@ public class SearchDisplyFragment extends Fragment {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        holder.getTextView(R.id.tv_title).setText(item.getTitle());
-        holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
-        holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
-        holder.getTextView(R.id.tv_time)
-                .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
-
+        holder.getTextView(R.id.tv_title).setText(item.titleRaw);
+        holder.getTextView(R.id.tv_count).setText(item.postcount + " 帖子, " + item.viewcount + " 浏览");
+        holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.timestamp));
         view.setOnClickListener(v -> mMessageWindows.showTopic(item));
         return view;
     }
@@ -189,8 +172,8 @@ public class SearchDisplyFragment extends Fragment {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        holder.getTextView(R.id.tv_user).setText(item.getName());
-        ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), item);
+        holder.getTextView(R.id.tv_user).setText(item.username);
+        ImageUtil.utils().setUser(holder.getImageView(R.id.iv_user), item, true);
         return view;
     }
 
@@ -238,13 +221,13 @@ public class SearchDisplyFragment extends Fragment {
                 try {
                     switch (type) {
                         case TYPE_QUESTION:
-                            Collections.addAll(result, mQuestions.searchQuestion(params[0]));
+                            mMessages.searchQuestion(params[0]);
                             break;
                         case TYPE_TOPIC:
-                            Collections.addAll(result, mQuestions.searchTopic(params[0]));
+                            mMessages.searchTopic(params[0]);
                             break;
                         case TYPE_USER:
-                            Collections.addAll(result, mUsers.searchUsers(params[0]));
+                            mUsers.searchUsers(params[0]);
                             break;
                         default:
                             throw Exceptions.E_NO_TYPE;

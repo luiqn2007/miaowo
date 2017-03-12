@@ -8,14 +8,14 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".root.MyApp"
+        android:name=".root.BaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/cat_ghost"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.activity.Splish"
+            android:name=".activity.Splish"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.Miao"/>
+        <activity android:name=".activity.Miao"/>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -34,8 +34,7 @@
             android:enabled="true"
             android:exported="true"/>
 
-        <activity android:name=".view.activity.Setting">
-        </activity>
+        <activity android:name=".activity.Setting"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

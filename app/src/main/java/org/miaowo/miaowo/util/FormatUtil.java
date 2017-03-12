@@ -6,7 +6,10 @@ package org.miaowo.miaowo.util;
  */
 
 public class FormatUtil {
-    public static String timeToString(long time) {
+    private FormatUtil() {}
+    public static FormatUtil format() { return new FormatUtil(); }
+
+    public String time(long time) {
         time = System.currentTimeMillis() - time;
         long second = time / 1000;
         if (second >= 60 * 60 * 24 * 365) {

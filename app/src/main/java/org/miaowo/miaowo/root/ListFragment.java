@@ -1,14 +1,8 @@
 package org.miaowo.miaowo.root;
 
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,61 +11,31 @@ import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.QuestionsImpl;
-import org.miaowo.miaowo.impl.interfaces.Questions;
+import org.miaowo.miaowo.impl.MsgImpl;
+import org.miaowo.miaowo.impl.interfaces.Messages;
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.view.LoadMoreList;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.SpUtil;
-import org.miaowo.miaowo.util.ThemeUtil;
+import org.miaowo.miaowo.view.LoadMoreList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ListFragment extends Fragment implements Parcelable {
+public class ListFragment extends Fragment {
 
     public static String TAG_NAME = "name";
 
     private LoadMoreList mList;
     private ItemRecyclerAdapter<Question> mAdapter;
     private ArrayList<Question> mItems;
-    private Questions mQuestions;
-    private Exception e = null;
+    private Messages mMessages;
     private MessageWindows mMessageWindows;
 
     private String name;
+    private int sort = ListWindows.SORT_NONE;
 
     public ListFragment() {}
-
-    protected ListFragment(Parcel in) {
-        mItems = in.createTypedArrayList(Question.CREATOR);
-        name = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(mItems);
-        dest.writeString(name);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<ListFragment> CREATOR = new Creator<ListFragment>() {
-        @Override
-        public ListFragment createFromParcel(Parcel in) {
-            return new ListFragment(in);
-        }
-
-        @Override
-        public ListFragment[] newArray(int size) {
-            return new ListFragment[size];
-        }
-    };
 
     public static ListFragment newInstance(String name) {
         Bundle args = new Bundle();
@@ -95,9 +59,9 @@ public class ListFragment extends Fragment implements Parcelable {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_list, container, false);
         mList = (LoadMoreList) v.findViewById(R.id.list_item);
-        mQuestions = new QuestionsImpl();
+        mMessages = new MsgImpl();
         mItems = new ArrayList<>();
-        mMessageWindows = new MessageWindows();
+        mMessageWindows = MessageWindows.windows();
         initList();
 
         return v;
@@ -119,22 +83,13 @@ public class ListFragment extends Fragment implements Parcelable {
             public void bindView(final Question item, ItemRecyclerAdapter.ViewHolder holder) {
 
                 // 用户
-                final User u = item.getUser();
+                final User u = item.user;
                 holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-                ImageUtil.setUserImage(holder.getImageView(R.id.iv_user), u);
-                holder.getTextView(R.id.tv_user).setText(u.getName());
-                holder.getTextView(R.id.tv_user)
-                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_USERNAME_COLOR, Color.rgb(255, 255, 255)));
-                // 时间
-                holder.getTextView(R.id.tv_time).setText(FormatUtil.timeToString(item.getTime()));
-                holder.getTextView(R.id.tv_time)
-                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TIME_COLOR, Color.rgb(255, 255, 255)));
-                // 标题
-                holder.getTextView(R.id.tv_title).setText(item.getTitle());
-                holder.getTextView(R.id.tv_title)
-                        .setTextColor(SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_TITLE_COLOR, Color.rgb(255, 255, 255)));
-                // 计数
-                holder.getTextView(R.id.tv_count).setText(item.getReply() + " 帖子, " + item.getView() + " 浏览");
+                ImageUtil.utils().setUser(holder.getImageView(R.id.iv_user), u, true);
+                holder.getTextView(R.id.tv_user).setText(u.username);
+                holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.timestamp));
+                holder.getTextView(R.id.tv_title).setText(item.titleRaw);
+                holder.getTextView(R.id.tv_count).setText(item.postcount + " 帖子, " + item.viewcount + " 浏览");
             }
 
             @Override
@@ -145,46 +100,12 @@ public class ListFragment extends Fragment implements Parcelable {
         });
         mList.setAdapter(mAdapter);
         mList.setPullRefresher(this::refresh);
-        mList.setPushRefresher(new SwipeRefreshLayout.OnRefreshListener() {
-            int lastCount = 0;
-
-            @Override
-            public void onRefresh() {
-                new AsyncTask<Void, Void, Void>(){
-
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        lastCount = mItems.size();
-                        mItems.addAll(checkUpdate(Questions.SEARCH_POSITION_DOWN));
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        if (e == null) {
-                            mAdapter.updateDate(mItems);
-                            Snackbar.make(getActivity().getWindow().getDecorView(),
-                                    "更新了 " + (mItems.size() - lastCount) + " 条消息", Snackbar.LENGTH_SHORT).show();
-                        }
-                        mList.loadOver();
-                    }
-                }.execute();
-            }
-        });
+        mList.setPushRefresher(() -> checkUpdate(Messages.SEARCH_POSITION_DOWN));
     }
 
     // 检查更新
-    private ArrayList<Question> checkUpdate(int position) {
-        ArrayList<Question> list = new ArrayList<>();
-        try {
-            e = null;
-            Question[] questions = mQuestions.checkQuestions(name, position, SpUtil.getInt(getContext(), ThemeUtil.UI_LIST_QUESTION_COUNT, 20),
-                    mItems.size() == 0 ? 0 : mItems.get(mItems.size() - 1).getTime());
-            Collections.addAll(list, questions);
-        } catch (final Exception e) {
-            getActivity().runOnUiThread(() -> D.getInstance().activeActivity.handleError(e));
-        }
-        return list;
+    private void checkUpdate(int position) {
+        mMessages.loadQuestions(name, position);
     }
 
     @Override
@@ -206,35 +127,28 @@ public class ListFragment extends Fragment implements Parcelable {
     }
 
     public void refresh() {
-        new AsyncTask<Void, Void, Void>(){
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                mItems = checkUpdate(Questions.SEARCH_POSITION_UP);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (e == null) {
-                    mAdapter.updateDate(mItems);
-                }
-                mList.loadOver();
-                mList.scrollToPosition(0);
-            }
-        }.execute();
+        checkUpdate(Messages.SEARCH_POSITION_UP);
+        mAdapter.updateDate(mItems);
+        mList.loadOver();
     }
 
     public void sort(int type) {
         switch (type) {
+            case ListWindows.SORT_NONE:
+                break;
             case ListWindows.SORT_HOT:
-                Collections.sort(mItems, (o1, o2) -> o2.getReply() - o1.getReply());
+                Collections.sort(mItems, (o1, o2) -> o2.postcount - o1.postcount);
                 break;
             case ListWindows.SORT_NEW:
-                Collections.sort(mItems, (o1, o2) -> o1.getTime() - o2.getTime() > 0 ? 1 : -1);
+                Collections.sort(mItems, (o1, o2) -> o1.timestamp - o2.timestamp > 0 ? 1 : -1);
                 break;
         }
-
+        this.sort = type;
         mAdapter.updateDate(mItems);
+    }
+
+    public void update(ArrayList<Question> items) {
+        mItems = items;
+        sort(sort);
     }
 }

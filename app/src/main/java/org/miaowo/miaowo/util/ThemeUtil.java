@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.util;
 
 import android.content.Context;
-import android.graphics.Color;
 
 /**
  * 界面设置的辅助类
@@ -11,19 +10,11 @@ import android.graphics.Color;
  */
 
 public class ThemeUtil {
-    final public static String UI_SLIDE_USERNAME_COLOR = "ui_slide_username_color";
-    final public static String UI_SLIDE_USER_SUMMARY_COLOR = "ui_slide_summary_color";
-    final public static String UI_BOTTOM_SELECTED_COLOR = "ui_bottom_selected_color";
-    final public static String UI_BOTTOM_DEFAULT_COLOR = "ui_bottom_default_color";
-    final public static String UI_LIST_USERNAME_COLOR = "ui_list_username_color";
-    final public static String UI_LIST_TIME_COLOR = "ui_list_time_color";
-    final public static String UI_LIST_TITLE_COLOR = "ui_list_title_color";
-    final public static String UI_LIST_QUESTION_COUNT = "ui_list_question_count";
     /**
      * 加载默认主题配置
      * @param context 上下文，用于获取参数
      */
-    public static void loadDefaultTheme(Context context) {
+    public static void loadDefaultThemea(Context context) {
         /*
         自定义内容
         格式：
@@ -42,17 +33,17 @@ public class ThemeUtil {
                 value 范围：true 或 false
                 SpUtil.putBoolean(this, <C.UI_*>, <value>);
          */
-        // 侧边栏
-        SpUtil.putInt(context, UI_SLIDE_USERNAME_COLOR, Color.rgb(0, 0, 0));
-        SpUtil.putInt(context, UI_SLIDE_USER_SUMMARY_COLOR, Color.rgb(0, 0, 0));
-        // 广场 底部
-        SpUtil.putInt(context, UI_BOTTOM_DEFAULT_COLOR, Color.rgb(255, 255, 255));
-        SpUtil.putInt(context, UI_BOTTOM_SELECTED_COLOR, Color.rgb(238, 238, 238));
-        // 问题列表
-        SpUtil.putInt(context, UI_LIST_USERNAME_COLOR, Color.rgb(0, 0, 0));
-        SpUtil.putInt(context, UI_LIST_TIME_COLOR, Color.rgb(117, 117, 117));
-        SpUtil.putInt(context, UI_LIST_TITLE_COLOR, Color.rgb(121, 85, 72));
-        SpUtil.putInt(context, UI_LIST_QUESTION_COUNT, 20);
+//        // 侧边栏
+//        SpUtil.putInt(context, UI_SLIDE_USERNAME_COLOR, Color.rgb(0, 0, 0));
+//        SpUtil.putInt(context, UI_SLIDE_USER_SUMMARY_COLOR, Color.rgb(0, 0, 0));
+//        // 广场 底部
+//        SpUtil.putInt(context, UI_BOTTOM_DEFAULT_COLOR, Color.rgb(255, 255, 255));
+//        SpUtil.putInt(context, UI_BOTTOM_SELECTED_COLOR, Color.rgb(238, 238, 238));
+//        // 问题列表
+//        SpUtil.putInt(context, UI_LIST_USERNAME_COLOR, Color.rgb(0, 0, 0));
+//        SpUtil.putInt(context, UI_LIST_TIME_COLOR, Color.rgb(117, 117, 117));
+//        SpUtil.putInt(context, UI_LIST_TITLE_COLOR, Color.rgb(121, 85, 72));
+//        SpUtil.putInt(context, UI_LIST_QUESTION_COUNT, 20);
     }
 
 //    // 导入用户配置

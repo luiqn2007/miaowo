@@ -1,9 +1,8 @@
-package org.miaowo.miaowo.view.activity;
+package org.miaowo.miaowo.activity;
 
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,11 +20,10 @@ import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.BaseApp;
 import org.miaowo.miaowo.root.D;
-import org.miaowo.miaowo.root.MyApp;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.PwdUtil;
 import org.miaowo.miaowo.view.FloatView;
 
 import java.io.File;
@@ -40,18 +38,18 @@ public class Setting extends BaseActivity {
 
     EditText et_name, et_pwd, et_summary;
     ImageView iv_head;
-    Button btn_ok, btn_cancel, btn_reset, btn_clear;
+    Button btn_ok, btn_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-
-        initView();
+        init();
     }
 
-    private void initView() {
+    private void init() {
         mUsers = new UsersImpl();
+        newUser = new User(D.getInstance().thisUser);
 
         iv_head = (ImageView) findViewById(R.id.iv_user);
         et_name = (EditText) findViewById(R.id.et_user);
@@ -59,83 +57,30 @@ public class Setting extends BaseActivity {
         et_summary = (EditText) findViewById(R.id.et_summary);
         btn_ok = (Button) findViewById(R.id.btn_send);
         btn_cancel = (Button) findViewById(R.id.btn_cancel);
-        btn_reset = (Button) findViewById(R.id.btn_reset);
-        btn_clear = (Button) findViewById(R.id.btn_clear);
 
-        fillDefault();
+        fill();
 
         iv_head.setOnClickListener(v -> chooseType());
         btn_cancel.setOnClickListener(v -> finish());
-        btn_clear.setOnClickListener(v -> fillEmpty());
         btn_ok.setOnClickListener(v -> send());
-        btn_reset.setOnClickListener(v -> fillDefault());
-    }
-
-    private void fillEmpty() {
-        clearUser();
-        fill();
-    }
-
-    private void fillDefault() {
-        reloadUser();
-        fill();
-    }
-
-    private void reloadUser() {
-        User localUser = D.getInstance().thisUser;
-        if (newUser == null) {
-            newUser = new User(localUser.getId(), localUser.getName(), localUser.getSummary(), localUser.getPwd(), localUser.getHeadImg());
-        } else {
-            newUser.setHeadImg(localUser.getHeadImg());
-            newUser.setName(localUser.getName());
-            newUser.setPwd(localUser.getPwd());
-            newUser.setSummary(localUser.getSummary());
-        }
-    }
-
-    private void clearUser() {
-        if (newUser == null) {
-            newUser = new User(-1, "", "", "", "");
-        } else {
-            newUser.setHeadImg("");
-            newUser.setName("");
-            newUser.setPwd("");
-            newUser.setSummary("");
-        }
     }
 
     private void fill() {
-        et_name.setText(newUser.getName());
+        et_name.setText(newUser.username);
         et_pwd.setText("");
-        et_summary.setText(newUser.getSummary());
-        ImageUtil.fillUserImage(iv_head, newUser);
+        et_summary.setText(newUser.signature);
+        ImageUtil.utils().setUser(iv_head, newUser, false);
     }
 
     private void send() {
-        newUser.setSummary(et_summary.getText().toString());
-        newUser.setPwd(PwdUtil.toPwd(et_pwd.getText().toString(), et_name.getText().toString()));
-        newUser.setName(et_name.getText().toString());
-        new AsyncTask<User, Void, Exception>() {
-
-            @Override
-            protected Exception doInBackground(User... params) {
-                try {
-                    mUsers.updateUser(params[0]);
-                } catch (Exception e) {
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception e) {
-                if (e != null) {
-                    handleError(e);
-                    return;
-                }
-                finish();
-            }
-        }.execute(newUser);
+        newUser.signature = et_summary.getText().toString();
+        newUser.password = et_pwd.getText().toString();
+        newUser.username = et_name.getText().toString();
+        try {
+            mUsers.updateUser(newUser);
+        } catch (Exception e) {
+            handleError(e);
+        }
     }
 
     private void setHeadImg() {
@@ -143,8 +88,8 @@ public class Setting extends BaseActivity {
         if (!dir.isDirectory()) {
             dir.mkdirs();
         }
-        File img = new File(dir, "head_" + D.getInstance().thisUser.getId());
-        dst = FileProvider.getUriForFile(this, MyApp.FILE_PROVIDER_URI, img);
+        File img = new File(dir, "head_" + D.getInstance().thisUser.uid);
+        dst = FileProvider.getUriForFile(this, BaseApp.FILE_PROVIDER_URI, img);
         UCrop.of(src, dst).withAspectRatio(1, 1).start(this);
     }
 
@@ -154,13 +99,13 @@ public class Setting extends BaseActivity {
 
         v.findViewById(R.id.btn_camera).setOnClickListener(v1 -> {
             try {
-                File srcFile = new File(getCacheDir(), Integer.toString(D.getInstance().thisUser.getId()));
+                File srcFile = new File(getCacheDir(), Integer.toString(D.getInstance().thisUser.uid));
                 if (srcFile.isDirectory()) {
                     srcFile.mkdirs();
                 }
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                src = FileProvider.getUriForFile(this, MyApp.FILE_PROVIDER_URI, srcFile);
+                src = FileProvider.getUriForFile(this, BaseApp.FILE_PROVIDER_URI, srcFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, src);
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivityForResult(intent, IMG_CAMERA);
@@ -189,7 +134,7 @@ public class Setting extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
+        switch (requestCode) {
             case IMG_ALBUM:
                 src = data.getData();
                 break;
@@ -198,7 +143,7 @@ public class Setting extends BaseActivity {
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
                     dst = UCrop.getOutput(data);
-                    ImageUtil.fillImage(iv_head, dst.getPath());
+                    ImageUtil.utils().fill(iv_head, dst.getPath(), null);
                 } else {
                     handleError(new Exception(UCrop.getError(data)));
                 }

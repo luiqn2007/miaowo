@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.impl.interfaces.NotSingle;
+package org.miaowo.miaowo.impl.interfaces;
 
 /**
  * 加了个错误处理

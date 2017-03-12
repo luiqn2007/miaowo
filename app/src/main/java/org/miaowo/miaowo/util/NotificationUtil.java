@@ -7,10 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-import org.miaowo.miaowo.view.activity.Miao;
+import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.ChatMessage;
-import org.miaowo.miaowo.root.MyApp;
+import org.miaowo.miaowo.root.BaseApp;
 
 /**
  * 向系统状态栏发送消息
@@ -26,18 +26,18 @@ public class NotificationUtil {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(context, Miao.class);
-        intent.putExtra(MyApp.EXTRA_ITEM, PW_CHAT);
+        intent.putExtra(BaseApp.EXTRA_ITEM, PW_CHAT);
         chatDialog = PendingIntent.getActivity(context, 0, intent, 0);
 
         chatLockNoti = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.cat_ghost)
                 .setContentTitle("喵有新消息啦")
-                .setContentText(message.getFrom().getName() + "给喵发来一条信息")
+                .setContentText(message.getFrom().username + "给喵发来一条信息")
                 .setContentIntent(chatDialog)
                 .build();
 
         chatMsgNoti = new NotificationCompat.Builder(context)
-                .setContentTitle(message.getFrom().getName() + "给喵发来一条信息")
+                .setContentTitle(message.getFrom().username + "给喵发来一条信息")
                 .setContentText(message.getMessage().length() > 10
                         ? message.getMessage().substring(0, 6) + "..."
                         : message.getMessage())

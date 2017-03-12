@@ -2,23 +2,20 @@ package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.Question;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
-
-import java.util.ArrayList;
 
 public class TopicFragment extends Fragment {
 
+    private static TextView msg;
+    private static StringBuffer sb;
 
     public TopicFragment() {
         // Required empty public constructor
@@ -41,7 +38,29 @@ public class TopicFragment extends Fragment {
 
     private void initView(View view) {
         ImageView test = (ImageView) view.findViewById(R.id.test);
-        test.setImageDrawable(ImageUtil.getText("试"));
-        test.setOnClickListener(v -> LogUtil.i("Click!"));
+        msg = (TextView) view.findViewById(R.id.msg);
+        test.setImageDrawable(ImageUtil.utils().textIcon("试", new ImageUtil.TextIconConfig()));
+    }
+
+    public static void setText(CharSequence str) {
+        if (msg != null) {
+            if (sb == null) {
+                sb = new StringBuffer(msg.getText());
+            }
+            sb.append('\n');
+            sb.append(str);
+            D.getInstance().activeActivity.runOnUiThread(() -> msg.setText(sb.toString()));
+        }
+    }
+
+    public static void clearText() {
+        if (msg != null) {
+            if (sb != null) {
+                sb.delete(0, sb.length());
+                D.getInstance().activeActivity.runOnUiThread(() -> msg.setText(sb.toString()));
+            } else {
+                D.getInstance().activeActivity.runOnUiThread(() -> msg.setText(""));
+            }
+        }
     }
 }

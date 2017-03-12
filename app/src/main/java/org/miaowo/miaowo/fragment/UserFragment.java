@@ -11,17 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.Users;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.util.ImageUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class UserFragment extends Fragment {
 
@@ -29,7 +26,6 @@ public class UserFragment extends Fragment {
     private ItemRecyclerAdapter<User> mAdapter;
     private ArrayList<User> mList;
     private UserWindows mUserWindows;
-    private Users mUsers;
 
     public UserFragment() {
     }
@@ -46,8 +42,7 @@ public class UserFragment extends Fragment {
                              Bundle savedInstanceState) {
         mView = new RecyclerView(getContext());
         mList = new ArrayList<>();
-        mUserWindows = new UserWindows();
-        mUsers = new UsersImpl();
+        mUserWindows = UserWindows.windows();
 
         initView();
         return mView;
@@ -65,9 +60,9 @@ public class UserFragment extends Fragment {
             public void bindView(User item, ItemRecyclerAdapter.ViewHolder holder) {
                 holder.getView().setOnClickListener(v -> mUserWindows.showUserWindow(item));
                 ImageView iv_user = holder.getImageView(R.id.iv_user);
-                iv_user.setContentDescription("用户：" + item.getName());
-                ImageUtil.setUserImage(iv_user, item);
-                holder.getTextView(R.id.tv_user).setText(item.getName());
+                iv_user.setContentDescription("用户：" + item.username);
+                ImageUtil.utils().setUser(iv_user, item, true);
+                holder.getTextView(R.id.tv_user).setText(item.username);
             }
 
             @Override
@@ -87,7 +82,6 @@ public class UserFragment extends Fragment {
             protected Exception doInBackground(Void... params) {
                 try {
                     mList.clear();
-                    Collections.addAll(mList, mUsers.searchUsers(""));
                 } catch (Exception e) {
                     return e;
                 }

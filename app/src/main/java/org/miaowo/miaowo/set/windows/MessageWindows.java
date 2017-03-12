@@ -1,7 +1,5 @@
 package org.miaowo.miaowo.set.windows;
 
-import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,46 +10,43 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import org.miaowo.miaowo.root.D;
-import org.miaowo.miaowo.view.activity.Miao;
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.bean.data.Answer;
 import org.miaowo.miaowo.bean.data.Question;
-import org.miaowo.miaowo.impl.AnswersImpl;
-import org.miaowo.miaowo.impl.QuestionsImpl;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.Answers;
-import org.miaowo.miaowo.impl.interfaces.Questions;
+import org.miaowo.miaowo.impl.interfaces.Messages;
 import org.miaowo.miaowo.impl.interfaces.State;
-import org.miaowo.miaowo.root.SetRoot;
+import org.miaowo.miaowo.root.BaseSet;
+import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.set.Exceptions;
-import org.miaowo.miaowo.view.FloatView;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.ViewFiller;
+import org.miaowo.miaowo.view.FloatView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * 有关消息，回复的弹窗集合
  * Created by luqin on 17-1-17.
  */
 
-public class MessageWindows extends SetRoot {
+public class MessageWindows extends BaseSet {
 
-    private Questions mQuestions;
-    private Answers mAnswers;
+    private Messages mMessages;
     private State mState;
     private D d;
 
     private BaseAdapter mAdapter;
 
-    public MessageWindows() {
+    private MessageWindows() {
         d = D.getInstance();
-        mQuestions = new QuestionsImpl();
-        mAnswers = new AnswersImpl();
+        mMessages = new MsgImpl();
         mState = new StateImpl();
     }
+    public static MessageWindows windows() { return new MessageWindows(); }
 
     public FloatView showQuestion(final Question question) {
         FloatView view = new FloatView(R.layout.window_question);
@@ -65,19 +60,19 @@ public class MessageWindows extends SetRoot {
         Button btn_answer = (Button) v.findViewById(R.id.btn_send);
         Button btn_reply = (Button) v.findViewById(R.id.btn_reply);
 
-        ImageUtil.setUserImage(iv_user, question.getUser());
-        tv_user.setText(question.getUser().getName());
-        tv_title.setText(question.getTitle());
-        tv_question.setText(question.getMessage());
-        tv_count.setText(question.getReply() + " 回复, " + question.getView() + " 浏览");
-        btn_reply.setText("回答(" + question.getReply() + ")");
+        ImageUtil.utils().setUser(iv_user, question.user, true);
+        tv_user.setText(question.user.username);
+        tv_title.setText(question.titleRaw);
+        tv_question.setText(question.posts[0].content);
+        tv_count.setText(question.postcount + " 回复, " + question.viewcount + " 浏览");
+        btn_reply.setText("回答(" + question.postcount + ")");
         btn_reply.setOnClickListener(v1 -> showAnswers(question));
-        btn_answer.setOnClickListener(v1 -> showNewAnswer(question));
+        btn_answer.setOnClickListener(v1 -> showNewAnswer(question, null));
 
         return view.defaultBar().show();
     }
     public FloatView showTopic(final Question question) {
-        getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
+        getArguments().put("answer_" + question.cid, new ArrayList<Answer>());
         FloatView view = new FloatView(R.layout.window_topic);
         View v = view.getView();
 
@@ -85,14 +80,14 @@ public class MessageWindows extends SetRoot {
         Button btn_answer = (Button) v.findViewById(R.id.btn_send);
         ListView lv_answer = (ListView) v.findViewById(R.id.lv_answer);
 
-        tv_title.setText(question.getTitle());
-        btn_answer.setOnClickListener(v1 -> showNewAnswer(question));
+        tv_title.setText(question.titleRaw);
+        btn_answer.setOnClickListener(v1 -> showNewAnswer(question, null));
         lv_answer.setAdapter(new BaseAdapter() {
             ArrayList<Answer> answers;
 
             @Override
             public int getCount() {
-                answers = (ArrayList<Answer>) getArguments().getSerializable("answer_" + question.getId());
+                answers = (ArrayList<Answer>) getArguments().get("answer_" + question.cid);
                 return answers == null ? 0 : answers.size();
             }
 
@@ -113,35 +108,12 @@ public class MessageWindows extends SetRoot {
                 return convertView;
             }
         });
-
-        new AsyncTask<Question, Void, Exception>() {
-
-            @Override
-            protected Exception doInBackground(Question... params) {
-                try {
-                    ArrayList<Answer> answers = new ArrayList<>();
-                    Collections.addAll(answers, mAnswers.getAnswers(params[0]));
-                    getArguments().putSerializable("answer_" + question.getId(), answers);
-                } catch (Exception e) {
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception e) {
-                if (e != null) {
-                    d.activeActivity.handleError(e);
-                } else {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        }.execute(question);
+        mMessages.loadTopics(Messages.SEARCH_POSITION_UP);
 
         return view.defaultBar().show();
     }
     private FloatView showAnswers(Question question) {
-        getArguments().putSerializable("answer_" + question.getId(), new ArrayList<Answer>());
+        getArguments().put("answer_" + question.cid, new ArrayList<Answer>());
         FloatView view = new FloatView(R.layout.window_normal_list);
         View v = view.getView();
 
@@ -151,7 +123,7 @@ public class MessageWindows extends SetRoot {
 
             @Override
             public int getCount() {
-                answers = (ArrayList<Answer>) getArguments().getSerializable("answer_" + question.getId());
+                answers = (ArrayList<Answer>) getArguments().get("answer_" + question.cid);
                 return answers == null ? 0 : answers.size();
             }
 
@@ -173,36 +145,13 @@ public class MessageWindows extends SetRoot {
             }
         };
         list.setAdapter(mAdapter);
-
-        new AsyncTask<Question, Void, Exception>() {
-
-            @Override
-            protected Exception doInBackground(Question... params) {
-                try {
-                    ArrayList<Answer> answers = new ArrayList<>();
-                    Collections.addAll(answers, mAnswers.getAnswers(params[0]));
-                    getArguments().putSerializable("answer_" + question.getId(), answers);
-                } catch (Exception e) {
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception e) {
-                if (e != null) {
-                    d.activeActivity.handleError(e);
-                } else {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        }.execute(question);
-
+        getArguments().put("answer_" + question.cid, question.posts);
+        mAdapter.notifyDataSetChanged();
         return view.defaultBar().show();
     }
 
     public FloatView showNewQuestion() {
-        if (mState.getLocalUser().getId() < 0) {
+        if (!mState.isLogin()) {
             d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
         }
 
@@ -234,40 +183,23 @@ public class MessageWindows extends SetRoot {
             if (name == null) {
                 return;
             }
-            Question q = new Question(0, mState.getLocalUser(),
-                    et_title.getText().toString(),
-                    et_content.getText().toString(),
-                    System.currentTimeMillis(), 0, 0, name);
-
-            new AsyncTask<Question, Void, Exception>() {
-
-                @Override
-                protected Exception doInBackground(Question... params) {
-                    try {
-                        mQuestions.sendQuestion(params[0]);
-                    } catch (Exception e) {
-                        return e;
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Exception e) {
-                    if (e != null) {
-                        d.activeActivity.handleError(e);
-                    } else {
-                        Snackbar.make(D.getInstance().activeActivity.getWindow().getDecorView(),
-                                "发送成功", Snackbar.LENGTH_SHORT).show();
-                        view.dismiss();
-                    }
-                }
-            }.execute(q);
+            Question q = new Question();
+            Answer a = new Answer();
+            a.content = et_content.getText().toString();
+            q.title = et_title.getText().toString();
+            q.posts = new Answer[] { a };
+            try {
+                mMessages.sendQuestion(q);
+                view.dismiss();
+            } catch (Exception e) {
+                d.activeActivity.handleError(e);
+            }
         });
 
         return view.defaultBar().show();
     }
-    private FloatView showNewAnswer(final Question question) {
-        if (mState.getLocalUser().getId() < 0) {
+    private FloatView showNewAnswer(Question question, User reply) {
+        if (!mState.isLogin()) {
             d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
         }
 
@@ -278,77 +210,25 @@ public class MessageWindows extends SetRoot {
         final TextInputEditText et_content = (TextInputEditText) v.findViewById(R.id.et_content);
         Button btn_send = (Button) v.findViewById(R.id.btn_send);
         v.findViewById(R.id.rg_type).setVisibility(View.GONE);
-        et_title.setText("正在回答: " + question.getTitle());
+        if (reply != null) {
+            et_title.setText("正在回复: " + reply.username);
+        } else {
+            et_title.setText("正在回答: " + question.title);
+        }
         et_title.setEnabled(false);
 
         btn_send.setOnClickListener(vv -> {
-
-            Answer a = new Answer(0, question, null, et_content.getText().toString(), mState.getLocalUser(), System.currentTimeMillis());
-
-            new AsyncTask<Answer, Void, Exception>() {
-
-                @Override
-                protected Exception doInBackground(Answer... params) {
-                    try {
-                        mAnswers.sendAnswer(params[0]);
-                    } catch (Exception e) {
-                        return e;
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Exception e) {
-                    if (e != null) {
-                        d.activeActivity.handleError(e);
-                    } else {
-                        Snackbar.make(D.getInstance().activeActivity.getWindow().getDecorView(),
-                                "发送成功", Snackbar.LENGTH_SHORT).show();
-                        view.dismiss();
-                    }
-                }
-            }.execute(a);
+            Answer a = new Answer();
+            a.content = et_content.getText().toString();
+            a.uid = D.getInstance().thisUser.uid;
+            a.pid = question.cid;
+            a.timestamp = System.currentTimeMillis();
+            try {
+                view.dismiss();
+            } catch (Exception e) {
+                d.activeActivity.handleError(e);
+            }
         });
-        return view.defaultBar().show();
-    }
-    public FloatView showNewReply(final Answer answer) {
-        if (mState.getLocalUser().getId() < 0) {
-            d.activeActivity.handleError(Exceptions.E_NON_LOGIN);
-        }
-
-        final FloatView view = new FloatView(R.layout.window_ask);
-        View v = view.getView();
-
-        final TextInputEditText et_title = (TextInputEditText) v.findViewById(R.id.et_title);
-        final TextInputEditText et_content = (TextInputEditText) v.findViewById(R.id.et_content);
-        Button btn_send = (Button) v.findViewById(R.id.btn_send);
-        v.findViewById(R.id.rg_type).setVisibility(View.GONE);
-        et_title.setText("正在回复: " + answer.getUser().getName());
-        et_title.setEnabled(false);
-        btn_send.setOnClickListener(v1 -> {
-            Answer a = new Answer(0, mAnswers.getFinalAnswer(answer).getQuestion(), answer, et_content.getText().toString(), mState.getLocalUser(), System.currentTimeMillis());
-            new AsyncTask<Answer, Void, Exception>() {
-                @Override
-                protected Exception doInBackground(Answer... params) {
-                    try {
-                        mAnswers.sendAnswer(params[0]);
-                    } catch (Exception e) {
-                        return e;
-                    }
-                    return null;
-                }
-                @Override
-                protected void onPostExecute(Exception e) {
-                    if (e != null) {
-                        d.activeActivity.handleError(e);
-                    } else {
-                        Snackbar.make(d.activeActivity.getWindow().getDecorView(), "发送成功", Snackbar.LENGTH_SHORT).show();
-                        view.dismiss();
-                    }
-                }
-            }.execute(a);
-        });
-
         return view.defaultBar().show();
     }
 }

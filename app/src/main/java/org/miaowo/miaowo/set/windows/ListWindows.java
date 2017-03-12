@@ -21,23 +21,15 @@ import org.miaowo.miaowo.util.SpUtil;
 
 public class ListWindows {
     // 显示
+    final public static int SORT_NONE = 0;
     final public static int SORT_NEW = 1;
     final public static int SORT_HOT= 2;
-
-    private static ListWindows windows;
-
     private BaseActivity context;
 
-    public ListWindows() {
+    private ListWindows() {
         context = D.getInstance().activeActivity;
     }
-
-    public static ListWindows getInstance() {
-        if (windows == null) {
-            windows = new ListWindows();
-        }
-        return windows;
-    }
+    public static ListWindows windows() { return new ListWindows(); }
 
     public FloatView showListSortChooser() {
         final ListFragment lf = D.getInstance().shownFragment;
@@ -48,7 +40,6 @@ public class ListWindows {
 
         final FloatView view = new FloatView(R.layout.window_list_sort);
         View v = view.getView();
-
 
         Button btn_ok = (Button) v.findViewById(R.id.btn_send);
         Button btn_cancel = (Button) v.findViewById(R.id.btn_cancel);

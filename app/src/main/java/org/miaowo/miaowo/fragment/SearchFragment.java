@@ -58,12 +58,7 @@ public class SearchFragment extends Fragment {
         sv_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                search(newText);
+                search(query);
 
                 InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (manager != null) {
@@ -71,6 +66,11 @@ public class SearchFragment extends Fragment {
                 }
                 sv_search.clearFocus();
                 return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
 

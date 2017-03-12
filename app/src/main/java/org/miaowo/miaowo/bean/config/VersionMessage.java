@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.bean.data;
+package org.miaowo.miaowo.bean.config;
 
 import android.os.Parcel;
 import android.os.Parcelable;

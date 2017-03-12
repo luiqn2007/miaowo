@@ -13,22 +13,39 @@ import java.util.List;
  */
 
 public class FragmentUtil {
+
+    private FragmentUtil(FragmentManager manager){ this.manager = manager; }
+    public static FragmentUtil manager(FragmentManager manager) {
+        return new FragmentUtil(manager);
+    }
+
+    private FragmentManager manager;
+
     /**
      * 显示一个Fragment
-     * @param manager FragmentManager
-     * @param layoutId 显示Fragment的FrameLayout
+     * @param container 显示Fragment的FrameLayout
      * @param fragment 要显示的Fragment
      */
-    public static void showFragment(FragmentManager manager, @IdRes int layoutId, Fragment fragment) {
+    private void show(@IdRes int container, Fragment fragment) {
         FragmentTransaction transaction = manager.beginTransaction();
         if (!fragment.isAdded()) {
-            transaction.add(layoutId, fragment);
+            transaction.add(container, fragment);
         }
         transaction.show(fragment);
         transaction.commit();
     }
 
-    private static void hideFragment(FragmentManager manager, Fragment... fragments) {
+    /**
+     * 关闭所有打开的 Fragment, 仅显示一页
+     * @param container
+     * @param fragment
+     */
+    public void showOnly(@IdRes int container, Fragment fragment) {
+        hideAll();
+        show(container, fragment);
+    }
+
+    private void hide(Fragment... fragments) {
         FragmentTransaction transaction = manager.beginTransaction();
         for (Fragment fragment : fragments) {
             if (fragment.isVisible()) {
@@ -40,13 +57,12 @@ public class FragmentUtil {
 
     /**
      * 隐藏所有Fragment，通常用于显示一个Fragment之前的扫尾工作
-     * @param manager 要隐藏的FragmentManager
      */
-    public static void hideAllFragment(FragmentManager manager) {
+    private void hideAll() {
         List<Fragment> fragments = manager.getFragments();
         if (fragments != null) {
             for (Fragment fragment : fragments) {
-                hideFragment(manager, fragment);
+                hide(fragment);
             }
         }
     }

@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
-import org.miaowo.miaowo.util.SpUtil;
-import org.miaowo.miaowo.util.ThemeUtil;
 
 import java.util.ArrayList;
 
@@ -63,10 +61,11 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     private void loadFragment(int fragmentId) {
         int index = controls.indexOf(fragmentId);
         if (index >= 0) {
-            hideAllFragment();
-            FragmentUtil.showFragment(getChildFragmentManager(), container, fragments.get(index));
-            root.findViewById(fragmentId).setBackgroundColor(SpUtil.getInt(getContext(), ThemeUtil.UI_BOTTOM_SELECTED_COLOR,
-                    Color.rgb(255, 255, 255)));
+            for (int id : controls) {
+                root.findViewById(id).setBackgroundColor(Color.rgb(255, 255, 255));
+            }
+            FragmentUtil.manager(getChildFragmentManager()).showOnly(container, fragments.get(index));
+            root.findViewById(fragmentId).setBackgroundColor(Color.rgb(238, 238, 238));
         }
     }
 
@@ -95,16 +94,6 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
             v.findViewById(id).setOnLongClickListener(this);
         }
 
-        mListWindows = new ListWindows();
-    }
-
-    // 隐藏所有 Fragment
-    private void hideAllFragment() {
-        FragmentUtil.hideAllFragment(getChildFragmentManager());
-
-        for (int id : controls) {
-            root.findViewById(id).setBackgroundColor(SpUtil.getInt(getContext(), ThemeUtil.UI_BOTTOM_DEFAULT_COLOR,
-                    Color.argb(255, 255, 255, 255)));
-        }
+        mListWindows = ListWindows.windows();
     }
 }

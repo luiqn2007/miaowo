@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.set.windows;
 
-import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,7 +10,6 @@ import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.view.FloatView;
-import org.miaowo.miaowo.view.activity.Miao;
 
 /**
  * 与用户登录状态有关的弹窗
@@ -21,7 +19,9 @@ import org.miaowo.miaowo.view.activity.Miao;
 public class StateWindows {
     private boolean isLogin = true;
     private State mState = new StateImpl();
-    private D d = D.getInstance();
+
+    private StateWindows() {}
+    public static StateWindows windows() { return new StateWindows(); }
 
     public FloatView showLogin() {
         isLogin = true;
@@ -29,72 +29,49 @@ public class StateWindows {
         final FloatView view = new FloatView(R.layout.window_login);
         View v = view.getView();
 
-        final EditText user = (EditText) v.findViewById(R.id.et_user);
-        final EditText pwd = (EditText) v.findViewById(R.id.et_password);
-        final EditText summary = (EditText) v.findViewById(R.id.et_summary);
-        final View label = v.findViewById(R.id.tv_label1);
-        final Button login = (Button) v.findViewById(R.id.btn_login);
-        login.setOnClickListener(v1 -> new AsyncTask<String, Void, Exception>() {
-            @Override
-            protected Exception doInBackground(String... params) {
-                if (isLogin) {
-                    try {
-                        mState.login(new User(params[0], params[1]));
-                    } catch (Exception e) {
-                        return e;
-                    }
+        EditText user = (EditText) v.findViewById(R.id.et_user);
+        EditText pwd = (EditText) v.findViewById(R.id.et_password);
+        EditText email = (EditText) v.findViewById(R.id.et_email);
+        View label = v.findViewById(R.id.tv_label1);
+        Button login = (Button) v.findViewById(R.id.btn_login);
+        login.setOnClickListener(v1 -> {
+            if (isLogin) {
+                User u = new User();
+                u.username = user.getText().toString();
+                u.password = pwd.getText().toString();
+                try {
+                    mState.login(u);
+                    view.dismiss();
+                } catch (Exception e) {
+                    D.getInstance().activeActivity.handleError(e);
                 }
-                return null;
+            } else {
+                ((Button) v1).setText("登录");
+                label.setVisibility(View.GONE);
+                email.setVisibility(View.GONE);
+                isLogin = true;
             }
 
-            @Override
-            protected void onPostExecute(Exception e) {
-                if (isLogin) {
-                    if (e == null) {
-                        ((Miao) d.activeActivity).loadUserMsg();
-                        view.dismiss();
-                    } else {
-                        D.getInstance().activeActivity.handleError(e);
-                    }
-                } else {
-                    ((Button) v1).setText("登录");
-                    label.setVisibility(View.GONE);
-                    summary.setVisibility(View.GONE);
-                    isLogin = true;
+        });
+        v.findViewById(R.id.btn_regist).setOnClickListener(v1 -> {
+            if (!isLogin) {
+                try {
+                    User u = new User();
+                    u.username = user.getText().toString();
+                    u.password = pwd.getText().toString();
+                    u.email = email.getText().toString();
+                    mState.register(u);
+                    view.dismiss();
+                } catch (Exception e) {
+                    D.getInstance().activeActivity.handleError(e);
                 }
+            } else {
+                login.setText("返回");
+                label.setVisibility(View.VISIBLE);
+                email.setVisibility(View.VISIBLE);
+                isLogin = false;
             }
-        }.execute(user.getText().toString(), pwd.getText().toString()));
-        v.findViewById(R.id.btn_regist).setOnClickListener(v12 -> new AsyncTask<String, Void, Exception>() {
-            @Override
-            protected Exception doInBackground(String... params) {
-                if (!isLogin) {
-                    try {
-                        mState.regist(new User(-1, params[0], params[1], params[2], ""));
-                    } catch (final Exception e) {
-                        return e;
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception e) {
-                if (isLogin) {
-                    login.setText("返回");
-                    label.setVisibility(View.VISIBLE);
-                    summary.setVisibility(View.VISIBLE);
-                    isLogin = false;
-                } else {
-                    if (e == null) {
-                        ((Miao) d.activeActivity).loadUserMsg();
-                        view.dismiss();
-                    } else {
-                        d.activeActivity.handleError(e);
-                    }
-                }
-            }
-        }.execute(user.getText().toString(), summary.getText().toString(), pwd.getText().toString()));
-
+        });
         return view.defaultBar().show();
     }
 }

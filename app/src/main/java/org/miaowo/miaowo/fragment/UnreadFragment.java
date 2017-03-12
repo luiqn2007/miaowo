@@ -1,9 +1,8 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
-import org.miaowo.miaowo.view.activity.Miao;
+import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.ChooseFragment;
 import org.miaowo.miaowo.root.ListFragment;
@@ -11,7 +10,7 @@ import org.miaowo.miaowo.root.ListFragment;
 import java.util.ArrayList;
 
 /**
- * 一个典型的Fragment {@link Fragment}.
+ * 一个典型的Fragment.
  * Activities 想要包含此 Fragment，需要实现
  * SquareFragment.OnFragmentInteractionListener(已删) 接口来实现
  * 互相的信息传递

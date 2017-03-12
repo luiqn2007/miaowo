@@ -2,13 +2,12 @@ package org.miaowo.miaowo.root;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import com.bugtags.library.Bugtags;
+import com.sdsmdg.tastytoast.TastyToast;
 
-import org.miaowo.miaowo.impl.interfaces.NotSingle.ExceptionHandled;
+import org.miaowo.miaowo.impl.interfaces.ExceptionHandled;
 
 /**
  * 创建的所有Activity的基类
@@ -53,7 +52,7 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
     @Override
     public void handleError(Exception e) {
         e.printStackTrace();
-        Snackbar.make(getWindow().getDecorView(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
+        TastyToast.makeText(this, e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
     }
 
     /**
