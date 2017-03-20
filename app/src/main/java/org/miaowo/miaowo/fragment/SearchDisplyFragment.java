@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.fragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,34 +14,38 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.MsgImpl;
-import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.Messages;
-import org.miaowo.miaowo.impl.interfaces.Users;
-import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.bean.data.web.QuestionSearchPage;
+import org.miaowo.miaowo.bean.data.web.UserSearchPage;
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
+import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.FormatUtil;
+import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+/**
+ * 显示搜索结果的 Fragment
+ */
 public class SearchDisplyFragment extends Fragment {
     final private static String TAG_TYPE = "layout";
     final private static String TAG_RESULT = "result";
 
     final public static int TYPE_USER = 0;
-    final public static int TYPE_TOPIC = 1;
-    final public static int TYPE_QUESTION = 2;
+    final public static int TYPE_QUESTION = 1;
 
-    private ArrayList result;
-    private BaseAdapter mAdapter;
+    private List result;
     private int type;
 
-    private Users mUsers;
-    private Messages mMessages;
     private MessageWindows mMessageWindows;
 
     public SearchDisplyFragment() {
@@ -66,9 +69,7 @@ public class SearchDisplyFragment extends Fragment {
             result = (ArrayList) getArguments().getSerializable(TAG_RESULT);
         }
 
-        mMessages = new MsgImpl();
-        mUsers = new UsersImpl();
-        mMessageWindows = MessageWindows.windows();
+        mMessageWindows = MessageWindows.windows((BaseActivity) getActivity());
     }
 
     @Override
@@ -87,15 +88,12 @@ public class SearchDisplyFragment extends Fragment {
             case TYPE_QUESTION:
                 tv_title.setText("问题");
                 break;
-            case TYPE_TOPIC:
-                tv_title.setText("话题");
-                break;
             case TYPE_USER:
                 tv_title.setText("用户");
                 break;
         }
 
-        mAdapter = new BaseAdapter() {
+        mList.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
                 return result == null ? 0 : result.size();
@@ -115,13 +113,10 @@ public class SearchDisplyFragment extends Fragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 switch (type) {
                     case TYPE_QUESTION:
-                        convertView = setQuestion((Question) getItem(position), convertView);
-                        break;
-                    case TYPE_TOPIC:
-                        convertView = setTopic((Question) getItem(position), convertView);
+                        convertView = setQuestion((QuestionSearchPage.PostsBean) getItem(position), convertView);
                         break;
                     case TYPE_USER:
-                        convertView = setUser((User) getItem(position), convertView);
+                        convertView = setUser((UserSearchPage.UsersBean) getItem(position), convertView);
                         break;
                     default:
                         convertView = null;
@@ -129,51 +124,36 @@ public class SearchDisplyFragment extends Fragment {
                 }
                 return convertView;
             }
-        };
-        mList.setAdapter(mAdapter);
+        });
     }
 
-    private View setQuestion(Question item, View view) {
+    private View setQuestion(QuestionSearchPage.PostsBean item, View view) {
         if (view == null) {
-            view = View.inflate(getContext(), R.layout.list_question, null);
+            view = View.inflate(getContext(), R.layout.list_question_title, null);
             view.setTag(new ViewHolder(view));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        User u = item.user;
-        holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item), R.id.rl_item);
-        ImageUtil.utils().setUser(holder.getImageView(R.id.iv_user), u, true);
-        holder.getTextView(R.id.tv_user).setText(u.username);
-        holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.timestamp));
-        holder.getTextView(R.id.tv_title).setText(item.titleRaw);
-        holder.getTextView(R.id.tv_count).setText(item.postcount+ " 帖子, " + item.viewcount + " 浏览");
+        User u = item.getUser();
+        holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item.getTopic().getSlug()), R.id.rl_item);
+        ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), u, true);
+        holder.getTextView(R.id.tv_user).setText(u.getUsername());
+        holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getTimestamp()));
+        holder.getTextView(R.id.tv_title).setText(item.getTopic().getTitle());
+        holder.getTextView(R.id.tv_count).setText(item.getTopic().getPostcount()+ " 帖子");
 
         return view;
     }
 
-    private View setTopic(Question item, View view) {
-        if (view == null) {
-            view = View.inflate(getContext(), R.layout.list_topic, null);
-            view.setTag(new ViewHolder(view));
-        }
-        ViewHolder holder = (ViewHolder) view.getTag();
-
-        holder.getTextView(R.id.tv_title).setText(item.titleRaw);
-        holder.getTextView(R.id.tv_count).setText(item.postcount + " 帖子, " + item.viewcount + " 浏览");
-        holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.timestamp));
-        view.setOnClickListener(v -> mMessageWindows.showTopic(item));
-        return view;
-    }
-
-    private View setUser(User item, View view) {
+    private View setUser(UserSearchPage.UsersBean item, View view) {
         if (view == null) {
             view = View.inflate(getContext(), R.layout.list_chat, null);
             view.setTag(new ViewHolder(view));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        holder.getTextView(R.id.tv_user).setText(item.username);
-        ImageUtil.utils().setUser(holder.getImageView(R.id.iv_user), item, true);
+        holder.getTextView(R.id.tv_user).setText(item.getUsername());
+        ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), item, true);
         return view;
     }
 
@@ -214,38 +194,28 @@ public class SearchDisplyFragment extends Fragment {
     }
 
     public void search(String key) {
-        new AsyncTask<String, Void, Exception>() {
-
+        String url = getString(R.string.url_home)
+                + getString(R.string.url_search) + key
+                + getString(type == TYPE_USER ? R.string.url_search_user : R.string.url_search_title);
+        HttpUtil.utils().post(url, new Callback() {
             @Override
-            protected Exception doInBackground(String... params) {
-                try {
-                    switch (type) {
-                        case TYPE_QUESTION:
-                            mMessages.searchQuestion(params[0]);
-                            break;
-                        case TYPE_TOPIC:
-                            mMessages.searchTopic(params[0]);
-                            break;
-                        case TYPE_USER:
-                            mUsers.searchUsers(params[0]);
-                            break;
-                        default:
-                            throw Exceptions.E_NO_TYPE;
-                    }
-                } catch (Exception e) {
-                    return e;
-                }
-                return null;
+            public void onFailure(Call call, IOException e) {
+                ((BaseActivity) getActivity()).handleError(Exceptions.E_WEB);
             }
 
             @Override
-            protected void onPostExecute(Exception e) {
-                if (e != null) {
-                    D.getInstance().activeActivity.handleError(e);
-                    return;
+            public void onResponse(Call call, Response response) throws IOException {
+                switch (type) {
+                    case TYPE_QUESTION:
+                        QuestionSearchPage question = BeanUtil.utils().buildFromLastJson(response, QuestionSearchPage.class);
+                        result = question.getPosts();
+                        break;
+                    case TYPE_USER:
+                        UserSearchPage user = BeanUtil.utils().buildFromLastJson(response, UserSearchPage.class);
+                        result = user.getUsers();
+                        break;
                 }
-                mAdapter.notifyDataSetChanged();
             }
-        }.execute(key);
+        });
     }
 }

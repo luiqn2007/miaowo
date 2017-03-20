@@ -9,7 +9,6 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -17,11 +16,12 @@ import com.yalantis.ucrop.UCrop;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
+import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseApp;
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.view.FloatView;
@@ -32,13 +32,13 @@ public class Setting extends BaseActivity {
     final private int IMG_CAMERA = 1;
     final private int IMG_ALBUM = 2;
 
-    User newUser;
-    Users mUsers;
-    Uri src, dst;
+    private User user;
+    private Users mUsers;
+    private State mState;
+    private Uri src, dst;
 
-    EditText et_name, et_pwd, et_summary;
-    ImageView iv_head;
-    Button btn_ok, btn_cancel;
+    private EditText et_name, et_pwd, et_email;
+    private ImageView iv_head;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,36 +48,35 @@ public class Setting extends BaseActivity {
     }
 
     private void init() {
-        mUsers = new UsersImpl();
-        newUser = new User(D.getInstance().thisUser);
+        mUsers = new UsersImpl(this);
+        mState = new StateImpl(this);
+        user = mState.loginedUser();
 
         iv_head = (ImageView) findViewById(R.id.iv_user);
         et_name = (EditText) findViewById(R.id.et_user);
         et_pwd = (EditText) findViewById(R.id.et_password);
-        et_summary = (EditText) findViewById(R.id.et_summary);
-        btn_ok = (Button) findViewById(R.id.btn_send);
-        btn_cancel = (Button) findViewById(R.id.btn_cancel);
+        et_email = (EditText) findViewById(R.id.et_email);
 
         fill();
 
+        findViewById(R.id.btn_send).setOnClickListener(v -> send());
+        findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
         iv_head.setOnClickListener(v -> chooseType());
-        btn_cancel.setOnClickListener(v -> finish());
-        btn_ok.setOnClickListener(v -> send());
     }
 
     private void fill() {
-        et_name.setText(newUser.username);
+        et_name.setText(user.getUsername());
         et_pwd.setText("");
-        et_summary.setText(newUser.signature);
-        ImageUtil.utils().setUser(iv_head, newUser, false);
+        et_email.setText(user.getEmail());
+        ImageUtil.utils(this).setUser(iv_head, user, false);
     }
 
     private void send() {
-        newUser.signature = et_summary.getText().toString();
-        newUser.password = et_pwd.getText().toString();
-        newUser.username = et_name.getText().toString();
+        String name = et_email.getText().toString();
+        String pwd = et_pwd.getText().toString();
+        String email = et_name.getText().toString();
         try {
-            mUsers.updateUser(newUser);
+            mUsers.updateUser(name, pwd, email);
         } catch (Exception e) {
             handleError(e);
         }
@@ -86,22 +85,26 @@ public class Setting extends BaseActivity {
     private void setHeadImg() {
         File dir = new File(getFilesDir().getAbsolutePath() + File.separator + "headImg");
         if (!dir.isDirectory()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                return;
+            }
         }
-        File img = new File(dir, "head_" + D.getInstance().thisUser.uid);
+        File img = new File(dir, "head_" + mState.loginedUser().getUid());
         dst = FileProvider.getUriForFile(this, BaseApp.FILE_PROVIDER_URI, img);
         UCrop.of(src, dst).withAspectRatio(1, 1).start(this);
     }
 
     private void chooseType() {
-        FloatView view = new FloatView(R.layout.window_choose_image);
+        FloatView view = new FloatView(this, "选择图片", R.layout.window_choose_image);
         View v = view.getView();
 
         v.findViewById(R.id.btn_camera).setOnClickListener(v1 -> {
             try {
-                File srcFile = new File(getCacheDir(), Integer.toString(D.getInstance().thisUser.uid));
+                File srcFile = new File(getCacheDir(), Integer.toString(mState.loginedUser().getUid()));
                 if (srcFile.isDirectory()) {
-                    srcFile.mkdirs();
+                    if (!srcFile.mkdirs()) {
+                        return;
+                    }
                 }
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -126,7 +129,7 @@ public class Setting extends BaseActivity {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, IMG_ALBUM);
         });
-        v.findViewById(R.id.btn_cancel).setOnClickListener(v1 -> view.dismiss());
+        v.findViewById(R.id.btn_cancel).setOnClickListener(v1 -> view.dismiss(false));
 
         view.show(Gravity.BOTTOM, new Point(0, 200));
     }
@@ -143,7 +146,7 @@ public class Setting extends BaseActivity {
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
                     dst = UCrop.getOutput(data);
-                    ImageUtil.utils().fill(iv_head, dst.getPath(), null);
+                    ImageUtil.utils(this).fill(iv_head, dst.getPath(), null);
                 } else {
                     handleError(new Exception(UCrop.getError(data)));
                 }

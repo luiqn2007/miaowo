@@ -23,7 +23,6 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
 
     @Override
     protected void onResume() {
-        D.getInstance().activeActivity = this;
         super.onResume();
 //        Bugtags.onResume(this);
     }
@@ -32,15 +31,6 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
     protected void onPause() {
         super.onPause();
 //        Bugtags.onPause(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (D.getInstance().activeActivity.equals(this)) {
-            D.getInstance().activeActivity = null;
-        }
-        destory();
-        super.onDestroy();
     }
 
     @Override
@@ -54,9 +44,4 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
         e.printStackTrace();
         TastyToast.makeText(this, e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
     }
-
-    /**
-     * 由于 onDestory 被复写了，新建一个 destory 代替之
-     */
-    protected void destory() {}
 }

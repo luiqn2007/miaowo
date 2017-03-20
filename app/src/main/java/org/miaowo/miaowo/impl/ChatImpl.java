@@ -1,8 +1,8 @@
 package org.miaowo.miaowo.impl;
 
-import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.bean.data.web.ChatMessage;
 import org.miaowo.miaowo.impl.interfaces.Chat;
-import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 
 /**
@@ -11,23 +11,29 @@ import org.miaowo.miaowo.set.Exceptions;
  */
 
 public class ChatImpl implements Chat {
+    private BaseActivity mContext;
+
+    public ChatImpl(BaseActivity mContext) {
+        this.mContext = mContext;
+    }
+
     @Override
     public void loadList() {
-        D.getInstance().activeActivity.handleError(Exceptions.E_NONE);
+        mContext.handleError(Exceptions.E_NONE);
     }
 
     @Override
     public void refresh() {
-        D.getInstance().activeActivity.handleError(Exceptions.E_NONE);
+        mContext.handleError(Exceptions.E_NONE);
     }
 
     @Override
     public void sendMessage(ChatMessage msg) {
-        D.getInstance().activeActivity.handleError(Exceptions.E_NONE);
+        mContext.handleError(Exceptions.E_NONE);
     }
 
     @Override
     public void loadBefore() {
-        D.getInstance().activeActivity.handleError(Exceptions.E_NONE);
+        mContext.handleError(Exceptions.E_NONE);
     }
 }

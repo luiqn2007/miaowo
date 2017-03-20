@@ -12,7 +12,7 @@ import com.squareup.picasso.RequestCreator;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.UserWindows;
 
@@ -24,10 +24,14 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
  */
 
 public class ImageUtil {
-    private ImageUtil() {}
-    public static ImageUtil utils() {
-        return new ImageUtil();
+    private ImageUtil(BaseActivity context) {
+        mContext = context;
     }
+    public static ImageUtil utils(BaseActivity context) {
+        return new ImageUtil(context);
+    }
+
+    private BaseActivity mContext;
 
     /**
      * 填充用户头像框
@@ -40,22 +44,22 @@ public class ImageUtil {
             return;
         }
         fillUserImage(iv, user);
-        UserWindows uv = UserWindows.windows();
+        UserWindows uv = UserWindows.windows(mContext);
         if (clickable) {
-            if (user.uid <= 0) {
-                iv.setOnClickListener(v -> D.getInstance().activeActivity.handleError(Exceptions.E_NON_LOGIN));
+            if (user.getUid() <= 0) {
+                iv.setOnClickListener(v -> mContext.handleError(Exceptions.E_NON_LOGIN));
             } else {
-                iv.setOnClickListener(v -> uv.showUserWindow(user));
+                iv.setOnClickListener(v -> uv.showUserWindow(user.getUsername()));
             }
         }
     }
     private void fillUserImage(ImageView iv, User user) {
-        if (TextUtils.isEmpty(user.picture)) {
-            if (TextUtils.isEmpty(user.iconText)) return;
+        if (TextUtils.isEmpty(user.getPicture())) {
+            if (TextUtils.isEmpty(user.getIconText())) return;
             iv.setImageDrawable(textIcon(user));
             return;
         }
-        fill(iv, user.picture, null);
+        fill(iv, mContext.getString(R.string.url_home) + user.getPicture(), null);
     }
 
     /**
@@ -67,13 +71,13 @@ public class ImageUtil {
         if (config == null) {
             RequestCreator creator;
             if ("default".equals(imgRes)) {
-                creator = Picasso.with(D.getInstance().activeActivity).load(R.drawable.def_user);
+                creator = Picasso.with(mContext).load(R.drawable.def_user);
             } else {
-                creator = Picasso.with(D.getInstance().activeActivity).load(imgRes);
+                creator = Picasso.with(mContext).load(imgRes);
             }
             creator.transform(new CropCircleTransformation()).fit().into(iv);
         } else {
-            D.getInstance().activeActivity.runOnUiThread(() -> iv.setImageDrawable(textIcon(imgRes, config)));
+            mContext.runOnUiThread(() -> iv.setImageDrawable(textIcon(imgRes, config)));
         }
     }
 
@@ -100,34 +104,36 @@ public class ImageUtil {
      * @return Drawable
      */
     public Drawable textIcon(User user) {
-        int bgColor = userBgColor(user);
+        int bgColor = fromUser(user.getIconBgColor());
         TextIconConfig config = bgColor < 0
-                ? new TextIconConfig()
-                : new TextIconConfig(bgColor);
-        return textIcon(user.iconText, config);
+                ? new TextIconConfig(Color.BLUE, Color.WHITE)
+                : new TextIconConfig(bgColor, Color.WHITE);
+        return textIcon(user.getIconText(), config);
     }
-    private int userBgColor(User u) {
-        return Color.BLUE;
+    private int fromUser(String color) {
+        if (TextUtils.isEmpty(color) || color.length() < 6) {
+            return -1;
+        }
+        int r = Integer.parseInt(color.substring(color.length() - 6, color.length() - 4), 16);
+        int g = Integer.parseInt(color.substring(color.length() - 4, color.length() - 2), 16);
+        int b = Integer.parseInt(color.substring(color.length() - 2, color.length()), 16);
+        return Color.rgb(r, g, b);
     }
 
     /**
      * 文字图标配置对象, null 通常表示不是文字图标
      */
     public static class TextIconConfig {
-        int bgColor = Color.BLUE;
-        int textColor = Color.WHITE;
+        int bgColor;
+        int textColor;
 
-        public TextIconConfig() {}
-        public TextIconConfig(@ColorInt int bgColor) {
-            this.bgColor = bgColor;
-        }
         public TextIconConfig(@ColorInt int bgColor, @ColorInt int textColor) {
             this.bgColor = bgColor;
             this.textColor = textColor;
         }
-
         public void setBgColor(int bgColor) {
             this.bgColor = bgColor;
+            this.textColor = Color.WHITE;
         }
         public int getBgColor() {
             return bgColor;

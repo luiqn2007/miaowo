@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.root.D;
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.util.ImageUtil;
 
@@ -42,7 +42,7 @@ public class UserFragment extends Fragment {
                              Bundle savedInstanceState) {
         mView = new RecyclerView(getContext());
         mList = new ArrayList<>();
-        mUserWindows = UserWindows.windows();
+        mUserWindows = UserWindows.windows((BaseActivity) getActivity());
 
         initView();
         return mView;
@@ -58,11 +58,11 @@ public class UserFragment extends Fragment {
 
             @Override
             public void bindView(User item, ItemRecyclerAdapter.ViewHolder holder) {
-                holder.getView().setOnClickListener(v -> mUserWindows.showUserWindow(item));
+                holder.getView().setOnClickListener(v -> mUserWindows.showUserWindow(item.getUsername()));
                 ImageView iv_user = holder.getImageView(R.id.iv_user);
-                iv_user.setContentDescription("用户：" + item.username);
-                ImageUtil.utils().setUser(iv_user, item, true);
-                holder.getTextView(R.id.tv_user).setText(item.username);
+                iv_user.setContentDescription("用户：" + item.getUsername());
+                ImageUtil.utils((BaseActivity) getActivity()).setUser(iv_user, item, true);
+                holder.getTextView(R.id.tv_user).setText(item.getUsername());
             }
 
             @Override
@@ -90,7 +90,7 @@ public class UserFragment extends Fragment {
 
             @Override
             protected void onPostExecute(Exception e) {
-                if (e != null) D.getInstance().activeActivity.handleError(e);
+                if (e != null) ((BaseActivity) getActivity()).handleError(e);
                 else mAdapter.updateDate(mList);
             }
         }.execute();

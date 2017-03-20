@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.root;
+package org.miaowo.miaowo.root.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.windows.ListWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 
@@ -82,18 +83,21 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
 
     @Override
     public boolean onLongClick(View v) {
-        mListWindows.showListSortChooser();
+        mListWindows.showListSortChooser(fragments.get((Integer) v.getTag()));
         return true;
     }
 
     private void initViews(View v) {
         root = v;
 
-        for (Integer id : controls) {
-            v.findViewById(id).setOnClickListener(this);
-            v.findViewById(id).setOnLongClickListener(this);
+        for (int i = 0; i < controls.size(); i++) {
+            int id = controls.get(i);
+            View view = v.findViewById(id);
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
+            view.setTag(i);
         }
 
-        mListWindows = ListWindows.windows();
+        mListWindows = ListWindows.windows((BaseActivity) getActivity());
     }
 }

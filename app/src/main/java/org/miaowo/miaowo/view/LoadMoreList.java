@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.sdsmdg.tastytoast.TastyToast;
 
+import org.miaowo.miaowo.util.LogUtil;
+
 /**
  * 原来用的 PullLoadMoreRecycleView 不能直接滑动到列表指定位置，弃之
  * Created by luqin on 17-1-1.
@@ -20,6 +22,7 @@ import com.sdsmdg.tastytoast.TastyToast;
 public class LoadMoreList extends SwipeRefreshLayout {
     private RecyclerView mRecyclerView;
     private OnRefreshListener mPushRefresher;
+    private OnRefreshListener mPullRefresher;
 
     private float startY;
     private Toast loading;
@@ -36,14 +39,28 @@ public class LoadMoreList extends SwipeRefreshLayout {
         mRecyclerView = new RecyclerView(context);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         loading = TastyToast.makeText(context, "加载中......", TastyToast.LENGTH_SHORT, TastyToast.INFO);
+        loading.cancel();
         addView(mRecyclerView);
     }
 
     public void setPullRefresher(OnRefreshListener listener) {
+        mPullRefresher = listener;
         setOnRefreshListener(listener);
     }
     public void setPushRefresher(OnRefreshListener listener) {
         this.mPushRefresher = listener;
+    }
+    public void pull() {
+        if (mPullRefresher != null) {
+            mPullRefresher.onRefresh();
+        }
+    }
+    public void push() {
+        if (mPushRefresher != null) {
+            setRefreshing(true);
+            mPushRefresher.onRefresh();
+            setRefreshing(false);
+        }
     }
 
     public void setAdapter(RecyclerView.Adapter adapter) {
@@ -63,24 +80,21 @@ public class LoadMoreList extends SwipeRefreshLayout {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startY = ev.getY();
+                    LogUtil.i("start: " + startY);
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (needLoad(getY())) {
-                        loadData();
+                    float endY = ev.getY();
+                    LogUtil.i("end: " + endY);
+                    if (startY - endY >= 300 &&isEnd()) {
+                        setRefreshing(true);
+                        mPushRefresher.onRefresh();
                     }
                     break;
             }
         }
         return super.dispatchTouchEvent(ev);
     }
-    private void loadData() {
-        loading.show();
-        mPushRefresher.onRefresh();
-    }
 
-    private boolean needLoad(float lastY) {
-        return startY - lastY >= 300 &&isEnd();
-    }
     private boolean isEnd() {
         // 获取总大小;
         int itemCount = -1;

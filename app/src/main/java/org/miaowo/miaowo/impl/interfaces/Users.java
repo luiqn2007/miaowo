@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.impl.interfaces;
 
 
-import org.miaowo.miaowo.bean.data.Search;
 import org.miaowo.miaowo.bean.data.User;
 
 /**
@@ -13,17 +12,9 @@ public interface Users {
     /**
      * 获取一个用户的信息
      * 获取的 User 包含除 password 的所有信息
-     * @param id 获取用户的ID
      * @return 返回的用户，若未登录则返回用户id为-1的用户(Guest)
      */
-    User getUser(int id);
-
-    /**
-     * 根据用户名获取用户信息
-     * 获取的 User 包含除 password 的所有信息
-     * @param userName 要搜索的用户名
-     */
-    void searchUsers(String userName);
+    User getUser(String name);
 
     /**
      * 关注
@@ -34,7 +25,6 @@ public interface Users {
 
     /**
      * 更新用户信息
-     * @param u 新用户信息
      */
-    void updateUser(User u);
+    void updateUser(String user, String pwd, String email);
 }

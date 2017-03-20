@@ -35,8 +35,7 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
         fragments = new SearchDisplyFragment[] {
                 SearchDisplyFragment.newInstance(0, new ArrayList()),
-                SearchDisplyFragment.newInstance(1, new ArrayList()),
-                SearchDisplyFragment.newInstance(2, new ArrayList())
+                SearchDisplyFragment.newInstance(1, new ArrayList())
         };
     }
 

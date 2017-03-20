@@ -2,7 +2,6 @@ package org.miaowo.miaowo.activity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -21,7 +20,6 @@ import java.util.TimerTask;
  */
 public class Splish extends BaseActivity {
     final public static String SP_FIRST_BOOT = "first_boot";
-    final public static String SP_FIRST_UPDATE = "first_update";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +52,7 @@ public class Splish extends BaseActivity {
     }
 
     private void start() {
-        checkUpdate();
+        new MsgImpl(this).checkUpdate();
         startService(new Intent(Splish.this, WebService.class));
         Intent intent = new Intent(Splish.this, Miao.class);
         startActivity(intent);
@@ -62,24 +60,14 @@ public class Splish extends BaseActivity {
         overridePendingTransition(0, 0);
     }
 
-    // 用于检查更新
-    private void checkUpdate() {
-        PackageManager pm = getPackageManager();
-        try {
-            new MsgImpl().getUpdateMessage(pm.getPackageInfo(getPackageName(), 0).versionCode);
-        } catch (PackageManager.NameNotFoundException e) {
-            handleError(e);
-        }
-    }
-
     // 用于第一次打开初始化参数
     private void checkFirst() {
-        if (SpUtil.getBoolean(this, SP_FIRST_BOOT, false)) {
+        if (SpUtil.defaultSp(this).getBoolean(SP_FIRST_BOOT, false)) {
             return;
         }
         firstInit();
         // 设置完毕
-        SpUtil.putBoolean(this, SP_FIRST_BOOT, true);
+        SpUtil.defaultSp(this).putBoolean(SP_FIRST_BOOT, true);
     }
     private void firstInit() {
     }

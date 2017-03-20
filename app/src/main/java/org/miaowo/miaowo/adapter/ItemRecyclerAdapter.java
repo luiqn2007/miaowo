@@ -9,27 +9,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 列表
  * Created by luqin on 16-12-28.
  */
 
-public class ItemRecyclerAdapter<E> extends RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder> {
+public class ItemRecyclerAdapter<E>
+        extends RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder> {
 
-    private ArrayList<E> mItems;
+    final public static int SORT_NEW = 1;
+    final public static int SORT_HOT= 2;
+
+    private List<E> mItems;
     private ViewLoader<E> mLoader;
+    private DataSort<E> mSort;
 
-    public ItemRecyclerAdapter(@Nullable ArrayList<E> items, @NonNull ViewLoader<E> loader) {
+    public ItemRecyclerAdapter(@Nullable List<E> items, @NonNull ViewLoader<E> loader) {
         mItems = items;
         mLoader = loader;
-    }
-
-    public interface ViewLoader<E> {
-        ViewHolder createHolder(ViewGroup parent, int viewType);
-        void bindView(E item, ViewHolder holder);
-        int setType(E item, int position);
     }
 
     @Override
@@ -55,12 +54,37 @@ public class ItemRecyclerAdapter<E> extends RecyclerView.Adapter<ItemRecyclerAda
         return mLoader.setType(mItems.get(position), position);
     }
 
-    public void updateDate(@NonNull ArrayList<E> newItems) {
+    public void updateDate(List<E> newItems) {
         mItems = newItems;
         notifyDataSetChanged();
     }
 
-    public ArrayList<E> getItems() {
+    public void setSort(DataSort<E> sortType) {
+        mSort = sortType;
+    }
+
+    public DataSort<E> getSort() {
+        return mSort;
+    }
+
+    public void sortBy(int sort) {
+        if (mSort == null) {
+            return;
+        }
+        switch (sort) {
+            case SORT_HOT:
+                mItems.sort((o1, o2) -> mSort.sortByHot(o1, o2));
+                break;
+            case SORT_NEW:
+                mItems.sort((o1, o2) -> mSort.sortByNew(o1, o2));
+                break;
+            default:
+                return;
+        }
+        notifyDataSetChanged();
+    }
+
+    public List<E> getItems() {
         return mItems;
     }
 
@@ -110,5 +134,14 @@ public class ItemRecyclerAdapter<E> extends RecyclerView.Adapter<ItemRecyclerAda
         public View getView() {
             return itemView;
         }
+    }
+    public interface ViewLoader<E> {
+        ViewHolder createHolder(ViewGroup parent, int viewType);
+        void bindView(E item, ViewHolder holder);
+        int setType(E item, int position);
+    }
+    public interface DataSort<E> {
+        int sortByHot(E o1, E o2);
+        int sortByNew(E o1, E o2);
     }
 }

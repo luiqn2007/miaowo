@@ -1,7 +1,6 @@
-package org.miaowo.miaowo.bean.data;
+package org.miaowo.miaowo.bean.data.web;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import org.miaowo.miaowo.bean.data.User;
 
 /**
  * 聊天信息

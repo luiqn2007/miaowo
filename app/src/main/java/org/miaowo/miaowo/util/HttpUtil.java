@@ -1,12 +1,18 @@
 package org.miaowo.miaowo.util;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.text.TextUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.miaowo.miaowo.bean.data.EventMsg;
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
+import org.miaowo.miaowo.bean.data.event.LoginEvent;
+import org.miaowo.miaowo.bean.data.event.RegisterEvent;
+import org.miaowo.miaowo.bean.data.event.UserEvent;
+import org.miaowo.miaowo.root.BaseEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +29,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static org.miaowo.miaowo.bean.data.EventMsg.DATA_TYPE;
-
 /**
  * 对 OKHttp 的二次封装
  * 用于网络信息的获取和处理
@@ -33,39 +37,40 @@ import static org.miaowo.miaowo.bean.data.EventMsg.DATA_TYPE;
 
 public class HttpUtil {
     private HttpUtil() {
-        cookieStore = new HashMap<>();
-        client = new OkHttpClient.Builder()
-                .cookieJar(new CookieJar() {
-                    @Override
-                    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                        cookieStore.put(url.host(), cookies);
-                    }
-
-                    @Override
-                    public List<Cookie> loadForRequest(HttpUrl url) {
-                        List<Cookie> cookie = cookieStore.get(url.host());
-                        return cookie == null ? new ArrayList<>() : cookie;
-                    }
-                })
-                .retryOnConnectionFailure(true)
-                .build();
         bean = BeanUtil.utils();
+        eventBus = EventBus.getDefault();
+        mCookieJar = new MyCookieJar();
+        client = new OkHttpClient.Builder().cookieJar(mCookieJar).build();
     }
+    private static HttpUtil util;
     public static HttpUtil utils() {
-        return new HttpUtil();
+        if (util == null) {
+            synchronized (HttpUtil.class) {
+                if (util == null) {
+                    util = new HttpUtil();
+                }
+            }
+        }
+        return util;
     }
 
+    private MyCookieJar mCookieJar;
     private OkHttpClient client;
-    private HashMap<String, List<Cookie>> cookieStore;
     private BeanUtil bean;
+    private EventBus eventBus;
 
-    public void login(User u) {
-        csrf(DATA_TYPE.LOGIN, u);
+    public HttpUtil login(Context context, LoginEvent u) {
+        openCookiesWrite();
+        csrf(context, u);
+        return this;
     }
-    public void register(User u) {
-        csrf(DATA_TYPE.REGISTER, u);
+    public HttpUtil register(Context context, RegisterEvent u) {
+        openCookiesWrite();
+        csrf(context, u);
+        return this;
     }
-    private void relLogin(ContentValues loginMsg) {
+    private void relLogin(Context context, ContentValues loginMsg) {
+        openCookiesWrite();
         String user = loginMsg.getAsString("user");
         String pwd = loginMsg.getAsString("password");
         String csrf = loginMsg.getAsString("csrf");
@@ -74,22 +79,26 @@ public class HttpUtil {
                 .add("username", user)
                 .add("password", pwd)
                 .add("remember", "on").build();
-        Request login = new Request.Builder().url("https://miaowo.org/login")
+        Request login = new Request.Builder().url(context.getString(R.string.url_login))
                 .post(msg).addHeader("x-csrf-token", csrf)
                 .build();
+        LogUtil.i("连接Url: " + login.url());
         client.newCall(login).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.EXCEPTION, call, e));
+                eventBus.post(new ExceptionEvent(call, e));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.LOGIN, call, response, bean.buildUser(response)));
+                Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
+                LogUtil.i("连接Url: " + context.getString(R.string.url_home));
+                eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });
     }
-    private void relRegister(ContentValues loginMsg) {
+    private void relRegister(Context context, ContentValues loginMsg) {
+        openCookiesWrite();
         String user = loginMsg.getAsString("user");
         String pwd = loginMsg.getAsString("password");
         String email = loginMsg.getAsString("email");
@@ -99,27 +108,32 @@ public class HttpUtil {
                 .add("username", user)
                 .add("password", pwd)
                 .add("email", email).build();
-        Request login = new Request.Builder().url("https://miaowo.org/register")
+        Request login = new Request.Builder().url(context.getString(R.string.url_register))
                 .post(msg).addHeader("x-csrf-token", csrf)
                 .build();
+        LogUtil.i("连接Url: " + login.url());
         client.newCall(login).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.EXCEPTION, call, e));
+                eventBus.post(new ExceptionEvent(call, e));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.REGISTER, call, response, bean.buildUser(response)));
+                String msg = response.body().string();
+                if (msg.startsWith("[[error")) {
+                    throw new IOException(msg.substring(2, msg.length() - 2));
+                }
+                Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
+                eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });
     }
-    private void csrf(DATA_TYPE type, User user) {
-        Request csrf = new Request.Builder().url("https://miaowo.org/login").build();
-        client.newCall(csrf).enqueue(new Callback() {
+    private void csrf(Context context, BaseEvent user) {
+        post(context.getString(R.string.url_login), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.EXCEPTION, call, e));
+                eventBus.post(new ExceptionEvent(call, e));
             }
 
             @Override
@@ -127,81 +141,78 @@ public class HttpUtil {
                 String csrf = "";
                 ArrayList<String> jsons = bean.getJsons(response);
                 for (String json : jsons) {
+                    JSONObject jsonObject;
                     try {
-                        JSONObject jsonObject = new JSONObject(json);
+                        jsonObject = new JSONObject(json);
                         if (jsonObject.has("csrf_token")) {
                             csrf = jsonObject.getString("csrf_token");
                             break;
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        eventBus.post(new ExceptionEvent(call, e));
                     }
                 }
-                if (TextUtils.isEmpty(csrf)) {
+                if (!TextUtils.isEmpty(csrf)) {
                     ContentValues cv = new ContentValues();
-                    switch (type) {
-                        case LOGIN:
-                            cv.put("user", user.username);
-                            cv.put("password", user.password);
-                            cv.put("csrf", csrf);
-                            relLogin(cv);
-                            break;
-                        case REGISTER:
-                            cv.put("user", user.username);
-                            cv.put("password", user.password);
-                            cv.put("email", user.email);
-                            cv.put("csrf", csrf);
-                            relRegister(cv);
-                            break;
-                        default:
-                            break;
+                    if (user instanceof LoginEvent) {
+                        cv.put("user", ((LoginEvent) user).username);
+                        cv.put("password", ((LoginEvent) user).password);
+                        cv.put("csrf", csrf);
+                        relLogin(context, cv);
+                    } else if (user instanceof RegisterEvent) {
+                        cv.put("user", ((RegisterEvent) user).username);
+                        cv.put("password", ((RegisterEvent) user).password);
+                        cv.put("email", ((RegisterEvent) user).email);
+                        cv.put("csrf", csrf);
+                        relRegister(context, cv);
                     }
                 }
             }
         });
     }
 
-    public void post(String url, EventMsg.DATA_TYPE type) {
+    public HttpUtil openCookiesWrite() {
+        mCookieJar.writable(true);
+        return this;
+    }
+    public HttpUtil clearCookies() {
+        mCookieJar.clear();
+        return this;
+    }
+    public HttpUtil post(String url, Callback callback) {
+        LogUtil.i("连接Url: " + url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                EventUtil.post(new EventMsg<>(DATA_TYPE.EXCEPTION, call, e));
-            }
+        client.newCall(request).enqueue(callback);
+        return this;
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                switch (type) {
-                    case ANSWER:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildAnswer(response)));
-                        break;
-                    case CHAT:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildQuestion(response)));
-                        break;
-                    case QUESTION:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildChat(response)));
-                        break;
-                    case USER:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildUser(response)));
-                        break;
-                    case VERSION:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildVersion(response)));
-                        break;
-                    case CATEGORY:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildCategory(response)));
-                        break;
-                    case SEARCH_QUESTION:
-                    case SEARCH_TOPIC:
-                    case SEARCH_USER:
-                        EventUtil.post(new EventMsg<>(type, call, response, bean.buildSearch(response)));
-                        break;
-                    case TEST:
-                        EventUtil.post(new EventMsg<>(type, call, response, request));
-                    default:
-                }
+    private static class MyCookieJar implements CookieJar {
+        final private static HashMap<String, List<Cookie>> mCookies = new HashMap<>();
+
+        private boolean writable = false;
+
+        @Override
+        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            if (writable) {
+                mCookies.put(url.host(), cookies);
+                writable = false;
             }
-        });
+        }
+
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            List<Cookie> cookies = mCookies.get(url.host());
+            return cookies != null ? cookies : new ArrayList<>();
+        }
+
+        void writable(boolean writable) {
+            this.writable = writable;
+        }
+
+        void clear() {
+            mCookies.clear();
+        }
     }
 }

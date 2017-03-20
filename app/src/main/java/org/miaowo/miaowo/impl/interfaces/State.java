@@ -10,10 +10,20 @@ import org.miaowo.miaowo.bean.data.User;
 public interface State {
 
     /**
-     * 登录
-     * @param u 包含登录信息的用户对象
+     * 当前登陆的用户
+     * @return 已登录的用户
      */
-    void login(User u);
+    User loginedUser();
+
+    /**
+     * 登陆成功时，使用此方法记录登陆成功的用户
+     */
+    void setUser(User user);
+
+    /**
+     * 登录
+     */
+    void login(String user, String pwd);
 
     /**
      * 登出
@@ -22,15 +32,13 @@ public interface State {
 
     /**
      * 注册
-     * @param u 包含用户注册信息的用户对象
      */
-    void register(User u);
+    void register(String user, String pwd, String email);
 
     /**
-     * 用于注销用户
-     * @param u 要注销的用户
+     * 用于注销用户user
      */
-    void remove(User u);
+    void remove(String user, String pwd);
 
     /**
      * 用于校验本机是否已登录

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rl_user"
     android:background="@drawable/bg_rect_deep_purple_300"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -27,7 +26,6 @@
         android:layout_below="@id/include"/>
 
     <RelativeLayout
-        android:id="@+id/rl_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list">

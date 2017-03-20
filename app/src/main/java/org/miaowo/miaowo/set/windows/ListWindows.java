@@ -7,12 +7,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
-import org.miaowo.miaowo.root.D;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.root.ListFragment;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.view.FloatView;
+import org.miaowo.miaowo.root.fragment.ListFragment;
 import org.miaowo.miaowo.util.SpUtil;
+import org.miaowo.miaowo.view.FloatView;
+
+import static org.miaowo.miaowo.adapter.ItemRecyclerAdapter.SORT_HOT;
+import static org.miaowo.miaowo.adapter.ItemRecyclerAdapter.SORT_NEW;
 
 /**
  * 排序等对列表的操作
@@ -20,25 +22,22 @@ import org.miaowo.miaowo.util.SpUtil;
  */
 
 public class ListWindows {
-    // 显示
-    final public static int SORT_NONE = 0;
-    final public static int SORT_NEW = 1;
-    final public static int SORT_HOT= 2;
-    private BaseActivity context;
+    private BaseActivity mContext;
+    private SpUtil mDefaultSp;
 
-    private ListWindows() {
-        context = D.getInstance().activeActivity;
+    private ListWindows(BaseActivity context) {
+        mContext = context;
+        mDefaultSp = SpUtil.defaultSp(context);
     }
-    public static ListWindows windows() { return new ListWindows(); }
+    public static ListWindows windows(BaseActivity context) { return new ListWindows(context); }
 
-    public FloatView showListSortChooser() {
-        final ListFragment lf = D.getInstance().shownFragment;
+    public FloatView showListSortChooser(ListFragment lf) {
         if (lf == null) {
             return null;
         }
         final String name = lf.getName();
 
-        final FloatView view = new FloatView(R.layout.window_list_sort);
+        final FloatView view = new FloatView(mContext, "", R.layout.window_list_sort);
         View v = view.getView();
 
         Button btn_ok = (Button) v.findViewById(R.id.btn_send);
@@ -46,27 +45,27 @@ public class ListWindows {
         final CheckBox cb_refresh = (CheckBox) v.findViewById(R.id.cb_refresh);
         cb_refresh.setChecked(true);
         final RadioGroup rg_type = (RadioGroup) v.findViewById(R.id.rg_type);
-        int t = SpUtil.getInt(context, name, SORT_NEW);
+        int t = mDefaultSp.getInt(name, SORT_NEW);
         rg_type.check(t == SORT_HOT ? R.id.rb_hotter : R.id.rb_newer);
 
-        btn_cancel.setOnClickListener(v1 -> view.dismiss());
+        btn_cancel.setOnClickListener(v1 -> view.dismiss(false));
         btn_ok.setOnClickListener(v1 -> {
             switch (rg_type.getCheckedRadioButtonId()) {
                 case R.id.rb_newer:
-                    SpUtil.putInt(context, name, SORT_NEW);
+                    mDefaultSp.putInt(name, SORT_NEW);
                     break;
                 case R.id.rb_hotter:
-                    SpUtil.putInt(context, name, SORT_HOT);
+                    mDefaultSp.putInt(name, SORT_HOT);
                     break;
             }
 
             if (cb_refresh.isChecked()) {
-                lf.refresh();
+                lf.checkNew();
             } else {
-                lf.sort(SpUtil.getInt(context, name, SORT_NEW));
+                lf.sort(mDefaultSp.getInt(name, SORT_NEW));
             }
 
-            view.dismiss();
+            view.dismiss(false);
         });
 
         return view.show(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, new Point(0, 500));

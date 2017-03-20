@@ -1,14 +1,11 @@
 package org.miaowo.miaowo.bean.config;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * 软件版本信息
  * Created by lq2007 on 16-11-26.
  */
 
-public class VersionMessage implements Parcelable {
+public class VersionMessage {
     // 版本代号
     private int version;
     // 当前版本
@@ -24,25 +21,6 @@ public class VersionMessage implements Parcelable {
         this.message = message;
         this.url = url;
     }
-
-    protected VersionMessage(Parcel in) {
-        version = in.readInt();
-        versionName = in.readString();
-        message = in.readString();
-        url = in.readString();
-    }
-
-    public static final Creator<VersionMessage> CREATOR = new Creator<VersionMessage>() {
-        @Override
-        public VersionMessage createFromParcel(Parcel in) {
-            return new VersionMessage(in);
-        }
-
-        @Override
-        public VersionMessage[] newArray(int size) {
-            return new VersionMessage[size];
-        }
-    };
 
     public int getVersion() {
         return version;
@@ -74,18 +52,5 @@ public class VersionMessage implements Parcelable {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(version);
-        dest.writeString(versionName);
-        dest.writeString(message);
-        dest.writeString(url);
     }
 }

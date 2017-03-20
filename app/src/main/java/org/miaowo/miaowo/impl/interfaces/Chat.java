@@ -1,6 +1,6 @@
 package org.miaowo.miaowo.impl.interfaces;
 
-import org.miaowo.miaowo.bean.data.ChatMessage;
+import org.miaowo.miaowo.bean.data.web.ChatMessage;
 
 /**
  * 聊天的有关方法

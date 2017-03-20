@@ -2,14 +2,13 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".activity.Setting">
+    tools:mContext=".activity.Setting">
 
     <LinearLayout
         android:id="@+id/ll_action"
@@ -98,7 +97,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ll_summary"
                 android:layout_below="@id/ll_pwd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,11 +104,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/user_dst"
+                    android:text="@string/user_email"
                     android:textSize="20sp"/>
 
                 <EditText
-                    android:id="@+id/et_summary"
+                    android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top"

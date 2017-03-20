@@ -23,8 +23,8 @@ public class FragmentUtil {
 
     /**
      * 显示一个Fragment
-     * @param container 显示Fragment的FrameLayout
-     * @param fragment 要显示的Fragment
+     * @param container 显示容器
+     * @param fragment 要显示的 Fragment
      */
     private void show(@IdRes int container, Fragment fragment) {
         FragmentTransaction transaction = manager.beginTransaction();
@@ -37,15 +37,21 @@ public class FragmentUtil {
 
     /**
      * 关闭所有打开的 Fragment, 仅显示一页
-     * @param container
-     * @param fragment
+     * @param container 显示容器
+     * @param fragment 要显示的 Fragment
      */
     public void showOnly(@IdRes int container, Fragment fragment) {
-        hideAll();
+        hide(manager.getFragments());
         show(container, fragment);
     }
 
-    private void hide(Fragment... fragments) {
+    /*
+     * 隐藏 Fragment
+     */
+    private void hide(List<Fragment> fragments) {
+        if (fragments == null || fragments.size() == 0) {
+            return;
+        }
         FragmentTransaction transaction = manager.beginTransaction();
         for (Fragment fragment : fragments) {
             if (fragment.isVisible()) {
@@ -53,17 +59,5 @@ public class FragmentUtil {
             }
         }
         transaction.commit();
-    }
-
-    /**
-     * 隐藏所有Fragment，通常用于显示一个Fragment之前的扫尾工作
-     */
-    private void hideAll() {
-        List<Fragment> fragments = manager.getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                hide(fragment);
-            }
-        }
     }
 }
