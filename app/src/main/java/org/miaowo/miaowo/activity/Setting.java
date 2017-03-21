@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import com.yalantis.ucrop.UCrop;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.State;

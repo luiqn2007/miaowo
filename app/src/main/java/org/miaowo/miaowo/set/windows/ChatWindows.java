@@ -11,9 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.adapter.ItemRecyclerAdapter;
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.view.load_more_list.ItemRecyclerAdapter;
 import org.miaowo.miaowo.bean.data.web.ChatMessage;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.ChatImpl;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Chat;
@@ -21,7 +21,8 @@ import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.view.FloatView;
-import org.miaowo.miaowo.view.LoadMoreList;
+import org.miaowo.miaowo.view.load_more_list.LoadMoreList;
+import org.miaowo.miaowo.view.load_more_list.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,16 +76,14 @@ public class ChatWindows {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
-                    ViewHolder holder = new ViewHolder();
                     convertView = View.inflate(mContext, R.layout.list_chat, null);
-                    holder.iv_user = (ImageView) convertView.findViewById(R.id.iv_user);
-                    holder.tv_user = (TextView) convertView.findViewById(R.id.tv_user);
+                    ViewHolder holder = new ViewHolder(convertView);
                     convertView.setTag(holder);
                 }
                 ViewHolder holder = (ViewHolder) convertView.getTag();
                 User u = (User) getItem(position);
-                holder.tv_user.setText(u.getUsername());
-                ImageUtil.utils(mContext).setUser(holder.iv_user, u, true);
+                holder.getTextView(R.id.tv_user).setText(u.getUsername());
+                ImageUtil.utils(mContext).setUser(holder.getImageView(R.id.iv_user), u, true);
                 return convertView;
             }
         };
@@ -122,17 +121,20 @@ public class ChatWindows {
 
         ImageUtil.utils(mContext).setUser(iv_user, from, true);
         tv_user.setText(from.getUsername());
-        list.setPullRefresher(() -> mChat.loadBefore());
+        list.setPullRefresher(() -> {
+            mChat.loadBefore();
+            list.loadOver();
+        });
         list.setAdapter(new ItemRecyclerAdapter<>(
                 new ArrayList<>(), new ItemRecyclerAdapter.ViewLoader<ChatMessage>() {
             @Override
-            public ItemRecyclerAdapter.ViewHolder createHolder(ViewGroup parent, int viewType) {
-                return new ItemRecyclerAdapter.ViewHolder(
+            public ViewHolder createHolder(ViewGroup parent, int viewType) {
+                return new ViewHolder(
                         LayoutInflater.from(mContext).inflate(R.layout.list_chat_message, parent, false));
             }
 
             @Override
-            public void bindView(ChatMessage item, ItemRecyclerAdapter.ViewHolder holder) {
+            public void bindView(ChatMessage item, ViewHolder holder) {
                 View v = holder.getView();
                 if (to.equals(item.getFrom())) {
                     v.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.bg_rect_indigo_100));
@@ -150,11 +152,6 @@ public class ChatWindows {
         btn_send.setOnClickListener(v1 ->
                 mChat.sendMessage(new ChatMessage(-1, System.currentTimeMillis(), from, to, et_msg.getText().toString())));
         return view.defaultBar().show();
-    }
-
-    private class ViewHolder {
-        ImageView iv_user;
-        TextView tv_user;
     }
 
     public static boolean addChatMsg(final ChatMessage msg) {

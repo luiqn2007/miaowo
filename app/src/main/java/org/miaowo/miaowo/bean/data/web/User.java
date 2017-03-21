@@ -2,8 +2,6 @@ package org.miaowo.miaowo.bean.data.web;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.miaowo.miaowo.bean.data.User;
-
 import java.util.List;
 
 /**
@@ -11,7 +9,7 @@ import java.util.List;
  * Created by luqin on 17-3-18.
  */
 
-public class UserPage implements User {
+public class User {
 
     /**
      * username : 么么么喵
@@ -104,7 +102,7 @@ public class UserPage implements User {
     private int postcount;
     private int topiccount;
     private long lastposttime;
-    private boolean banned;
+    private int reputation;
     private String status;
     private int uid;
     private int passwordExpiry;
@@ -130,7 +128,9 @@ public class UserPage implements User {
     private int theirid;
     private boolean isTargetAdmin;
     private boolean isAdmin;
+    @SerializedName("isGlobalMod")
     private boolean isGlobalModerator;
+    @SerializedName("isMod")
     private boolean isModerator;
     private boolean isAdminOrGlobalModerator;
     private boolean isAdminOrGlobalModeratorOrModerator;
@@ -158,18 +158,22 @@ public class UserPage implements User {
     private int hasPrivateChat;
     private int nextStart;
     private String title;
-    private PaginationBean pagination;
+    private String password;
+    private Pagination pagination;
     private boolean loggedIn;
     private String relative_path;
-    private TemplateBean template;
     private String url;
     private String bodyClass;
     private List<String> ips;
     private List<?> groups;
     private List<?> profile_links;
     private List<?> sso;
-    private List<PostsBean> posts;
-    private List<BreadcrumbsBean> breadcrumbs;
+    private List<?> custom_profile_info;
+    private List<Post> posts;
+    private boolean isEmailConfirmSent;
+    private String aboutme;
+    private int banned_until;
+    private String banned_until_readable;
 
     public String getUsername() {
         return username;
@@ -215,9 +219,8 @@ public class UserPage implements User {
         return picture;
     }
 
-    @Override
     public int getReputation() {
-        return 0;
+        return reputation;
     }
 
     public void setPicture(String picture) {
@@ -304,14 +307,6 @@ public class UserPage implements User {
         this.lastposttime = lastposttime;
     }
 
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -324,9 +319,8 @@ public class UserPage implements User {
         return uid;
     }
 
-    @Override
     public boolean emailConfirmed() {
-        return false;
+        return emailConfirmed;
     }
 
     public void setUid(int uid) {
@@ -409,14 +403,12 @@ public class UserPage implements User {
         return iconBgColor;
     }
 
-    @Override
     public boolean isAdmin() {
-        return false;
+        return isAdmin;
     }
 
-    @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     public void setIconBgColor(String iconBgColor) {
@@ -671,11 +663,11 @@ public class UserPage implements User {
         this.title = title;
     }
 
-    public PaginationBean getPagination() {
+    public Pagination getPagination() {
         return pagination;
     }
 
-    public void setPagination(PaginationBean pagination) {
+    public void setPagination(Pagination pagination) {
         this.pagination = pagination;
     }
 
@@ -693,14 +685,6 @@ public class UserPage implements User {
 
     public void setRelative_path(String relative_path) {
         this.relative_path = relative_path;
-    }
-
-    public TemplateBean getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(TemplateBean template) {
-        this.template = template;
     }
 
     public String getUrl() {
@@ -751,665 +735,11 @@ public class UserPage implements User {
         this.sso = sso;
     }
 
-    public List<PostsBean> getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostsBean> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
-    }
-
-    public List<BreadcrumbsBean> getBreadcrumbs() {
-        return breadcrumbs;
-    }
-
-    public void setBreadcrumbs(List<BreadcrumbsBean> breadcrumbs) {
-        this.breadcrumbs = breadcrumbs;
-    }
-
-    public static class PaginationBean {
-        /**
-         * rel : [{"rel":"next","href":"?page=2"}]
-         * pages : [{"page":1,"active":true,"qs":"page=1"},{"page":2,"active":false,"qs":"page=2"},{"page":3,"active":false,"qs":"page=3"},{"page":4,"active":false,"qs":"page=4"},{"page":5,"active":false,"qs":"page=5"},{"separator":true},{"page":11,"active":false,"qs":"page=11"},{"page":12,"active":false,"qs":"page=12"}]
-         * currentPage : 1
-         * pageCount : 12
-         * prev : {"page":1,"active":false,"qs":"page=1"}
-         * next : {"page":2,"active":true,"qs":"page=2"}
-         */
-
-        private int currentPage;
-        private int pageCount;
-        private PrevBean prev;
-        private NextBean next;
-        private List<RelBean> rel;
-        private List<PagesBean> pages;
-
-        public int getCurrentPage() {
-            return currentPage;
-        }
-
-        public void setCurrentPage(int currentPage) {
-            this.currentPage = currentPage;
-        }
-
-        public int getPageCount() {
-            return pageCount;
-        }
-
-        public void setPageCount(int pageCount) {
-            this.pageCount = pageCount;
-        }
-
-        public PrevBean getPrev() {
-            return prev;
-        }
-
-        public void setPrev(PrevBean prev) {
-            this.prev = prev;
-        }
-
-        public NextBean getNext() {
-            return next;
-        }
-
-        public void setNext(NextBean next) {
-            this.next = next;
-        }
-
-        public List<RelBean> getRel() {
-            return rel;
-        }
-
-        public void setRel(List<RelBean> rel) {
-            this.rel = rel;
-        }
-
-        public List<PagesBean> getPages() {
-            return pages;
-        }
-
-        public void setPages(List<PagesBean> pages) {
-            this.pages = pages;
-        }
-
-        public static class PrevBean {
-            /**
-             * page : 1
-             * active : false
-             * qs : page=1
-             */
-
-            private int page;
-            private boolean active;
-            private String qs;
-
-            public int getPage() {
-                return page;
-            }
-
-            public void setPage(int page) {
-                this.page = page;
-            }
-
-            public boolean isActive() {
-                return active;
-            }
-
-            public void setActive(boolean active) {
-                this.active = active;
-            }
-
-            public String getQs() {
-                return qs;
-            }
-
-            public void setQs(String qs) {
-                this.qs = qs;
-            }
-        }
-
-        public static class NextBean {
-            /**
-             * page : 2
-             * active : true
-             * qs : page=2
-             */
-
-            private int page;
-            private boolean active;
-            private String qs;
-
-            public int getPage() {
-                return page;
-            }
-
-            public void setPage(int page) {
-                this.page = page;
-            }
-
-            public boolean isActive() {
-                return active;
-            }
-
-            public void setActive(boolean active) {
-                this.active = active;
-            }
-
-            public String getQs() {
-                return qs;
-            }
-
-            public void setQs(String qs) {
-                this.qs = qs;
-            }
-        }
-
-        public static class RelBean {
-            /**
-             * rel : next
-             * href : ?page=2
-             */
-
-            private String rel;
-            private String href;
-
-            public String getRel() {
-                return rel;
-            }
-
-            public void setRel(String rel) {
-                this.rel = rel;
-            }
-
-            public String getHref() {
-                return href;
-            }
-
-            public void setHref(String href) {
-                this.href = href;
-            }
-        }
-
-        public static class PagesBean {
-            /**
-             * page : 1
-             * active : true
-             * qs : page=1
-             * separator : true
-             */
-
-            private int page;
-            private boolean active;
-            private String qs;
-            private boolean separator;
-
-            public int getPage() {
-                return page;
-            }
-
-            public void setPage(int page) {
-                this.page = page;
-            }
-
-            public boolean isActive() {
-                return active;
-            }
-
-            public void setActive(boolean active) {
-                this.active = active;
-            }
-
-            public String getQs() {
-                return qs;
-            }
-
-            public void setQs(String qs) {
-                this.qs = qs;
-            }
-
-            public boolean isSeparator() {
-                return separator;
-            }
-
-            public void setSeparator(boolean separator) {
-                this.separator = separator;
-            }
-        }
-    }
-
-    public static class TemplateBean {
-        /**
-         * name : account/profile
-         * account/profile : true
-         */
-
-        private String name;
-        @SerializedName("account/profile")
-        private boolean accountProfile;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public boolean isAccountProfile() {
-            return accountProfile;
-        }
-
-        public void setAccountProfile(boolean accountProfile) {
-            this.accountProfile = accountProfile;
-        }
-    }
-
-    public static class PostsBean {
-        /**
-         * pid : 1168
-         * uid : 7
-         * tid : 197
-         * content : <p><a class="plugin-mentions-a" href="https://miaowo.org/uid/1">@Systemd</a><br />
-         说实话，我查了查awesome，个人不喜欢这样的。不可重叠，硬伤，alt+tab效率也不差。</p>
-         <p>暂时不喜换系统，webstorm我现在就装着，不过基本没用过 /(ㄒoㄒ)/~~</p>
-         <p><a href="http://Blog.miaowo.org" rel="nofollow">Blog.miaowo.org</a> 现在还是空着的啊，不过既然计划要把公告去掉的话，我就不在APP里面预留了。</p>
-         <p>rhel。。。也行，不过都差不多吧。说这些有点远，得先搞完喵窝APP再说。不然一不小心硬盘再挂掉哭都没地方哭去。</p>
-         <p>装软件很烦吗？我感觉 webapp 依托服务器，万一服务器挂了就完了，不太安全持久，而且外面套一层浏览器的壳也挺难看的，显示效果也不好保证。而且webapp比一般APP多一步打开浏览器的步骤，比较麻烦。想用旧版本也不太可能，离线功能也是个问题。</p>
-         <p>下一步到底是更进一步继续看 nativeApp 呢，还是看 webApp，有点迷茫了。nativeAPP 再深入就得研究 Linux，想看 root 后的功能，或者图形-&gt;游戏。webAPP的话，低平台依赖是个好处，而且如果解决了离线问题的话还是很不错的，但是好像基于web框架做的APP运行性能不如本地。不管C++还是JS我都是只看过一遍语法，也不存在什么难度不同。愁。不过幸好这个APP够我再写一个月的了，我还有比较充裕的时间考虑。</p>
-
-         * timestamp : 1489774776511
-         * deleted : false
-         * upvotes : 0
-         * downvotes : 0
-         * user : {"username":"么么么喵","userslug":"么么么喵","picture":"/uploads/files/14828604360404e0e28381f30e92480e63b4a45086e061d95f715.jpg","uid":7,"icon:text":"么","icon:bgColor":"#1b5e20"}
-         * topic : {"tid":197,"uid":7,"cid":"6","mainPid":1128,"title":"搭好了leanote了","slug":"197/搭好了leanote了","postcount":16,"deleted":false}
-         * category : {"cid":6,"name":"灌水","icon":"fa-comments","bgColor":"#32c3e3","color":"#fff","slug":"6/灌水","parentCid":0}
-         * isMainPost : false
-         * votes : 0
-         * timestampISO : 2017-03-17T18:19:36.511Z
-         */
-
-        private int pid;
-        private int uid;
-        private int tid;
-        private String content;
-        private long timestamp;
-        private boolean deleted;
-        private int upvotes;
-        private int downvotes;
-        private UserBean user;
-        private TopicBean topic;
-        private CategoryBean category;
-        private boolean isMainPost;
-        private int votes;
-        private String timestampISO;
-
-        public int getPid() {
-            return pid;
-        }
-
-        public void setPid(int pid) {
-            this.pid = pid;
-        }
-
-        public int getUid() {
-            return uid;
-        }
-
-        public void setUid(int uid) {
-            this.uid = uid;
-        }
-
-        public int getTid() {
-            return tid;
-        }
-
-        public void setTid(int tid) {
-            this.tid = tid;
-        }
-
-        public String getContent() {
-            return content;
-        }
-
-        public void setContent(String content) {
-            this.content = content;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(long timestamp) {
-            this.timestamp = timestamp;
-        }
-
-        public boolean isDeleted() {
-            return deleted;
-        }
-
-        public void setDeleted(boolean deleted) {
-            this.deleted = deleted;
-        }
-
-        public int getUpvotes() {
-            return upvotes;
-        }
-
-        public void setUpvotes(int upvotes) {
-            this.upvotes = upvotes;
-        }
-
-        public int getDownvotes() {
-            return downvotes;
-        }
-
-        public void setDownvotes(int downvotes) {
-            this.downvotes = downvotes;
-        }
-
-        public UserBean getUser() {
-            return user;
-        }
-
-        public void setUser(UserBean user) {
-            this.user = user;
-        }
-
-        public TopicBean getTopic() {
-            return topic;
-        }
-
-        public void setTopic(TopicBean topic) {
-            this.topic = topic;
-        }
-
-        public CategoryBean getCategory() {
-            return category;
-        }
-
-        public void setCategory(CategoryBean category) {
-            this.category = category;
-        }
-
-        public boolean isIsMainPost() {
-            return isMainPost;
-        }
-
-        public void setIsMainPost(boolean isMainPost) {
-            this.isMainPost = isMainPost;
-        }
-
-        public int getVotes() {
-            return votes;
-        }
-
-        public void setVotes(int votes) {
-            this.votes = votes;
-        }
-
-        public String getTimestampISO() {
-            return timestampISO;
-        }
-
-        public void setTimestampISO(String timestampISO) {
-            this.timestampISO = timestampISO;
-        }
-
-        public static class UserBean {
-            /**
-             * username : 么么么喵
-             * userslug : 么么么喵
-             * picture : /uploads/files/14828604360404e0e28381f30e92480e63b4a45086e061d95f715.jpg
-             * uid : 7
-             * icon:text : 么
-             * icon:bgColor : #1b5e20
-             */
-
-            private String username;
-            private String userslug;
-            private String picture;
-            private int uid;
-            @SerializedName("icon:text")
-            private String iconText;
-            @SerializedName("icon:bgColor")
-            private String iconBgColor;
-
-            public String getUsername() {
-                return username;
-            }
-
-            public void setUsername(String username) {
-                this.username = username;
-            }
-
-            public String getUserslug() {
-                return userslug;
-            }
-
-            public void setUserslug(String userslug) {
-                this.userslug = userslug;
-            }
-
-            public String getPicture() {
-                return picture;
-            }
-
-            public void setPicture(String picture) {
-                this.picture = picture;
-            }
-
-            public int getUid() {
-                return uid;
-            }
-
-            public void setUid(int uid) {
-                this.uid = uid;
-            }
-
-            public String getIconText() {
-                return iconText;
-            }
-
-            public void setIconText(String iconText) {
-                this.iconText = iconText;
-            }
-
-            public String getIconBgColor() {
-                return iconBgColor;
-            }
-
-            public void setIconBgColor(String iconBgColor) {
-                this.iconBgColor = iconBgColor;
-            }
-        }
-
-        public static class TopicBean {
-            /**
-             * tid : 197
-             * uid : 7
-             * cid : 6
-             * mainPid : 1128
-             * title : 搭好了leanote了
-             * slug : 197/搭好了leanote了
-             * postcount : 16
-             * deleted : false
-             */
-
-            private int tid;
-            private int uid;
-            private String cid;
-            private int mainPid;
-            private String title;
-            private String slug;
-            private int postcount;
-            private boolean deleted;
-
-            public int getTid() {
-                return tid;
-            }
-
-            public void setTid(int tid) {
-                this.tid = tid;
-            }
-
-            public int getUid() {
-                return uid;
-            }
-
-            public void setUid(int uid) {
-                this.uid = uid;
-            }
-
-            public String getCid() {
-                return cid;
-            }
-
-            public void setCid(String cid) {
-                this.cid = cid;
-            }
-
-            public int getMainPid() {
-                return mainPid;
-            }
-
-            public void setMainPid(int mainPid) {
-                this.mainPid = mainPid;
-            }
-
-            public String getTitle() {
-                return title;
-            }
-
-            public void setTitle(String title) {
-                this.title = title;
-            }
-
-            public String getSlug() {
-                return slug;
-            }
-
-            public void setSlug(String slug) {
-                this.slug = slug;
-            }
-
-            public int getPostcount() {
-                return postcount;
-            }
-
-            public void setPostcount(int postcount) {
-                this.postcount = postcount;
-            }
-
-            public boolean isDeleted() {
-                return deleted;
-            }
-
-            public void setDeleted(boolean deleted) {
-                this.deleted = deleted;
-            }
-        }
-
-        public static class CategoryBean {
-            /**
-             * cid : 6
-             * name : 灌水
-             * icon : fa-comments
-             * bgColor : #32c3e3
-             * color : #fff
-             * slug : 6/灌水
-             * parentCid : 0
-             */
-
-            private int cid;
-            private String name;
-            private String icon;
-            private String bgColor;
-            private String color;
-            private String slug;
-            private int parentCid;
-
-            public int getCid() {
-                return cid;
-            }
-
-            public void setCid(int cid) {
-                this.cid = cid;
-            }
-
-            public String getName() {
-                return name;
-            }
-
-            public void setName(String name) {
-                this.name = name;
-            }
-
-            public String getIcon() {
-                return icon;
-            }
-
-            public void setIcon(String icon) {
-                this.icon = icon;
-            }
-
-            public String getBgColor() {
-                return bgColor;
-            }
-
-            public void setBgColor(String bgColor) {
-                this.bgColor = bgColor;
-            }
-
-            public String getColor() {
-                return color;
-            }
-
-            public void setColor(String color) {
-                this.color = color;
-            }
-
-            public String getSlug() {
-                return slug;
-            }
-
-            public void setSlug(String slug) {
-                this.slug = slug;
-            }
-
-            public int getParentCid() {
-                return parentCid;
-            }
-
-            public void setParentCid(int parentCid) {
-                this.parentCid = parentCid;
-            }
-        }
-    }
-
-    public static class BreadcrumbsBean {
-        /**
-         * text : [[global:home]]
-         * url : /
-         */
-
-        private String text;
-        private String url;
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_rect_deep_purple_300"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -17,7 +18,7 @@
         android:id="@+id/include"
         layout="@layout/include_chat_head" />
 
-    <org.miaowo.miaowo.view.LoadMoreList
+    <org.miaowo.miaowo.view.load_more_list.LoadMoreList
         android:id="@+id/list"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"

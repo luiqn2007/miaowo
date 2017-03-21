@@ -1,18 +1,22 @@
 <resources>
     <string name="app_name">喵窝</string>
+    <string name="app_ns">http://schemas.android.com/apk/res-auto</string>
 
-    <string name="url_home">https://miaowo.org</string>
-    <string name="url_user">/user/</string>
-    <string name="url_topic">/topic/</string>
-    <string name="url_search">/search?term=</string>
-    <string name="url_search_title">&amp;in=titlesposts&amp;showAs=posts</string>
-    <string name="url_search_user">&amp;in=users</string>
-    <string name="url_login">https://miaowo.org/login</string>
-    <string name="url_register">https://miaowo.org/register</string>
-    <string name="url_announce">https://miaowo.org/category/1/announcements</string>
+    <string name="url_home" formatted="false">https://miaowo.org</string>
+    <string name="url_user" formatted="false">/user/</string>
+    <string name="url_topic" formatted="false">/topic/</string>
+    <string name="url_search" formatted="false">/search?term=</string>
+    <string name="url_search_title" formatted="false">&amp;in=titlesposts&amp;showAs=posts</string>
+    <string name="url_search_user" formatted="false">&amp;in=users</string>
+    <string name="url_login" formatted="false">https://miaowo.org/login</string>
+    <string name="url_register" formatted="false">https://miaowo.org/register</string>
+    <string name="url_announce" formatted="false">https://miaowo.org/category/1/announcements</string>
     <string name="url_daily" formatted="false">https://miaowo.org/category/7/%E6%AF%8F%E6%97%A5%E9%97%AE%E9%A2%98</string>
     <string name="url_question" formatted="false">https://miaowo.org/category/5/%E6%8F%90%E9%97%AE</string>
     <string name="url_water" formatted="false">https://miaowo.org/category/6/%E7%81%8C%E6%B0%B4</string>
+    <string name="url_unread" formatted="false">https://miaowo.org/unread</string>
+    <string name="url_tags" formatted="false">https://miaowo.org/tags/</string>
+    <string name="url_users" formatted="false">https://miaowo.org/users?page=</string>
 
     <string name="reply">回复</string>
     <string name="square">广场</string>

@@ -8,8 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.set.windows.ListWindows;
+import org.miaowo.miaowo.fragment.ListFragment;
 import org.miaowo.miaowo.util.FragmentUtil;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
  * Created by luqin on 17-1-24.
  */
 
-public class ChooseFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
+public class ChooseFragment extends Fragment implements View.OnClickListener {
     public static String TAG_CONTAINER = "container";
     public static String TAG_DEFAULT = "default";
     public static String TAG_LAYOUT = "layout";
@@ -57,7 +56,6 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
     private int container, defaultFg;
 
     private View root;
-    private ListWindows mListWindows;
 
     private void loadFragment(int fragmentId) {
         int index = controls.indexOf(fragmentId);
@@ -81,12 +79,6 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
         loadFragment(v.getId());
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        mListWindows.showListSortChooser(fragments.get((Integer) v.getTag()));
-        return true;
-    }
-
     private void initViews(View v) {
         root = v;
 
@@ -94,10 +86,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener, Vi
             int id = controls.get(i);
             View view = v.findViewById(id);
             view.setOnClickListener(this);
-            view.setOnLongClickListener(this);
             view.setTag(i);
         }
-
-        mListWindows = ListWindows.windows((BaseActivity) getActivity());
     }
 }

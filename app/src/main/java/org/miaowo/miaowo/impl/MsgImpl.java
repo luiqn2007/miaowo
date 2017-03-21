@@ -1,6 +1,7 @@
 package org.miaowo.miaowo.impl;
 
-import org.miaowo.miaowo.bean.data.web.QuestionDetail;
+import org.miaowo.miaowo.bean.data.web.Post;
+import org.miaowo.miaowo.bean.data.web.Question;
 import org.miaowo.miaowo.impl.interfaces.Message;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Callbacks;
@@ -26,7 +27,7 @@ public class MsgImpl implements Message {
     }
 
     @Override
-    public void sendReply(QuestionDetail.PostsBean question, String content) {
+    public void sendReply(Post question, String content) {
         mContext.handleError(Exceptions.E_NONE);
     }
 

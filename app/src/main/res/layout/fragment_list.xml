@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.miaowo.miaowo.view.LoadMoreList
+    <org.miaowo.miaowo.view.load_more_list.LoadMoreList
         android:id="@+id/list_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

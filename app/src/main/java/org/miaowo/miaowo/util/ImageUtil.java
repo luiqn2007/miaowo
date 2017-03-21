@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.UserWindows;
@@ -75,7 +75,7 @@ public class ImageUtil {
             } else {
                 creator = Picasso.with(mContext).load(imgRes);
             }
-            creator.transform(new CropCircleTransformation()).fit().into(iv);
+            mContext.runOnUiThread(() -> creator.transform(new CropCircleTransformation()).fit().into(iv));
         } else {
             mContext.runOnUiThread(() -> iv.setImageDrawable(textIcon(imgRes, config)));
         }

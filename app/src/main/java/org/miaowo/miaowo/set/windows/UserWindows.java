@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.UserPage;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
@@ -49,7 +49,7 @@ public class UserWindows {
 
         ImageUtil.utils(mContext).fill((ImageView) v.findViewById(R.id.iv_user), "default", null);
         ((TextView) v.findViewById(R.id.tv_user)).setText(username);
-        ((TextView) v.findViewById(R.id.tv_summary)).setText("加载中");
+        ((TextView) v.findViewById(R.id.tv_email)).setText("加载中");
         ((TextView) v.findViewById(R.id.tv_regist_time)).setText("加载中");
         fillCount(v, R.id.tv_ask, 0);
         fillCount(v, R.id.tv_scan,0);
@@ -60,7 +60,7 @@ public class UserWindows {
             @Override
             public void onFailure(Call call, IOException e) {
                 ((TextView) v.findViewById(R.id.tv_regist_time)).setText("加载失败");
-                ((TextView) v.findViewById(R.id.tv_summary)).setText("加载失败");
+                ((TextView) v.findViewById(R.id.tv_email)).setText("加载失败");
                 ((TextView) v.findViewById(R.id.tv_regist_time)).setText("加载失败");
                 v.findViewById(R.id.btn_chat).setOnClickListener(null);
                 v.findViewById(R.id.btn_focus).setOnClickListener(null);
@@ -68,21 +68,23 @@ public class UserWindows {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                UserPage user = BeanUtil.utils().buildFromLastJson(response, UserPage.class);
-                ImageUtil.utils(mContext).setUser((ImageView) v.findViewById(R.id.iv_user), user, false);
-                ((TextView) v.findViewById(R.id.tv_user)).setText(username);
-                ((TextView) v.findViewById(R.id.tv_summary)).setText(user.getEmail());
-                ((TextView) v.findViewById(R.id.tv_regist_time)).setText(FormatUtil.format().time(user.getJoindate()));
-                fillCount(v, R.id.tv_ask, user.getPostcount());
-                fillCount(v, R.id.tv_scan, user.getProfileviews());
-                fillCount(v, R.id.tv_like, user.getFollowerCount());
-                fillCount(v, R.id.tv_focus, user.getFollowingCount());
-                v.findViewById(R.id.btn_chat).setOnClickListener(v1 -> {
-                    if (mState.isLogin()) {
-                        mChatWindows.showChatDialog(user);
-                    }
+                User user = BeanUtil.utils().buildFromLastJson(response, User.class);
+                mContext.runOnUiThread(() -> {
+                    ImageUtil.utils(mContext).setUser((ImageView) v.findViewById(R.id.iv_user), user, false);
+                    ((TextView) v.findViewById(R.id.tv_user)).setText(username);
+                    ((TextView) v.findViewById(R.id.tv_email)).setText(user.getEmail());
+                    ((TextView) v.findViewById(R.id.tv_regist_time)).setText(FormatUtil.format().time(user.getJoindate()));
+                    fillCount(v, R.id.tv_ask, user.getPostcount());
+                    fillCount(v, R.id.tv_scan, user.getProfileviews());
+                    fillCount(v, R.id.tv_like, user.getFollowerCount());
+                    fillCount(v, R.id.tv_focus, user.getFollowingCount());
+                    v.findViewById(R.id.btn_chat).setOnClickListener(v1 -> {
+                        if (mState.isLogin()) {
+                            mChatWindows.showChatDialog(user);
+                        }
+                    });
+                    v.findViewById(R.id.btn_focus).setOnClickListener(v1 -> mUsers.focusUser(user));
                 });
-                v.findViewById(R.id.btn_focus).setOnClickListener(v1 -> mUsers.focusUser(user));
             }
         });
         return view.defaultBar().show();

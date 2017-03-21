@@ -1,7 +1,7 @@
 package org.miaowo.miaowo.impl.interfaces;
 
 
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.web.User;
 
 /**
  * 用于用户的查询，点赞等相关操作

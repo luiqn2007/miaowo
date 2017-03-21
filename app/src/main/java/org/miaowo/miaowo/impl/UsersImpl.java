@@ -1,8 +1,7 @@
 package org.miaowo.miaowo.impl;
 
 
-import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.bean.data.web.InnerUser;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
 
@@ -20,7 +19,7 @@ public class UsersImpl implements Users {
     }
 
     @Override
-    public InnerUser getUser(String name) {
+    public User getUser(String name) {
         return null;
     }
 

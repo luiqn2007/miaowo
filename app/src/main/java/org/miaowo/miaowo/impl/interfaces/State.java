@@ -1,6 +1,6 @@
 package org.miaowo.miaowo.impl.interfaces;
 
-import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.web.User;
 
 /**
  * 用于注册和登录的相关操作

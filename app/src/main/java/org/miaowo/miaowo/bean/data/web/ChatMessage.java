@@ -1,7 +1,5 @@
 package org.miaowo.miaowo.bean.data.web;
 
-import org.miaowo.miaowo.bean.data.User;
-
 /**
  * 聊天信息
  * Created by luqin on 16-12-31.

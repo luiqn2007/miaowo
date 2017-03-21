@@ -35,16 +35,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
 import org.miaowo.miaowo.bean.data.event.FileEvent;
 import org.miaowo.miaowo.bean.data.event.UserEvent;
 import org.miaowo.miaowo.bean.data.event.VersionEvent;
+import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.fragment.ListFragment;
 import org.miaowo.miaowo.fragment.MiaoFragment;
 import org.miaowo.miaowo.fragment.SearchFragment;
 import org.miaowo.miaowo.fragment.SquareFragment;
 import org.miaowo.miaowo.fragment.TopicFragment;
-import org.miaowo.miaowo.fragment.UnreadFragment;
 import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
@@ -58,7 +58,6 @@ import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.FragmentUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
 import java.io.File;
@@ -67,14 +66,6 @@ import java.util.ArrayList;
 // Android Studio自动生成的，用了一大堆支持库的东西，详见
 // http://wuxiaolong.me/2015/11/06/DesignSupportLibrary/
 public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListener {
-    final public static String FRAGMENT_DAILY = "daily";
-    final public static String FRAGMENT_ANNOUNCEMENT = "announcement";
-    final public static String FRAGMENT_QUESTION = "question";
-    final public static String FRAGMENT_WATER = "water";
-    final public static String FRAGMENT_TOPIC = "topic";
-    final public static String FRAGMENT_U_QUESTION = "u_question";
-    final public static String FRAGMENT_U_ANSWER = "u_answer";
-    final public static String FRAGMENT_U_REPLY = "u_reply";
 
     // 视图
     private Drawer drawer = null;
@@ -195,7 +186,7 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         fg_square = SquareFragment.newInstance();
         fg_search = SearchFragment.newInstance();
         fg_topic = TopicFragment.newInstance();
-        fg_unread = UnreadFragment.newInstance();
+        fg_unread = ListFragment.FragmentGetter.UNREAD.get();
         fg_user = UserFragment.newInstance();
         fg_miao = MiaoFragment.newInstance();
 

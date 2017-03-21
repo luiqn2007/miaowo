@@ -1,6 +1,7 @@
 package org.miaowo.miaowo.set.windows;
 
 import android.support.design.widget.TextInputEditText;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,9 +10,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.adapter.QuestionDetailListAdapter;
-import org.miaowo.miaowo.bean.data.web.QuestionDetail;
+import org.miaowo.miaowo.bean.data.web.Post;
+import org.miaowo.miaowo.bean.data.web.Question;
 import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.Message;
@@ -53,11 +54,9 @@ public class MessageWindows extends BaseSet {
 
         TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
         TextView tv_count = (TextView) v.findViewById(R.id.tv_count);
-        TextView tv_question = (TextView) v.findViewById(R.id.tv_question);
         ListView lv_question = (ListView) v.findViewById(R.id.lv_question);
 
         tv_title.setText("加载中");
-        tv_question.setText("加载中");
         tv_count.setText("加载中");
 
         HttpUtil.utils().post(mContext.getString(R.string.url_home) + mContext.getString(R.string.url_topic) + slug, new Callback() {
@@ -65,19 +64,17 @@ public class MessageWindows extends BaseSet {
             public void onFailure(Call call, IOException e) {
                 mContext.runOnUiThread(() -> {
                     tv_title.setText("加载失败");
-                    tv_question.setText("加载失败");
                     tv_count.setText("加载失败");
                 });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                QuestionDetail questionDetail = BeanUtil.utils().buildFromLastJson(response, QuestionDetail.class);
+                Question question = BeanUtil.utils().buildFromLastJson(response, Question.class);
                 mContext.runOnUiThread(() -> {
-                    tv_title.setText(questionDetail.getTitleRaw());
-                    tv_question.setText(questionDetail.getPosts().get(0).getContent());
-                    tv_count.setText(questionDetail.getPostcount() + " 回复, " + questionDetail.getViewcount() + " 浏览");
-                    lv_question.setAdapter(new QuestionDetailListAdapter(mContext, questionDetail));
+                    tv_title.setText(Html.fromHtml(question.getTitle()));
+                    tv_count.setText(question.getPostcount() + " 回复, " + question.getViewcount() + " 浏览");
+                    lv_question.setAdapter(new QuestionDetailListAdapter(mContext, question));
                 });
             }
         });
@@ -85,7 +82,7 @@ public class MessageWindows extends BaseSet {
         return view.defaultBar().show();
     }
 
-    public FloatView showNewReply(QuestionDetail.PostsBean question) {
+    public FloatView showNewReply(Post question) {
         FloatView view = new FloatView(mContext, "回复: " + question.getUser().getUsername(), R.layout.window_reply);
         View v = view.getView();
 
@@ -113,16 +110,16 @@ public class MessageWindows extends BaseSet {
             String name;
             switch (rg_type.getCheckedRadioButtonId()) {
                 case R.id.rb_ann:
-                    name = Miao.FRAGMENT_ANNOUNCEMENT;
+                    name = "公告";
                     break;
                 case R.id.rb_ask:
-                    name = Miao.FRAGMENT_QUESTION;
+                    name = "提问";
                     break;
                 case R.id.rb_daily:
-                    name = Miao.FRAGMENT_DAILY;
+                    name = "每日";
                     break;
                 case R.id.rb_water:
-                    name = Miao.FRAGMENT_WATER;
+                    name = "灌水";
                     break;
                 default:
                     name = null;
@@ -131,8 +128,8 @@ public class MessageWindows extends BaseSet {
                 return;
             }
             try {
-                QuestionDetail.PostsBean q = new QuestionDetail.PostsBean();
-                q.setUser((QuestionDetail.PostsBean.UserBean) mState.loginedUser());
+                Post q = new Post();
+                q.setUser(mState.loginedUser());
                 q.setContent(et_content.getText().toString());
                 String title = et_title.getText().toString();
                 String content = et_content.getText().toString();

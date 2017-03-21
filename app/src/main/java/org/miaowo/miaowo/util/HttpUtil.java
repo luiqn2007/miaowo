@@ -91,6 +91,7 @@ public class HttpUtil {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                LogUtil.i(response.headers().toMultimap());
                 Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
                 LogUtil.i("连接Url: " + context.getString(R.string.url_home));
                 eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
@@ -181,6 +182,9 @@ public class HttpUtil {
     }
     public HttpUtil post(String url, Callback callback) {
         LogUtil.i("连接Url: " + url);
+        if (url == null) {
+            return null;
+        }
         Request request = new Request.Builder()
                 .url(url)
                 .build();

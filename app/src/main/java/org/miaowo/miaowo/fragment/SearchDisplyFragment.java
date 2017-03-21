@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.bean.data.web.QuestionSearchPage;
-import org.miaowo.miaowo.bean.data.web.UserSearchPage;
+import org.miaowo.miaowo.bean.data.web.Post;
+import org.miaowo.miaowo.bean.data.web.QuestionSearch;
+import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.web.UserSearch;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
@@ -113,10 +115,10 @@ public class SearchDisplyFragment extends Fragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 switch (type) {
                     case TYPE_QUESTION:
-                        convertView = setQuestion((QuestionSearchPage.PostsBean) getItem(position), convertView);
+                        convertView = setQuestion((Post) getItem(position), convertView);
                         break;
                     case TYPE_USER:
-                        convertView = setUser((UserSearchPage.UsersBean) getItem(position), convertView);
+                        convertView = setUser((User) getItem(position), convertView);
                         break;
                     default:
                         convertView = null;
@@ -127,7 +129,7 @@ public class SearchDisplyFragment extends Fragment {
         });
     }
 
-    private View setQuestion(QuestionSearchPage.PostsBean item, View view) {
+    private View setQuestion(Post item, View view) {
         if (view == null) {
             view = View.inflate(getContext(), R.layout.list_question_title, null);
             view.setTag(new ViewHolder(view));
@@ -135,17 +137,17 @@ public class SearchDisplyFragment extends Fragment {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         User u = item.getUser();
-        holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item.getTopic().getSlug()), R.id.rl_item);
+        holder.setOnClickListener((v) -> mMessageWindows.showQuestion(item.getTitle().getSlug()), R.id.rl_item);
         ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), u, true);
         holder.getTextView(R.id.tv_user).setText(u.getUsername());
         holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getTimestamp()));
-        holder.getTextView(R.id.tv_title).setText(item.getTopic().getTitle());
-        holder.getTextView(R.id.tv_count).setText(item.getTopic().getPostcount()+ " 帖子");
+        holder.getTextView(R.id.tv_title).setText(Html.fromHtml(item.getTitle().getTitle()));
+        holder.getTextView(R.id.tv_count).setText(item.getTitle().getPostcount()+ " 帖子");
 
         return view;
     }
 
-    private View setUser(UserSearchPage.UsersBean item, View view) {
+    private View setUser(User item, View view) {
         if (view == null) {
             view = View.inflate(getContext(), R.layout.list_chat, null);
             view.setTag(new ViewHolder(view));
@@ -207,11 +209,11 @@ public class SearchDisplyFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 switch (type) {
                     case TYPE_QUESTION:
-                        QuestionSearchPage question = BeanUtil.utils().buildFromLastJson(response, QuestionSearchPage.class);
+                        QuestionSearch question = BeanUtil.utils().buildFromLastJson(response, QuestionSearch.class);
                         result = question.getPosts();
                         break;
                     case TYPE_USER:
-                        UserSearchPage user = BeanUtil.utils().buildFromLastJson(response, UserSearchPage.class);
+                        UserSearch user = BeanUtil.utils().buildFromLastJson(response, UserSearch.class);
                         result = user.getUsers();
                         break;
                 }

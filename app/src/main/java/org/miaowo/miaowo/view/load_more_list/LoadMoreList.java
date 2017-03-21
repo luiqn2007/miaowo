@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.view;
+package org.miaowo.miaowo.view.load_more_list;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,8 +9,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Toast;
-
-import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.util.LogUtil;
 
@@ -29,17 +27,15 @@ public class LoadMoreList extends SwipeRefreshLayout {
 
     public LoadMoreList(Context context) {
         super(context);
-        init(context);
+        init(context, null);
     }
     public LoadMoreList(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
-    private void init(Context context) {
+    private void init(Context context, AttributeSet attrs) {
         mRecyclerView = new RecyclerView(context);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        loading = TastyToast.makeText(context, "加载中......", TastyToast.LENGTH_SHORT, TastyToast.INFO);
-        loading.cancel();
         addView(mRecyclerView);
     }
 
@@ -49,18 +45,6 @@ public class LoadMoreList extends SwipeRefreshLayout {
     }
     public void setPushRefresher(OnRefreshListener listener) {
         this.mPushRefresher = listener;
-    }
-    public void pull() {
-        if (mPullRefresher != null) {
-            mPullRefresher.onRefresh();
-        }
-    }
-    public void push() {
-        if (mPushRefresher != null) {
-            setRefreshing(true);
-            mPushRefresher.onRefresh();
-            setRefreshing(false);
-        }
     }
 
     public void setAdapter(RecyclerView.Adapter adapter) {
@@ -72,6 +56,10 @@ public class LoadMoreList extends SwipeRefreshLayout {
 
     public void loadOver() {
         setRefreshing(false);
+    }
+    public void load() {
+        setRefreshing(true);
+        mPullRefresher.onRefresh();
     }
 
     @Override
@@ -116,18 +104,11 @@ public class LoadMoreList extends SwipeRefreshLayout {
         return itemCount == mRecyclerView.getLayoutManager().getItemCount() - 1;
     }
 
-    @Override
-    public void setRefreshing(boolean refreshing) {
-        if (refreshing) loading.show();
-        else loading.cancel();
-        super.setRefreshing(refreshing);
-    }
-    @Override
-    public boolean isRefreshing() {
-        return super.isRefreshing();
-    }
-
     public RecyclerView.Adapter getAdapter() {
         return mRecyclerView.getAdapter();
+    }
+
+    public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
+        mRecyclerView.setLayoutManager(layoutManager);
     }
 }

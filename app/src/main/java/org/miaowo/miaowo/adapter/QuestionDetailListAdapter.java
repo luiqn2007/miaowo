@@ -1,16 +1,18 @@
 package org.miaowo.miaowo.adapter;
 
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.QuestionDetail;
+import org.miaowo.miaowo.bean.data.web.Post;
+import org.miaowo.miaowo.bean.data.web.Question;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
+import org.miaowo.miaowo.view.load_more_list.ViewHolder;
 
 import java.util.List;
 
@@ -20,11 +22,11 @@ import java.util.List;
  */
 
 public class QuestionDetailListAdapter extends BaseAdapter {
-    private QuestionDetail mPage;
-    private List<QuestionDetail.PostsBean> mItems;
+    private Question mPage;
+    private List<Post> mItems;
     private BaseActivity mContext;
 
-    public QuestionDetailListAdapter(BaseActivity context, QuestionDetail page) {
+    public QuestionDetailListAdapter(BaseActivity context, Question page) {
         mPage = page;
         mContext = context;
         mItems = mPage.getPosts();
@@ -49,26 +51,16 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.list_answer, null);
-            ViewHolder holder = new ViewHolder();
-            holder.iv_user = (ImageView) convertView.findViewById(R.id.iv_user);
-            holder.tv_context = (TextView) convertView.findViewById(R.id.tv_context);
-            holder.tv_time = (TextView) convertView.findViewById(R.id.tv_time);
-            holder.tv_user = (TextView) convertView.findViewById(R.id.tv_user);
+            ViewHolder holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }
         ViewHolder mHolder = (ViewHolder) convertView.getTag();
-        QuestionDetail.PostsBean question = (QuestionDetail.PostsBean) getItem(position);
-        ImageUtil.utils(mContext).setUser(mHolder.iv_user, question.getUser(), true);
-        mHolder.tv_user.setText(question.getUser().getUsername());
-        mHolder.tv_time.setText(FormatUtil.format().time(question.getTimestamp()));
-        mHolder.tv_context.setText(question.getContent());
+        Post question = (Post) getItem(position);
+        ImageUtil.utils(mContext).setUser(mHolder.getImageView(R.id.iv_user), question.getUser(), true);
+        mHolder.getTextView(R.id.tv_user).setText(question.getUser().getUsername());
+        mHolder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(question.getTimestamp()));
+        mHolder.getTextView(R.id.tv_context).setText(Html.fromHtml(question.getContent()));
+        mHolder.getTextView(R.id.tv_context).setMovementMethod(LinkMovementMethod.getInstance());
         return convertView;
-    }
-
-    private class ViewHolder {
-        TextView tv_time;
-        TextView tv_user;
-        TextView tv_context;
-        ImageView iv_user;
     }
 }

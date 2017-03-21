@@ -4,9 +4,9 @@ import android.text.TextUtils;
 
 import com.sdsmdg.tastytoast.TastyToast;
 
-import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.bean.data.event.LoginEvent;
 import org.miaowo.miaowo.bean.data.event.RegisterEvent;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;

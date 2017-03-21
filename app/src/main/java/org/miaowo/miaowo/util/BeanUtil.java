@@ -2,13 +2,11 @@ package org.miaowo.miaowo.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.LinkedTreeMap;
-import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
 import org.miaowo.miaowo.bean.config.VersionMessage;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
-import org.miaowo.miaowo.bean.data.web.InnerUser;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.set.Exceptions;
 
 import java.io.IOException;
@@ -22,12 +20,22 @@ import okhttp3.Response;
  */
 
 public class BeanUtil {
+    private static BeanUtil util;
     private BeanUtil() {
         gson = new GsonBuilder()
                 .serializeNulls()
                 .create();
     }
-    public static BeanUtil utils() { return new BeanUtil(); }
+    public static BeanUtil utils() {
+        if (util == null) {
+            synchronized (BeanUtil.class) {
+                if (util == null) {
+                    util = new BeanUtil();
+                }
+            }
+        }
+        return util;
+    }
 
     private Gson gson;
 
@@ -61,18 +69,18 @@ public class BeanUtil {
         }
         return jsons;
     }
-    public InnerUser buildUser(Response response) {
+    public User buildUser(Response response) {
         ArrayList<String> jsons = getJsons(response);
         if (!jsons.isEmpty()) {
             for (String json : jsons) {
                 if (json.contains("uid") && json.contains("username")) {
-                    InnerUser innerUser =null;
+                    User user =null;
                     try {
-                        innerUser = gson.fromJson(json, InnerUser.class);
+                        user = gson.fromJson(json, User.class);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return innerUser;
+                    return user;
                 }
             }
         }
@@ -86,6 +94,7 @@ public class BeanUtil {
         try {
             ArrayList<String> jsons = getJsons(response);
             String json = jsons.isEmpty() ? null : jsons.get(jsons.size() - 1);
+            LogUtil.i(json);
             return gson.fromJson(json, typeClass);
         } catch (Exception e) {
             e.printStackTrace();

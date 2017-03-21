@@ -29,6 +29,7 @@ import java.util.ArrayList;
 public class FloatView extends LinearLayout {
     public static ArrayList<FloatView> shownWindows = new ArrayList<>();
     public static FloatView alwaysTop;
+    public static FloatView top;
 
     private PointF mStartTouch = new PointF();
     private PointF mEndTouch = new PointF();
@@ -65,8 +66,12 @@ public class FloatView extends LinearLayout {
         return show();
     }
     public FloatView show() {
+        if (equals(top)) {
+            return this;
+        }
         WindowManager.LayoutParams params = buildLayoutParams();
         shownWindows.add(this);
+        top = this;
         isShowing = true;
         mManager.addView(this, params);
 
@@ -81,6 +86,7 @@ public class FloatView extends LinearLayout {
             mManager.removeView(this);
             shownWindows.remove(this);
             isShowing = false;
+            removeAlwaysTop(this);
             if (clear) {
                 mPosition.set(0, 0);
                 mGravity = Gravity.CENTER;
@@ -166,6 +172,9 @@ public class FloatView extends LinearLayout {
     }
 
     private void moveToTop() {
+        if (equals(top)) {
+            return;
+        }
         mManager.removeViewImmediate(this);
         show();
     }
