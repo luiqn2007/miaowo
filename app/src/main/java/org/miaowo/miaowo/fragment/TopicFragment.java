@@ -62,11 +62,10 @@ public class TopicFragment extends Fragment {
     }
     private void bind(View view) {
         lv_list = (ListView) view.findViewById(R.id.list);
-        tv_topic = (TextView) view.findViewById(R.id.tv_topic);
-        ib_load = (ImageButton) view.findViewById(R.id.ib_choose);
+        tv_topic = (TextView) view.findViewById(R.id.et_topic);
+        ib_load = (ImageButton) view.findViewById(R.id.ib_search);
         mContext = (BaseActivity) getActivity();
         mMenu = new PopupMenu(getContext(), ib_load);
-        ib_load.setOnClickListener(v -> mMenu.show());
         start();
     }
     /* ================================================================ */
@@ -75,6 +74,7 @@ public class TopicFragment extends Fragment {
     private BaseListAdapter<Title> mAdapter;
 
     private void start() {
+        ib_load.setOnClickListener(v -> mMenu.show());
         mAdapter = new BaseListAdapter<Title>(mQuestions) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -105,7 +105,7 @@ public class TopicFragment extends Fragment {
         tv_topic.setText("加载中...");
         menu.clear();
         menu.add("加载中");
-        mMenu.setOnMenuItemClickListener(null);
+        mMenu.setOnMenuItemClickListener(item -> false);
     }
 
     private boolean loadTags() {
@@ -113,7 +113,7 @@ public class TopicFragment extends Fragment {
         HttpUtil.utils().post(getContext().getString(R.string.url_tags), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(() -> {
+                ((BaseActivity) getActivity()).updateFragment(TopicFragment.this, () -> {
                     tv_topic.setText("加载失败");
                     mMenu.getMenu().clear();
                     mMenu.getMenu().add("重新加载");
@@ -125,7 +125,7 @@ public class TopicFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 TopicList topicList = BeanUtil.utils().buildFromLastJson(response, TopicList.class);
                 mTopics = topicList.getTags();
-                getActivity().runOnUiThread(() -> {
+                ((BaseActivity) getActivity()).updateFragment(TopicFragment.this, () -> {
                     tv_topic.setText("请选择话题");
                     Menu menu = mMenu.getMenu();
                     menu.clear();
@@ -147,21 +147,19 @@ public class TopicFragment extends Fragment {
         HttpUtil.utils().post(mContext.getString(R.string.url_tags) + title, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(() -> tv_topic.setText("加载失败"));
+                mContext.updateFragment(TopicFragment.this, () -> tv_topic.setText("加载失败"));
                 mContext.handleError(e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 TitleList topicPage = BeanUtil.utils().buildFromLastJson(response, TitleList.class);
-                mQuestions = topicPage.getTitles();
-                getActivity().runOnUiThread(() -> {
+                mContext.updateFragment(TopicFragment.this, () -> {
                     tv_topic.setText(title);
-                    mAdapter.update(mQuestions);
+                    mAdapter.update(topicPage.getTitles());
                 });
             }
         });
         return true;
     }
-
 }

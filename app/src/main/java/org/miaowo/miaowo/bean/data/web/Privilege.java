@@ -1,8 +1,11 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Privilege {
+public class Privilege implements Parcelable {
     @SerializedName("topics:reply")
     private boolean topicsReply;
     @SerializedName("topics:read")
@@ -23,6 +26,36 @@ public class Privilege {
     private int cid;
     private int tid;
     private int uid;
+
+    protected Privilege(Parcel in) {
+        topicsReply = in.readByte() != 0;
+        topicsRead = in.readByte() != 0;
+        topicsDelete = in.readByte() != 0;
+        postsEdit = in.readByte() != 0;
+        postsDelete = in.readByte() != 0;
+        read = in.readByte() != 0;
+        view_thread_tools = in.readByte() != 0;
+        editable = in.readByte() != 0;
+        deletable = in.readByte() != 0;
+        view_deleted = in.readByte() != 0;
+        isAdminOrMod = in.readByte() != 0;
+        disabled = in.readByte() != 0;
+        cid = in.readInt();
+        tid = in.readInt();
+        uid = in.readInt();
+    }
+
+    public static final Creator<Privilege> CREATOR = new Creator<Privilege>() {
+        @Override
+        public Privilege createFromParcel(Parcel in) {
+            return new Privilege(in);
+        }
+
+        @Override
+        public Privilege[] newArray(int size) {
+            return new Privilege[size];
+        }
+    };
 
     public boolean isTopicsReply() {
         return topicsReply;
@@ -142,5 +175,29 @@ public class Privilege {
 
     public void setUid(int uid) {
         this.uid = uid;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (topicsReply ? 1 : 0));
+        dest.writeByte((byte) (topicsRead ? 1 : 0));
+        dest.writeByte((byte) (topicsDelete ? 1 : 0));
+        dest.writeByte((byte) (postsEdit ? 1 : 0));
+        dest.writeByte((byte) (postsDelete ? 1 : 0));
+        dest.writeByte((byte) (read ? 1 : 0));
+        dest.writeByte((byte) (view_thread_tools ? 1 : 0));
+        dest.writeByte((byte) (editable ? 1 : 0));
+        dest.writeByte((byte) (deletable ? 1 : 0));
+        dest.writeByte((byte) (view_deleted ? 1 : 0));
+        dest.writeByte((byte) (isAdminOrMod ? 1 : 0));
+        dest.writeByte((byte) (disabled ? 1 : 0));
+        dest.writeInt(cid);
+        dest.writeInt(tid);
+        dest.writeInt(uid);
     }
 }

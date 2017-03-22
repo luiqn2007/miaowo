@@ -1,5 +1,7 @@
 package org.miaowo.miaowo.view.load_more_list;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +15,8 @@ import java.util.List;
  */
 
 public class ItemRecyclerAdapter<E>
-        extends RecyclerView.Adapter<ViewHolder> {
+        extends RecyclerView.Adapter<ViewHolder>
+        implements Parcelable{
 
     private List<E> mItems;
     private ViewLoader<E> mLoader;
@@ -23,6 +26,21 @@ public class ItemRecyclerAdapter<E>
         mItems = items;
         mLoader = loader;
     }
+
+    protected ItemRecyclerAdapter(Parcel in) {
+    }
+
+    public static final Creator<ItemRecyclerAdapter> CREATOR = new Creator<ItemRecyclerAdapter>() {
+        @Override
+        public ItemRecyclerAdapter createFromParcel(Parcel in) {
+            return new ItemRecyclerAdapter(in);
+        }
+
+        @Override
+        public ItemRecyclerAdapter[] newArray(int size) {
+            return new ItemRecyclerAdapter[size];
+        }
+    };
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -62,6 +80,15 @@ public class ItemRecyclerAdapter<E>
 
     public List<E> getItems() {
         return mItems;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
     }
 
     public interface ViewLoader<E> {

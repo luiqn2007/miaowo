@@ -55,11 +55,6 @@ public class UserFragment extends Fragment {
         mList = new ArrayList<>();
         mUserWindows = UserWindows.windows((BaseActivity) getActivity());
 
-        initView();
-        return mView;
-    }
-
-    private void initView() {
         mAdapter = new ItemRecyclerAdapter<>(mList, new ItemRecyclerAdapter.ViewLoader<User>() {
             @Override
             public ViewHolder createHolder(ViewGroup parent, int viewType) {
@@ -86,6 +81,7 @@ public class UserFragment extends Fragment {
         mView.setPushRefresher(() -> loadNextPage());
         mView.setPullRefresher(() -> reloadUser());
         reloadUser();
+        return mView;
     }
 
     private void reloadUser() {
@@ -113,11 +109,11 @@ public class UserFragment extends Fragment {
                 UserList userList = BeanUtil.utils().buildFromLastJson(response, UserList.class);
                 if (userList.getUsers().size() == 0) {
                     mPage--;
-                    getActivity().runOnUiThread(() ->
+                    ((BaseActivity) getActivity()).updateFragment(UserFragment.this, () ->
                             TastyToast.makeText(getContext(), "就这些用户啦", TastyToast.LENGTH_SHORT, TastyToast.WARNING).show());
                 }
                 mList.addAll(userList.getUsers());
-                getActivity().runOnUiThread(() -> {
+                ((BaseActivity) getActivity()).updateFragment(UserFragment.this, () -> {
                     mAdapter.updateDate(mList);
                     mView.loadOver();
                 });

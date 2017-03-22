@@ -1,6 +1,8 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,23 +23,51 @@ import org.miaowo.miaowo.view.load_more_list.LoadMoreList;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements Parcelable {
     public static String TAG_URL = "url";
 
     private LoadMoreList mList;
     private ItemRecyclerAdapter<Title> mAdapter;
-    private List<Title> mItems;
+    private ArrayList<Title> mItems;
     private BaseActivity mContext;
 
     private String url;
 
     public ListFragment() {}
+
+    protected ListFragment(Parcel in) {
+        mItems = in.createTypedArrayList(Title.CREATOR);
+        url = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mAdapter, flags);
+        dest.writeTypedList(mItems);
+        dest.writeString(url);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ListFragment> CREATOR = new Creator<ListFragment>() {
+        @Override
+        public ListFragment createFromParcel(Parcel in) {
+            return new ListFragment(in);
+        }
+
+        @Override
+        public ListFragment[] newArray(int size) {
+            return new ListFragment[size];
+        }
+    };
 
     public static ListFragment newInstance(@StringRes int urlId) {
         Bundle args = new Bundle();
@@ -68,20 +98,11 @@ public class ListFragment extends Fragment {
     }
     private void initList() {
         mList.setAdapter(mAdapter);
-        mList.setPullRefresher(() -> loadTitle());
-        mList.setPushRefresher(() -> {
-            mContext.handleError(Exceptions.E_NONE);
-            mList.loadOver();
-        });
-        loadTitle();
-    }
-
-    private void loadTitle() {
-        HttpUtil.utils().post(url, new Callback() {
+        mList.setPullRefresher(() -> HttpUtil.utils().post(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 mContext.handleError(Exceptions.E_WEB);
-                mContext.runOnUiThread(() -> mList.loadOver());
+                mContext.updateFragment(ListFragment.this, () -> mList.loadOver());
             }
 
             @Override
@@ -90,9 +111,36 @@ public class ListFragment extends Fragment {
                 if (page == null) {
                     mItems = new ArrayList<>();
                 } else {
-                    mItems = page.getTitles();
+                    mItems.clear();
+                    mItems.addAll(page.getTitles());
                 }
-                mContext.runOnUiThread(() -> {
+                mContext.updateFragment(ListFragment.this, () -> {
+                    mAdapter.updateDate(mItems);
+                    mList.loadOver();
+                });
+            }
+        }));
+        mList.setPushRefresher(() -> {
+            mContext.handleError(Exceptions.E_NONE);
+            mList.loadOver();
+        });
+        HttpUtil.utils().post(url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mContext.handleError(Exceptions.E_WEB);
+                mContext.updateFragment(ListFragment.this, () -> mList.loadOver());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                TitleList page = BeanUtil.utils().buildFromLastJson(response, TitleList.class);
+                if (page == null) {
+                    mItems = new ArrayList<>();
+                } else {
+                    mItems.clear();
+                    mItems.addAll(page.getTitles());
+                }
+                mContext.updateFragment(ListFragment.this, () -> {
                     mAdapter.updateDate(mItems);
                     mList.loadOver();
                 });
@@ -100,7 +148,7 @@ public class ListFragment extends Fragment {
         });
     }
 
-    public enum FragmentGetter implements Getter {
+    public enum FragmentGetter {
         ANNOUNCEMENT {
             @Override
             public ListFragment get() {
@@ -126,10 +174,9 @@ public class ListFragment extends Fragment {
             public ListFragment get() {
                 return ListFragment.newInstance(R.string.url_unread);
             }
-        }
+        };
+
+        public ListFragment get() {return null;}
     }
 
-    private interface Getter {
-        ListFragment get();
-    }
 }

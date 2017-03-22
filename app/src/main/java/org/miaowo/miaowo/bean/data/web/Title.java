@@ -1,8 +1,11 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class Title {
+public class Title implements Parcelable {
     /**
      * tid : 187
      * uid : 7
@@ -64,6 +67,47 @@ public class Title {
     private int index;
     private List<?> tags;
     private List<?> icons;
+
+    protected Title(Parcel in) {
+        tid = in.readInt();
+        uid = in.readInt();
+        cid = in.readString();
+        mainPid = in.readString();
+        title = in.readString();
+        slug = in.readString();
+        timestamp = in.readLong();
+        lastposttime = in.readLong();
+        postcount = in.readInt();
+        viewcount = in.readInt();
+        locked = in.readByte() != 0;
+        deleted = in.readByte() != 0;
+        pinned = in.readByte() != 0;
+        teaserPid = in.readString();
+        thumb = in.readString();
+        titleRaw = in.readString();
+        timestampISO = in.readString();
+        lastposttimeISO = in.readString();
+        category = in.readParcelable(Category.class.getClassLoader());
+        user = in.readParcelable(User.class.getClassLoader());
+        teaser = in.readParcelable(Teaser.class.getClassLoader());
+        isOwner = in.readByte() != 0;
+        ignored = in.readByte() != 0;
+        unread = in.readByte() != 0;
+        unreplied = in.readByte() != 0;
+        index = in.readInt();
+    }
+
+    public static final Creator<Title> CREATOR = new Creator<Title>() {
+        @Override
+        public Title createFromParcel(Parcel in) {
+            return new Title(in);
+        }
+
+        @Override
+        public Title[] newArray(int size) {
+            return new Title[size];
+        }
+    };
 
     public int getTid() {
         return tid;
@@ -295,5 +339,40 @@ public class Title {
 
     public void setIcons(List<?> icons) {
         this.icons = icons;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(tid);
+        dest.writeInt(uid);
+        dest.writeString(cid);
+        dest.writeString(mainPid);
+        dest.writeString(title);
+        dest.writeString(slug);
+        dest.writeLong(timestamp);
+        dest.writeLong(lastposttime);
+        dest.writeInt(postcount);
+        dest.writeInt(viewcount);
+        dest.writeByte((byte) (locked ? 1 : 0));
+        dest.writeByte((byte) (deleted ? 1 : 0));
+        dest.writeByte((byte) (pinned ? 1 : 0));
+        dest.writeString(teaserPid);
+        dest.writeString(thumb);
+        dest.writeString(titleRaw);
+        dest.writeString(timestampISO);
+        dest.writeString(lastposttimeISO);
+        dest.writeParcelable(category, flags);
+        dest.writeParcelable(user, flags);
+        dest.writeParcelable(teaser, flags);
+        dest.writeByte((byte) (isOwner ? 1 : 0));
+        dest.writeByte((byte) (ignored ? 1 : 0));
+        dest.writeByte((byte) (unread ? 1 : 0));
+        dest.writeByte((byte) (unreplied ? 1 : 0));
+        dest.writeInt(index);
     }
 }

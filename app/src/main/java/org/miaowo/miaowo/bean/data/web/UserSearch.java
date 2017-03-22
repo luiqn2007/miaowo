@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -7,7 +10,7 @@ import java.util.List;
  * Created by luqin on 17-3-18.
  */
 
-public class UserSearch {
+public class UserSearch implements Parcelable {
 
     /**
      * matchCount : 1
@@ -48,6 +51,64 @@ public class UserSearch {
     private String bodyClass;
     private List<User> users;
     private List<Category> categories;
+
+    protected UserSearch(Parcel in) {
+        matchCount = in.readInt();
+        pageCount = in.readInt();
+        timing = in.readString();
+        search_query = in.readString();
+        time = in.readString();
+        categoriesCount = in.readInt();
+        pagination = in.readParcelable(Pagination.class.getClassLoader());
+        showAsPosts = in.readByte() != 0;
+        showAsTopics = in.readByte() != 0;
+        title = in.readString();
+        expandSearch = in.readByte() != 0;
+        loggedIn = in.readByte() != 0;
+        relative_path = in.readString();
+        url = in.readString();
+        bodyClass = in.readString();
+        users = in.createTypedArrayList(User.CREATOR);
+        categories = in.createTypedArrayList(Category.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(matchCount);
+        dest.writeInt(pageCount);
+        dest.writeString(timing);
+        dest.writeString(search_query);
+        dest.writeString(time);
+        dest.writeInt(categoriesCount);
+        dest.writeParcelable(pagination, flags);
+        dest.writeByte((byte) (showAsPosts ? 1 : 0));
+        dest.writeByte((byte) (showAsTopics ? 1 : 0));
+        dest.writeString(title);
+        dest.writeByte((byte) (expandSearch ? 1 : 0));
+        dest.writeByte((byte) (loggedIn ? 1 : 0));
+        dest.writeString(relative_path);
+        dest.writeString(url);
+        dest.writeString(bodyClass);
+        dest.writeTypedList(users);
+        dest.writeTypedList(categories);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<UserSearch> CREATOR = new Creator<UserSearch>() {
+        @Override
+        public UserSearch createFromParcel(Parcel in) {
+            return new UserSearch(in);
+        }
+
+        @Override
+        public UserSearch[] newArray(int size) {
+            return new UserSearch[size];
+        }
+    };
 
     public int getMatchCount() {
         return matchCount;

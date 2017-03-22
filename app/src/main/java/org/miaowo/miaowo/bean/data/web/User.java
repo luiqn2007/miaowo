@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by luqin on 17-3-18.
  */
 
-public class User {
+public class User implements Parcelable {
 
     /**
      * username : 么么么喵
@@ -174,6 +177,174 @@ public class User {
     private String aboutme;
     private int banned_until;
     private String banned_until_readable;
+
+    protected User(Parcel in) {
+        username = in.readString();
+        userslug = in.readString();
+        email = in.readString();
+        joindate = in.readLong();
+        lastonline = in.readLong();
+        picture = in.readString();
+        fullname = in.readString();
+        location = in.readString();
+        birthday = in.readString();
+        website = in.readString();
+        signature = in.readString();
+        uploadedpicture = in.readString();
+        profileviews = in.readInt();
+        postcount = in.readInt();
+        topiccount = in.readInt();
+        lastposttime = in.readLong();
+        reputation = in.readInt();
+        status = in.readString();
+        uid = in.readInt();
+        passwordExpiry = in.readInt();
+        coverPosition = in.readString();
+        coverUrl = in.readString();
+        githubid = in.readString();
+        followingCount = in.readInt();
+        groupTitle = in.readString();
+        bannedExpire = in.readInt();
+        followerCount = in.readInt();
+        iconText = in.readString();
+        iconBgColor = in.readString();
+        joindateISO = in.readString();
+        lastonlineISO = in.readString();
+        age = in.readInt();
+        emailClass = in.readString();
+        yourid = in.readInt();
+        theirid = in.readInt();
+        isTargetAdmin = in.readByte() != 0;
+        isAdmin = in.readByte() != 0;
+        isGlobalModerator = in.readByte() != 0;
+        isModerator = in.readByte() != 0;
+        isAdminOrGlobalModerator = in.readByte() != 0;
+        isAdminOrGlobalModeratorOrModerator = in.readByte() != 0;
+        isSelfOrAdminOrGlobalModerator = in.readByte() != 0;
+        canEdit = in.readByte() != 0;
+        canBan = in.readByte() != 0;
+        canChangePassword = in.readByte() != 0;
+        isSelf = in.readByte() != 0;
+        isFollowing = in.readByte() != 0;
+        showHidden = in.readByte() != 0;
+        disableSignatures = in.readByte() != 0;
+        reputationDisabled = in.readByte() != 0;
+        downvoteDisabled = in.readByte() != 0;
+        emailConfirmed = in.readByte() != 0;
+        websiteLink = in.readString();
+        websiteName = in.readString();
+        moderationNote = in.readString();
+        usernameDisableEdit = in.readByte() != 0;
+        emailDisableEdit = in.readByte() != 0;
+        hasPrivateChat = in.readInt();
+        nextStart = in.readInt();
+        title = in.readString();
+        password = in.readString();
+        pagination = in.readParcelable(Pagination.class.getClassLoader());
+        loggedIn = in.readByte() != 0;
+        relative_path = in.readString();
+        url = in.readString();
+        bodyClass = in.readString();
+        ips = in.createStringArrayList();
+        posts = in.createTypedArrayList(Post.CREATOR);
+        isEmailConfirmSent = in.readByte() != 0;
+        aboutme = in.readString();
+        banned_until = in.readInt();
+        banned_until_readable = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(username);
+        dest.writeString(userslug);
+        dest.writeString(email);
+        dest.writeLong(joindate);
+        dest.writeLong(lastonline);
+        dest.writeString(picture);
+        dest.writeString(fullname);
+        dest.writeString(location);
+        dest.writeString(birthday);
+        dest.writeString(website);
+        dest.writeString(signature);
+        dest.writeString(uploadedpicture);
+        dest.writeInt(profileviews);
+        dest.writeInt(postcount);
+        dest.writeInt(topiccount);
+        dest.writeLong(lastposttime);
+        dest.writeInt(reputation);
+        dest.writeString(status);
+        dest.writeInt(uid);
+        dest.writeInt(passwordExpiry);
+        dest.writeString(coverPosition);
+        dest.writeString(coverUrl);
+        dest.writeString(githubid);
+        dest.writeInt(followingCount);
+        dest.writeString(groupTitle);
+        dest.writeInt(bannedExpire);
+        dest.writeInt(followerCount);
+        dest.writeString(iconText);
+        dest.writeString(iconBgColor);
+        dest.writeString(joindateISO);
+        dest.writeString(lastonlineISO);
+        dest.writeInt(age);
+        dest.writeString(emailClass);
+        dest.writeInt(yourid);
+        dest.writeInt(theirid);
+        dest.writeByte((byte) (isTargetAdmin ? 1 : 0));
+        dest.writeByte((byte) (isAdmin ? 1 : 0));
+        dest.writeByte((byte) (isGlobalModerator ? 1 : 0));
+        dest.writeByte((byte) (isModerator ? 1 : 0));
+        dest.writeByte((byte) (isAdminOrGlobalModerator ? 1 : 0));
+        dest.writeByte((byte) (isAdminOrGlobalModeratorOrModerator ? 1 : 0));
+        dest.writeByte((byte) (isSelfOrAdminOrGlobalModerator ? 1 : 0));
+        dest.writeByte((byte) (canEdit ? 1 : 0));
+        dest.writeByte((byte) (canBan ? 1 : 0));
+        dest.writeByte((byte) (canChangePassword ? 1 : 0));
+        dest.writeByte((byte) (isSelf ? 1 : 0));
+        dest.writeByte((byte) (isFollowing ? 1 : 0));
+        dest.writeByte((byte) (showHidden ? 1 : 0));
+        dest.writeByte((byte) (disableSignatures ? 1 : 0));
+        dest.writeByte((byte) (reputationDisabled ? 1 : 0));
+        dest.writeByte((byte) (downvoteDisabled ? 1 : 0));
+        dest.writeByte((byte) (emailConfirmed ? 1 : 0));
+        dest.writeString(websiteLink);
+        dest.writeString(websiteName);
+        dest.writeString(moderationNote);
+        dest.writeByte((byte) (usernameDisableEdit ? 1 : 0));
+        dest.writeByte((byte) (emailDisableEdit ? 1 : 0));
+        dest.writeInt(hasPrivateChat);
+        dest.writeInt(nextStart);
+        dest.writeString(title);
+        dest.writeString(password);
+        dest.writeParcelable(pagination, flags);
+        dest.writeByte((byte) (loggedIn ? 1 : 0));
+        dest.writeString(relative_path);
+        dest.writeString(url);
+        dest.writeString(bodyClass);
+        dest.writeStringList(ips);
+        dest.writeTypedList(posts);
+        dest.writeByte((byte) (isEmailConfirmSent ? 1 : 0));
+        dest.writeString(aboutme);
+        dest.writeInt(banned_until);
+        dest.writeString(banned_until_readable);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getUsername() {
         return username;

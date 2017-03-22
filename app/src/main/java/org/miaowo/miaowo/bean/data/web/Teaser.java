@@ -1,6 +1,9 @@
 package org.miaowo.miaowo.bean.data.web;
 
-public class Teaser {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Teaser implements Parcelable {
     /**
      * pid : 1101
      * uid : 91
@@ -21,6 +24,44 @@ public class Teaser {
     private User user;
     private String timestampISO;
     private int index;
+
+    protected Teaser(Parcel in) {
+        pid = in.readInt();
+        uid = in.readInt();
+        tid = in.readInt();
+        content = in.readString();
+        timestamp = in.readLong();
+        timestampISO = in.readString();
+        index = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(pid);
+        dest.writeInt(uid);
+        dest.writeInt(tid);
+        dest.writeString(content);
+        dest.writeLong(timestamp);
+        dest.writeString(timestampISO);
+        dest.writeInt(index);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Teaser> CREATOR = new Creator<Teaser>() {
+        @Override
+        public Teaser createFromParcel(Parcel in) {
+            return new Teaser(in);
+        }
+
+        @Override
+        public Teaser[] newArray(int size) {
+            return new Teaser[size];
+        }
+    };
 
     public int getPid() {
         return pid;

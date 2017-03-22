@@ -70,7 +70,6 @@ public class StateWindows {
                 ((Button) v1).setText("登录");
                 label.setVisibility(View.GONE);
                 email.setVisibility(View.GONE);
-                cb_save.setVisibility(View.GONE);
                 isLogin = true;
             }
 
@@ -90,7 +89,6 @@ public class StateWindows {
                 login.setText("返回");
                 label.setVisibility(View.VISIBLE);
                 email.setVisibility(View.VISIBLE);
-                cb_save.setVisibility(View.VISIBLE);
                 isLogin = false;
             }
         });

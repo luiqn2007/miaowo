@@ -26,38 +26,22 @@ public class FragmentUtil {
      * @param container 显示容器
      * @param fragment 要显示的 Fragment
      */
-    private void show(@IdRes int container, Fragment fragment) {
+    public void show(@IdRes int container, Fragment fragment) {
+        if (fragment.isVisible()) {
+            return;
+        }
         FragmentTransaction transaction = manager.beginTransaction();
+        List<Fragment> fragments = manager.getFragments();
+        if (fragments != null) {
+            fragments.stream().forEach(fragment1 -> {
+                fragment1.onDetach();
+                transaction.hide(fragment1);
+            });
+        }
         if (!fragment.isAdded()) {
             transaction.add(container, fragment);
         }
         transaction.show(fragment);
-        transaction.commit();
-    }
-
-    /**
-     * 关闭所有打开的 Fragment, 仅显示一页
-     * @param container 显示容器
-     * @param fragment 要显示的 Fragment
-     */
-    public void showOnly(@IdRes int container, Fragment fragment) {
-        hide(manager.getFragments());
-        show(container, fragment);
-    }
-
-    /*
-     * 隐藏 Fragment
-     */
-    private void hide(List<Fragment> fragments) {
-        if (fragments == null || fragments.size() == 0) {
-            return;
-        }
-        FragmentTransaction transaction = manager.beginTransaction();
-        for (Fragment fragment : fragments) {
-            if (fragment.isVisible()) {
-                transaction.hide(fragment);
-            }
-        }
         transaction.commit();
     }
 }

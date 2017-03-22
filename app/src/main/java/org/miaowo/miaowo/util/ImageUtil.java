@@ -105,9 +105,7 @@ public class ImageUtil {
      */
     public Drawable textIcon(User user) {
         int bgColor = fromUser(user.getIconBgColor());
-        TextIconConfig config = bgColor < 0
-                ? new TextIconConfig(Color.BLUE, Color.WHITE)
-                : new TextIconConfig(bgColor, Color.WHITE);
+        TextIconConfig config = new TextIconConfig(bgColor, Color.WHITE);
         return textIcon(user.getIconText(), config);
     }
     private int fromUser(String color) {

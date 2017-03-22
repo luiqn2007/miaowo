@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.root.fragment.ChooseFragment;
 
 import java.util.ArrayList;

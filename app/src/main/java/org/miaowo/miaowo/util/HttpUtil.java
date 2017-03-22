@@ -180,7 +180,7 @@ public class HttpUtil {
         mCookieJar.clear();
         return this;
     }
-    public HttpUtil post(String url, Callback callback) {
+    public Call post(String url, Callback callback) {
         LogUtil.i("连接Url: " + url);
         if (url == null) {
             return null;
@@ -188,8 +188,9 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(callback);
-        return this;
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
     private static class MyCookieJar implements CookieJar {

@@ -1,6 +1,9 @@
 package org.miaowo.miaowo.bean.data.web;
 
-public class Topic {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Topic implements Parcelable {
     /**
      * value : 猜猜我是谁
      * score : 2
@@ -12,6 +15,38 @@ public class Topic {
     private int score;
     private String color;
     private String bgColor;
+
+    protected Topic(Parcel in) {
+        value = in.readString();
+        score = in.readInt();
+        color = in.readString();
+        bgColor = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(value);
+        dest.writeInt(score);
+        dest.writeString(color);
+        dest.writeString(bgColor);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Topic> CREATOR = new Creator<Topic>() {
+        @Override
+        public Topic createFromParcel(Parcel in) {
+            return new Topic(in);
+        }
+
+        @Override
+        public Topic[] newArray(int size) {
+            return new Topic[size];
+        }
+    };
 
     public String getValue() {
         return value;

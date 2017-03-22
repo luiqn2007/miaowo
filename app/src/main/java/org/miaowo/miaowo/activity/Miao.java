@@ -190,7 +190,7 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         fg_user = UserFragment.newInstance();
         fg_miao = MiaoFragment.newInstance();
 
-        mManager.showOnly(R.id.container, fg_miao);
+        mManager.show(R.id.container, fg_miao);
     }
 
     // 退出
@@ -248,19 +248,19 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
         }
         switch (position) {
             case 1:
-                mManager.showOnly(R.id.container, fg_square);
+                mManager.show(R.id.container, fg_square);
                 break;
             case 2:
-                mManager.showOnly(R.id.container, fg_unread);
+                mManager.show(R.id.container, fg_unread);
                 break;
             case 3:
-                mManager.showOnly(R.id.container, fg_topic);
+                mManager.show(R.id.container, fg_topic);
                 break;
             case 4:
-                mManager.showOnly(R.id.container, fg_user);
+                mManager.show(R.id.container, fg_user);
                 break;
             case 5:
-                mManager.showOnly(R.id.container, fg_search);
+                mManager.show(R.id.container, fg_search);
                 break;
             default:
                 doAction(position - 7);
@@ -309,7 +309,7 @@ public class Miao extends BaseActivity implements Drawer.OnDrawerItemClickListen
                     break;
                 case 3:
                     mState.logout();
-                    mManager.showOnly(R.id.container, fg_miao);
+                    mManager.show(R.id.container, fg_miao);
                     loadUserMsg();
                     break;
             }

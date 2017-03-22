@@ -1,10 +1,9 @@
 package org.miaowo.miaowo.bean.data.web;
 
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.util.List;
-
-public class Category {
+public class Category implements Parcelable {
 
     /**
      * value : all
@@ -55,6 +54,72 @@ public class Category {
     private String undefined;
     private int totalPostCount;
     private int totalTopicCount;
+
+    protected Category(Parcel in) {
+        value = in.readString();
+        text = in.readString();
+        cid = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        descriptionParsed = in.readString();
+        icon = in.readString();
+        bgColor = in.readString();
+        color = in.readString();
+        slug = in.readString();
+        parentCid = in.readInt();
+        topic_count = in.readInt();
+        post_count = in.readInt();
+        disabled = in.readByte() != 0;
+        order = in.readInt();
+        link = in.readString();
+        numRecentReplies = in.readInt();
+        imageClass = in.readString();
+        undefined = in.readString();
+        totalPostCount = in.readInt();
+        totalTopicCount = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(value);
+        dest.writeString(text);
+        dest.writeInt(cid);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(descriptionParsed);
+        dest.writeString(icon);
+        dest.writeString(bgColor);
+        dest.writeString(color);
+        dest.writeString(slug);
+        dest.writeInt(parentCid);
+        dest.writeInt(topic_count);
+        dest.writeInt(post_count);
+        dest.writeByte((byte) (disabled ? 1 : 0));
+        dest.writeInt(order);
+        dest.writeString(link);
+        dest.writeInt(numRecentReplies);
+        dest.writeString(imageClass);
+        dest.writeString(undefined);
+        dest.writeInt(totalPostCount);
+        dest.writeInt(totalTopicCount);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Category> CREATOR = new Creator<Category>() {
+        @Override
+        public Category createFromParcel(Parcel in) {
+            return new Category(in);
+        }
+
+        @Override
+        public Category[] newArray(int size) {
+            return new Category[size];
+        }
+    };
 
     public String getValue() {
         return value;

@@ -1,10 +1,13 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * 聊天信息
  * Created by luqin on 16-12-31.
  */
-public class ChatMessage {
+public class ChatMessage implements Parcelable {
 
     // 消息id
     private int id;
@@ -24,6 +27,26 @@ public class ChatMessage {
         this.to = to;
         this.message = message;
     }
+
+    protected ChatMessage(Parcel in) {
+        id = in.readInt();
+        time = in.readLong();
+        from = in.readParcelable(User.class.getClassLoader());
+        to = in.readParcelable(User.class.getClassLoader());
+        message = in.readString();
+    }
+
+    public static final Creator<ChatMessage> CREATOR = new Creator<ChatMessage>() {
+        @Override
+        public ChatMessage createFromParcel(Parcel in) {
+            return new ChatMessage(in);
+        }
+
+        @Override
+        public ChatMessage[] newArray(int size) {
+            return new ChatMessage[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -86,5 +109,19 @@ public class ChatMessage {
                 ", to=" + to +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeLong(time);
+        dest.writeParcelable(from, flags);
+        dest.writeParcelable(to, flags);
+        dest.writeString(message);
     }
 }

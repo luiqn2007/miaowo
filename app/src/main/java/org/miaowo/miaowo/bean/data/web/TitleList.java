@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by luqin on 17-3-15.
  */
 
-public class TitleList {
+public class TitleList implements Parcelable {
 
     /**
      * cid : 1
@@ -91,6 +94,98 @@ public class TitleList {
     private List<?> children;
     private List<?> tagWhitelist;
     private List<Title> topics;
+
+    protected TitleList(Parcel in) {
+        cid = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        descriptionParsed = in.readString();
+        icon = in.readString();
+        bgColor = in.readString();
+        color = in.readString();
+        slug = in.readString();
+        parentCid = in.readInt();
+        topic_count = in.readInt();
+        post_count = in.readInt();
+        disabled = in.readByte() != 0;
+        order = in.readInt();
+        link = in.readString();
+        numRecentReplies = in.readInt();
+        classX = in.readString();
+        imageClass = in.readString();
+        undefined = in.readString();
+        totalPostCount = in.readInt();
+        totalTopicCount = in.readInt();
+        unreadclass = in.readString();
+        nextStart = in.readInt();
+        isIgnored = in.readByte() != 0;
+        privileges = in.readParcelable(Privilege.class.getClassLoader());
+        showSelect = in.readByte() != 0;
+        feedsDisableRSS = in.readByte() != 0;
+        rssFeedUrl = in.readString();
+        title = in.readString();
+        pagination = in.readParcelable(Pagination.class.getClassLoader());
+        loggedIn = in.readByte() != 0;
+        relative_path = in.readString();
+        url = in.readString();
+        bodyClass = in.readString();
+        topics = in.createTypedArrayList(Title.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(cid);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(descriptionParsed);
+        dest.writeString(icon);
+        dest.writeString(bgColor);
+        dest.writeString(color);
+        dest.writeString(slug);
+        dest.writeInt(parentCid);
+        dest.writeInt(topic_count);
+        dest.writeInt(post_count);
+        dest.writeByte((byte) (disabled ? 1 : 0));
+        dest.writeInt(order);
+        dest.writeString(link);
+        dest.writeInt(numRecentReplies);
+        dest.writeString(classX);
+        dest.writeString(imageClass);
+        dest.writeString(undefined);
+        dest.writeInt(totalPostCount);
+        dest.writeInt(totalTopicCount);
+        dest.writeString(unreadclass);
+        dest.writeInt(nextStart);
+        dest.writeByte((byte) (isIgnored ? 1 : 0));
+        dest.writeParcelable(privileges, flags);
+        dest.writeByte((byte) (showSelect ? 1 : 0));
+        dest.writeByte((byte) (feedsDisableRSS ? 1 : 0));
+        dest.writeString(rssFeedUrl);
+        dest.writeString(title);
+        dest.writeParcelable(pagination, flags);
+        dest.writeByte((byte) (loggedIn ? 1 : 0));
+        dest.writeString(relative_path);
+        dest.writeString(url);
+        dest.writeString(bodyClass);
+        dest.writeTypedList(topics);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<TitleList> CREATOR = new Creator<TitleList>() {
+        @Override
+        public TitleList createFromParcel(Parcel in) {
+            return new TitleList(in);
+        }
+
+        @Override
+        public TitleList[] newArray(int size) {
+            return new TitleList[size];
+        }
+    };
 
     public int getCid() {
         return cid;

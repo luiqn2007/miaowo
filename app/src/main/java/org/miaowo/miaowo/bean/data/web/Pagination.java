@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -11,13 +14,47 @@ import java.util.List;
  * next : {"page":2,"active":true,"qs":"page=2"}
  */
 
-public class Pagination {
+public class Pagination implements Parcelable {
     private int currentPage;
     private int pageCount;
     private Page prev;
     private Page next;
     private List<Page.Rel> rel;
     private List<Page> pages;
+
+    protected Pagination(Parcel in) {
+        currentPage = in.readInt();
+        pageCount = in.readInt();
+        prev = in.readParcelable(Page.class.getClassLoader());
+        next = in.readParcelable(Page.class.getClassLoader());
+        pages = in.createTypedArrayList(Page.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(currentPage);
+        dest.writeInt(pageCount);
+        dest.writeParcelable(prev, flags);
+        dest.writeParcelable(next, flags);
+        dest.writeTypedList(pages);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Pagination> CREATOR = new Creator<Pagination>() {
+        @Override
+        public Pagination createFromParcel(Parcel in) {
+            return new Pagination(in);
+        }
+
+        @Override
+        public Pagination[] newArray(int size) {
+            return new Pagination[size];
+        }
+    };
 
     public int getCurrentPage() {
         return currentPage;

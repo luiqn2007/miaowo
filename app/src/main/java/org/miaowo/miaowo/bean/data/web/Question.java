@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by luqin on 17-3-17.
  */
 
-public class Question {
+public class Question implements Parcelable {
 
     /**
      * tid : 195
@@ -109,6 +112,106 @@ public class Question {
     private List<?> postSharing;
     private List<?> related;
     private List<?> icons;
+
+    protected Question(Parcel in) {
+        tid = in.readInt();
+        uid = in.readInt();
+        cid = in.readString();
+        mainPid = in.readInt();
+        title = in.readString();
+        slug = in.readString();
+        timestamp = in.readLong();
+        lastposttime = in.readLong();
+        postcount = in.readInt();
+        viewcount = in.readInt();
+        locked = in.readByte() != 0;
+        deleted = in.readByte() != 0;
+        pinned = in.readByte() != 0;
+        teaserPid = in.readString();
+        titleRaw = in.readString();
+        timestampISO = in.readString();
+        lastposttimeISO = in.readString();
+        category = in.readParcelable(Category.class.getClassLoader());
+        isFollowing = in.readByte() != 0;
+        isNotFollowing = in.readByte() != 0;
+        isIgnoring = in.readByte() != 0;
+        unreplied = in.readByte() != 0;
+        privileges = in.readParcelable(Privilege.class.getClassLoader());
+        topicStaleDays = in.readInt();
+        reputationDisabled = in.readByte() != 0;
+        downvoteDisabled = in.readByte() != 0;
+        feedsDisableRSS = in.readByte() != 0;
+        bookmarkThreshold = in.readInt();
+        postEditDuration = in.readInt();
+        postDeleteDuration = in.readInt();
+        scrollToMyPost = in.readByte() != 0;
+        rssFeedUrl = in.readString();
+        pagination = in.readParcelable(Pagination.class.getClassLoader());
+        loggedIn = in.readByte() != 0;
+        relative_path = in.readString();
+        url = in.readString();
+        bodyClass = in.readString();
+        posts = in.createTypedArrayList(Post.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(tid);
+        dest.writeInt(uid);
+        dest.writeString(cid);
+        dest.writeInt(mainPid);
+        dest.writeString(title);
+        dest.writeString(slug);
+        dest.writeLong(timestamp);
+        dest.writeLong(lastposttime);
+        dest.writeInt(postcount);
+        dest.writeInt(viewcount);
+        dest.writeByte((byte) (locked ? 1 : 0));
+        dest.writeByte((byte) (deleted ? 1 : 0));
+        dest.writeByte((byte) (pinned ? 1 : 0));
+        dest.writeString(teaserPid);
+        dest.writeString(titleRaw);
+        dest.writeString(timestampISO);
+        dest.writeString(lastposttimeISO);
+        dest.writeParcelable(category, flags);
+        dest.writeByte((byte) (isFollowing ? 1 : 0));
+        dest.writeByte((byte) (isNotFollowing ? 1 : 0));
+        dest.writeByte((byte) (isIgnoring ? 1 : 0));
+        dest.writeByte((byte) (unreplied ? 1 : 0));
+        dest.writeParcelable(privileges, flags);
+        dest.writeInt(topicStaleDays);
+        dest.writeByte((byte) (reputationDisabled ? 1 : 0));
+        dest.writeByte((byte) (downvoteDisabled ? 1 : 0));
+        dest.writeByte((byte) (feedsDisableRSS ? 1 : 0));
+        dest.writeInt(bookmarkThreshold);
+        dest.writeInt(postEditDuration);
+        dest.writeInt(postDeleteDuration);
+        dest.writeByte((byte) (scrollToMyPost ? 1 : 0));
+        dest.writeString(rssFeedUrl);
+        dest.writeParcelable(pagination, flags);
+        dest.writeByte((byte) (loggedIn ? 1 : 0));
+        dest.writeString(relative_path);
+        dest.writeString(url);
+        dest.writeString(bodyClass);
+        dest.writeTypedList(posts);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Question> CREATOR = new Creator<Question>() {
+        @Override
+        public Question createFromParcel(Parcel in) {
+            return new Question(in);
+        }
+
+        @Override
+        public Question[] newArray(int size) {
+            return new Question[size];
+        }
+    };
 
     public int getTid() {
         return tid;

@@ -1,5 +1,8 @@
 package org.miaowo.miaowo.bean.data.web;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * pid : 1168
  * uid : 7
@@ -24,7 +27,7 @@ package org.miaowo.miaowo.bean.data.web;
  * timestampISO : 2017-03-17T18:19:36.511Z
  */
 
-public class Post {
+public class Post implements Parcelable {
     /**
      * pid : 1119
      * uid : 1
@@ -94,6 +97,52 @@ public class Post {
     private Title title;
     private Category category;
     private boolean isMainPost;
+
+    public Post() {
+        
+    }
+
+    protected Post(Parcel in) {
+        pid = in.readInt();
+        uid = in.readInt();
+        tid = in.readInt();
+        content = in.readString();
+        timestamp = in.readLong();
+        deleted = in.readByte() != 0;
+        upvotes = in.readInt();
+        downvotes = in.readInt();
+        votes = in.readInt();
+        timestampISO = in.readString();
+        editedISO = in.readString();
+        index = in.readInt();
+        user = in.readParcelable(User.class.getClassLoader());
+        bookmarked = in.readByte() != 0;
+        upvoted = in.readByte() != 0;
+        downvoted = in.readByte() != 0;
+        replies = in.readInt();
+        selfPost = in.readByte() != 0;
+        display_edit_tools = in.readByte() != 0;
+        display_delete_tools = in.readByte() != 0;
+        display_moderator_tools = in.readByte() != 0;
+        display_move_tools = in.readByte() != 0;
+        display_post_menu = in.readByte() != 0;
+        edited = in.readLong();
+        title = in.readParcelable(Title.class.getClassLoader());
+        category = in.readParcelable(Category.class.getClassLoader());
+        isMainPost = in.readByte() != 0;
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
 
     public int getPid() {
         return pid;
@@ -317,5 +366,41 @@ public class Post {
 
     public void setIsMainPost(boolean isMainPost) {
         this.isMainPost = isMainPost;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(pid);
+        dest.writeInt(uid);
+        dest.writeInt(tid);
+        dest.writeString(content);
+        dest.writeLong(timestamp);
+        dest.writeByte((byte) (deleted ? 1 : 0));
+        dest.writeInt(upvotes);
+        dest.writeInt(downvotes);
+        dest.writeInt(votes);
+        dest.writeString(timestampISO);
+        dest.writeString(editedISO);
+        dest.writeInt(index);
+        dest.writeParcelable(user, flags);
+        dest.writeByte((byte) (bookmarked ? 1 : 0));
+        dest.writeByte((byte) (upvoted ? 1 : 0));
+        dest.writeByte((byte) (downvoted ? 1 : 0));
+        dest.writeInt(replies);
+        dest.writeByte((byte) (selfPost ? 1 : 0));
+        dest.writeByte((byte) (display_edit_tools ? 1 : 0));
+        dest.writeByte((byte) (display_delete_tools ? 1 : 0));
+        dest.writeByte((byte) (display_moderator_tools ? 1 : 0));
+        dest.writeByte((byte) (display_move_tools ? 1 : 0));
+        dest.writeByte((byte) (display_post_menu ? 1 : 0));
+        dest.writeLong(edited);
+        dest.writeParcelable(title, flags);
+        dest.writeParcelable(category, flags);
+        dest.writeByte((byte) (isMainPost ? 1 : 0));
     }
 }

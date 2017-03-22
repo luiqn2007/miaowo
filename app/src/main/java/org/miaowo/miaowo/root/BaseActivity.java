@@ -2,6 +2,7 @@ package org.miaowo.miaowo.root;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
@@ -24,18 +25,15 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
     @Override
     protected void onResume() {
         super.onResume();
-//        Bugtags.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        Bugtags.onPause(this);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-//        Bugtags.onDispatchTouchEvent(this, event);
         return super.dispatchTouchEvent(event);
     }
 
@@ -43,5 +41,11 @@ public class BaseActivity extends AppCompatActivity implements ExceptionHandled 
     public void handleError(Exception e) {
         e.printStackTrace();
         TastyToast.makeText(this, e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
+    }
+
+    public void updateFragment(Fragment fragment, Runnable action) {
+        if (fragment.isVisible()) {
+            runOnUiThread(action);
+        }
     }
 }

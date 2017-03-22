@@ -63,7 +63,7 @@ public class ChooseFragment extends Fragment implements View.OnClickListener {
             for (int id : controls) {
                 root.findViewById(id).setBackgroundColor(Color.rgb(255, 255, 255));
             }
-            FragmentUtil.manager(getChildFragmentManager()).showOnly(container, fragments.get(index));
+            FragmentUtil.manager(getChildFragmentManager()).show(container, fragments.get(index));
             root.findViewById(fragmentId).setBackgroundColor(Color.rgb(238, 238, 238));
         }
     }
