@@ -3,9 +3,7 @@ package org.miaowo.miaowo.set;
 import org.greenrobot.eventbus.EventBus;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
 import org.miaowo.miaowo.bean.data.event.FileEvent;
-import org.miaowo.miaowo.bean.data.event.SearchEvent;
 import org.miaowo.miaowo.bean.data.event.VersionEvent;
-import org.miaowo.miaowo.bean.data.web.QuestionSearch;
 import org.miaowo.miaowo.util.BeanUtil;
 
 import java.io.IOException;
@@ -24,14 +22,6 @@ public enum Callbacks implements Callback {
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             EventBus.getDefault().post(new VersionEvent(call, BeanUtil.utils().buildVersion(response)));
-        }
-    },
-
-    SEARCH_QUESTION {
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            EventBus.getDefault().post(new SearchEvent(call,
-                    BeanUtil.utils().buildFromLastJson(response, QuestionSearch.class)));
         }
     },
 

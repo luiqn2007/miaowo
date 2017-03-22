@@ -1,11 +1,10 @@
 package org.miaowo.miaowo.impl;
 
+import android.content.ContentValues;
 import android.text.TextUtils;
 
 import com.sdsmdg.tastytoast.TastyToast;
 
-import org.miaowo.miaowo.bean.data.event.LoginEvent;
-import org.miaowo.miaowo.bean.data.event.RegisterEvent;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
@@ -38,10 +37,12 @@ public class StateImpl implements State {
 
     @Override
     public void login(String user, String pwd) {
-        String email = "login@miaowo.org";
         try {
-            checkUser(user, pwd, email);
-            HttpUtil.utils().login(mContext, new LoginEvent(null, user, pwd, email));
+            checkUser(user, pwd, "login@miaowo.org");
+            ContentValues loginMsg = new ContentValues();
+            loginMsg.put("user", user);
+            loginMsg.put("password", pwd);
+            HttpUtil.utils().login(mContext, loginMsg);
             TastyToast.makeText(mContext, "登录中...", TastyToast.LENGTH_SHORT, TastyToast.CONFUSING).show();
         } catch (Exception e) {
             mContext.handleError(e);
@@ -58,7 +59,11 @@ public class StateImpl implements State {
     public void register(String user, String pwd, String email) {
         try {
             checkUser(user, pwd, email);
-            HttpUtil.utils().register(mContext, new RegisterEvent(null, user, pwd, email));
+            ContentValues regMsg = new ContentValues();
+            regMsg.put("user", user);
+            regMsg.put("password", pwd);
+            regMsg.put("email", email);
+            HttpUtil.utils().register(mContext, regMsg);
         } catch (Exception e) {
             mContext.handleError(e);
         }

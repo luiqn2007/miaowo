@@ -29,7 +29,6 @@ import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.view.load_more_list.ViewHolder;
 
 import java.io.IOException;

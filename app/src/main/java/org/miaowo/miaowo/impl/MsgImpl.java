@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.impl;
 
 import org.miaowo.miaowo.bean.data.web.Post;
-import org.miaowo.miaowo.bean.data.web.Question;
 import org.miaowo.miaowo.impl.interfaces.Message;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Callbacks;

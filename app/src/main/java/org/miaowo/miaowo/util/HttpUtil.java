@@ -9,10 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
-import org.miaowo.miaowo.bean.data.event.LoginEvent;
-import org.miaowo.miaowo.bean.data.event.RegisterEvent;
 import org.miaowo.miaowo.bean.data.event.UserEvent;
-import org.miaowo.miaowo.root.BaseEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,14 +56,14 @@ public class HttpUtil {
     private BeanUtil bean;
     private EventBus eventBus;
 
-    public HttpUtil login(Context context, LoginEvent u) {
+    public HttpUtil login(Context context, ContentValues loginMsg) {
         openCookiesWrite();
-        csrf(context, u);
+        csrf(context, loginMsg);
         return this;
     }
-    public HttpUtil register(Context context, RegisterEvent u) {
+    public HttpUtil register(Context context, ContentValues regMsg) {
         openCookiesWrite();
-        csrf(context, u);
+        csrf(context, regMsg);
         return this;
     }
     private void relLogin(Context context, ContentValues loginMsg) {
@@ -130,7 +127,7 @@ public class HttpUtil {
             }
         });
     }
-    private void csrf(Context context, BaseEvent user) {
+    private void csrf(Context context, ContentValues msg) {
         post(context.getString(R.string.url_login), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -153,26 +150,16 @@ public class HttpUtil {
                         eventBus.post(new ExceptionEvent(call, e));
                     }
                 }
+                msg.put("csrf", csrf);
                 if (!TextUtils.isEmpty(csrf)) {
-                    ContentValues cv = new ContentValues();
-                    if (user instanceof LoginEvent) {
-                        cv.put("user", ((LoginEvent) user).username);
-                        cv.put("password", ((LoginEvent) user).password);
-                        cv.put("csrf", csrf);
-                        relLogin(context, cv);
-                    } else if (user instanceof RegisterEvent) {
-                        cv.put("user", ((RegisterEvent) user).username);
-                        cv.put("password", ((RegisterEvent) user).password);
-                        cv.put("email", ((RegisterEvent) user).email);
-                        cv.put("csrf", csrf);
-                        relRegister(context, cv);
-                    }
+                    if (msg.containsKey("email")) relRegister(context, msg);
+                    else relLogin(context, msg);
                 }
             }
         });
     }
 
-    public HttpUtil openCookiesWrite() {
+    private HttpUtil openCookiesWrite() {
         mCookieJar.writable(true);
         return this;
     }
