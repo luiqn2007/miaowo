@@ -1,51 +1,61 @@
 package org.miaowo.miaowo.root;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 
 import com.sdsmdg.tastytoast.TastyToast;
 
-import org.miaowo.miaowo.impl.interfaces.ExceptionHandled;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
+
+import java.util.List;
 
 /**
  * 创建的所有Activity的基类
  * Created by luqin on 16-12-28.
  */
 
-public class BaseActivity extends AppCompatActivity implements ExceptionHandled {
+public abstract class BaseActivity extends AppCompatActivity {
+    private FragmentManager mFragmentManager;
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mFragmentManager = getSupportFragmentManager();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
     public void handleError(Exception e) {
         e.printStackTrace();
         TastyToast.makeText(this, e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
     }
 
-    public void updateFragment(Fragment fragment, Runnable action) {
-        if (fragment.isVisible()) {
-            runOnUiThread(action);
+    public void setProcess(int process, String message) {
+        List<Fragment> visibleFragment = getSupportFragmentManager().getFragments();
+        if (visibleFragment == null || visibleFragment.size() == 0) return;
+        if (visibleFragment.get(0) instanceof BaseFragment) {
+            runOnUiThread(() -> ((BaseFragment) visibleFragment.get(0))
+                    .getProcessController().setProcess(process, message));
+        }
+    }
+
+    public void processError(Exception e) {
+        List<Fragment> visibleFragment = getSupportFragmentManager().getFragments();
+        if (visibleFragment == null || visibleFragment.size() == 0) return;
+        if (visibleFragment.get(0) instanceof BaseFragment) {
+            runOnUiThread(() -> ((BaseFragment) visibleFragment.get(0))
+                    .getProcessController().processError(e));
+        }
+
+    }
+
+    public void stopProcess() {
+        List<Fragment> visibleFragment = getSupportFragmentManager().getFragments();
+        if (visibleFragment == null || visibleFragment.size() == 0) return;
+        if (visibleFragment.get(0) instanceof BaseFragment) {
+            runOnUiThread(() -> ((BaseFragment) visibleFragment.get(0))
+                    .getProcessController().stopProcess());
         }
     }
 }

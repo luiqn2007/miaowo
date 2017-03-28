@@ -3,7 +3,6 @@ package org.miaowo.miaowo.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import org.miaowo.miaowo.bean.data.web.QuestionSearch;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.bean.data.web.UserSearch;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
@@ -38,7 +38,7 @@ import okhttp3.Response;
 /**
  * 显示搜索结果的 Fragment
  */
-public class SearchDisplyFragment extends Fragment {
+public class SearchDisplyFragment extends BaseFragment {
     final private static String TAG_TYPE = "layout";
     final private static String TAG_RESULT = "result";
 
@@ -83,7 +83,7 @@ public class SearchDisplyFragment extends Fragment {
     }
 
     private void initView(View v) {
-        TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
+        TextView tv_title = (TextView) v.findViewById(R.id.tv_page);
         ListView mList = (ListView) v.findViewById(R.id.lv_result);
 
         switch (type) {
@@ -141,7 +141,7 @@ public class SearchDisplyFragment extends Fragment {
         ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), u, true);
         holder.getTextView(R.id.tv_user).setText(u.getUsername());
         holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getTimestamp()));
-        holder.getTextView(R.id.tv_title).setText(Html.fromHtml(item.getTitle().getTitle()));
+        holder.getTextView(R.id.tv_page).setText(Html.fromHtml(item.getTitle().getTitle()));
         holder.getTextView(R.id.tv_count).setText(item.getTitle().getPostcount()+ " 帖子");
 
         return view;
@@ -157,6 +157,16 @@ public class SearchDisplyFragment extends Fragment {
         holder.getTextView(R.id.tv_user).setText(item.getUsername());
         ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), item, true);
         return view;
+    }
+
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
     }
 
     private static class ViewHolder {

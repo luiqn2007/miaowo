@@ -12,8 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.yalantis.ucrop.UCrop;
-
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.StateImpl;
@@ -91,7 +89,6 @@ public class Setting extends BaseActivity {
         }
         File img = new File(dir, "head_" + mState.loginedUser().getUid());
         dst = FileProvider.getUriForFile(this, BaseApp.FILE_PROVIDER_URI, img);
-        UCrop.of(src, dst).withAspectRatio(1, 1).start(this);
     }
 
     private void chooseType() {
@@ -143,13 +140,6 @@ public class Setting extends BaseActivity {
                 break;
             case IMG_CAMERA:
                 break;
-            case UCrop.REQUEST_CROP:
-                if (resultCode == RESULT_OK) {
-                    dst = UCrop.getOutput(data);
-                    ImageUtil.utils(this).fill(iv_head, dst.getPath(), null);
-                } else {
-                    handleError(new Exception(UCrop.getError(data)));
-                }
         }
 
         setHeadImg();

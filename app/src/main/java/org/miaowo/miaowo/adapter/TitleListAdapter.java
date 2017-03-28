@@ -46,7 +46,7 @@ public class TitleListAdapter
                 ImageUtil.utils(context).setUser(holder.getImageView(R.id.iv_user), u, true);
                 holder.getTextView(R.id.tv_user).setText(u.getUsername());
                 holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getLastposttime()));
-                holder.getTextView(R.id.tv_title).setText(Html.fromHtml(item.getTitle()));
+                holder.getTextView(R.id.tv_page).setText(Html.fromHtml(item.getTitle()));
                 holder.getTextView(R.id.tv_count).setText(item.getPostcount() + " 帖子, " + item.getViewcount() + " 浏览");
             }
 

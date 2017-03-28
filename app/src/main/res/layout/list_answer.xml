@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:text="用户名"
+        android:text="@string/user_name"
         app:layout_constraintLeft_toRightOf="@+id/iv_user"
         app:layout_constraintTop_toTopOf="@+id/iv_user" />
 
@@ -34,8 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:text="XX 时间之前"
-        android:textSize="10sp"
+        android:text=""
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user"
         app:layout_constraintLeft_toRightOf="@+id/tv_user" />
 
@@ -45,8 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="8dp"
         android:layout_marginTop="14dp"
-        android:text="回复正文"
-        android:textColor="@color/material_drawer_primary_text"
+        android:text=""
+        android:textColor="@color/md_black_1000"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="@+id/tv_user"
         app:layout_constraintRight_toRightOf="parent"

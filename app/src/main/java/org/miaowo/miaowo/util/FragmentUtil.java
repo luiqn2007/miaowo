@@ -32,7 +32,7 @@ public class FragmentUtil {
         }
         FragmentTransaction transaction = manager.beginTransaction();
         List<Fragment> fragments = manager.getFragments();
-        if (fragments != null) {
+        if (fragments != null && fragments.size() != 0) {
             fragments.stream().forEach(fragment1 -> {
                 fragment1.onDetach();
                 transaction.hide(fragment1);

@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -21,6 +20,7 @@ import org.miaowo.miaowo.bean.data.web.TopicList;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseListAdapter;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.FormatUtil;
@@ -35,7 +35,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class TopicFragment extends Fragment {
+public class TopicFragment extends BaseFragment {
 
     private ListView lv_list;
     private PopupMenu mMenu;
@@ -91,7 +91,7 @@ public class TopicFragment extends Fragment {
                 ImageUtil.utils(mContext).setUser(holder.getImageView(R.id.iv_user), u, true);
                 holder.getTextView(R.id.tv_user).setText(u.getUsername());
                 holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getLastposttime()));
-                holder.getTextView(R.id.tv_title).setText(Html.fromHtml(item.getTitle()));
+                holder.getTextView(R.id.tv_page).setText(Html.fromHtml(item.getTitle()));
                 holder.getTextView(R.id.tv_count).setText(item.getPostcount() + " 帖子, " + item.getViewcount() + " 浏览");
                 return convertView;
             }
@@ -113,7 +113,7 @@ public class TopicFragment extends Fragment {
         HttpUtil.utils().post(getContext().getString(R.string.url_tags), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                ((BaseActivity) getActivity()).updateFragment(TopicFragment.this, () -> {
+                getActivity().runOnUiThread(() -> {
                     tv_topic.setText("加载失败");
                     mMenu.getMenu().clear();
                     mMenu.getMenu().add("重新加载");
@@ -125,7 +125,7 @@ public class TopicFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 TopicList topicList = BeanUtil.utils().buildFromLastJson(response, TopicList.class);
                 mTopics = topicList.getTags();
-                ((BaseActivity) getActivity()).updateFragment(TopicFragment.this, () -> {
+                getActivity().runOnUiThread(() -> {
                     tv_topic.setText("请选择话题");
                     Menu menu = mMenu.getMenu();
                     menu.clear();
@@ -147,19 +147,29 @@ public class TopicFragment extends Fragment {
         HttpUtil.utils().post(mContext.getString(R.string.url_tags) + title, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                mContext.updateFragment(TopicFragment.this, () -> tv_topic.setText("加载失败"));
+                mContext.runOnUiThread(() -> tv_topic.setText("加载失败"));
                 mContext.handleError(e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 TitleList topicPage = BeanUtil.utils().buildFromLastJson(response, TitleList.class);
-                mContext.updateFragment(TopicFragment.this, () -> {
+                mContext.runOnUiThread(() -> {
                     tv_topic.setText(title);
                     mAdapter.update(topicPage.getTitles());
                 });
             }
         });
         return true;
+    }
+
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
     }
 }

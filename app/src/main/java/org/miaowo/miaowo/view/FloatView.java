@@ -150,7 +150,7 @@ public class FloatView extends LinearLayout {
     public FloatView defaultBar() {
         mHolder = new ViewHolder();
         mHolder.close = findViewById(R.id.iv_close);
-        mHolder.tv_title = (TextView) findViewById(R.id.tv_title);
+        mHolder.tv_title = (TextView) findViewById(R.id.tv_page);
         mHolder.pb_load = (ProgressBar) findViewById(R.id.pb_loading);
         mHolder.cb_top = (CheckBox) findViewById(R.id.cb_top);
 

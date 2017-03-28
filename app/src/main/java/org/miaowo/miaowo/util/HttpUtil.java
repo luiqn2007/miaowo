@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.util;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.text.TextUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
 import org.miaowo.miaowo.bean.data.event.UserEvent;
+import org.miaowo.miaowo.root.BaseActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,18 +56,21 @@ public class HttpUtil {
     private BeanUtil bean;
     private EventBus eventBus;
 
-    public HttpUtil login(Context context, ContentValues loginMsg) {
+    public HttpUtil login(BaseActivity context, ContentValues loginMsg) {
         openCookiesWrite();
+        context.setProcess(0, "获取服务器信息...");
         csrf(context, loginMsg);
         return this;
     }
-    public HttpUtil register(Context context, ContentValues regMsg) {
+    public HttpUtil register(BaseActivity context, ContentValues regMsg) {
         openCookiesWrite();
+        context.setProcess(0, "获取服务器信息...");
         csrf(context, regMsg);
         return this;
     }
-    private void relLogin(Context context, ContentValues loginMsg) {
+    private void relLogin(BaseActivity context, ContentValues loginMsg) {
         openCookiesWrite();
+
         String user = loginMsg.getAsString("user");
         String pwd = loginMsg.getAsString("password");
         String csrf = loginMsg.getAsString("csrf");
@@ -91,11 +94,12 @@ public class HttpUtil {
                 LogUtil.i(response.headers().toMultimap());
                 Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
                 LogUtil.i("连接Url: " + context.getString(R.string.url_home));
+                context.setProcess(50, "正在登录...");
                 eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });
     }
-    private void relRegister(Context context, ContentValues loginMsg) {
+    private void relRegister(BaseActivity context, ContentValues loginMsg) {
         openCookiesWrite();
         String user = loginMsg.getAsString("user");
         String pwd = loginMsg.getAsString("password");
@@ -123,11 +127,12 @@ public class HttpUtil {
                     throw new IOException(msg.substring(2, msg.length() - 2));
                 }
                 Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
+                context.setProcess(50, "正在注册...");
                 eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });
     }
-    private void csrf(Context context, ContentValues msg) {
+    private void csrf(BaseActivity context, ContentValues msg) {
         post(context.getString(R.string.url_login), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

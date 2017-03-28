@@ -74,7 +74,7 @@ public class StateWindows {
             }
 
         });
-        v.findViewById(R.id.btn_regist).setOnClickListener(v1 -> {
+        v.findViewById(R.id.btn_register).setOnClickListener(v1 -> {
             if (!isLogin) {
                 try {
                     String username = user.getText().toString();

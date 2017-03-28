@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.bean.data.web.UserList;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
 import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.HttpUtil;
@@ -30,7 +30,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class UserFragment extends Fragment {
+public class UserFragment extends BaseFragment {
 
     private LoadMoreList mView;
     private ItemRecyclerAdapter<User> mAdapter;
@@ -78,8 +78,8 @@ public class UserFragment extends Fragment {
         });
         mView.setAdapter(mAdapter);
         mView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        mView.setPushRefresher(() -> loadNextPage());
-        mView.setPullRefresher(() -> reloadUser());
+        mView.setPushRefresher(this::loadNextPage);
+        mView.setPullRefresher(this::reloadUser);
         reloadUser();
         return mView;
     }
@@ -109,16 +109,26 @@ public class UserFragment extends Fragment {
                 UserList userList = BeanUtil.utils().buildFromLastJson(response, UserList.class);
                 if (userList.getUsers().size() == 0) {
                     mPage--;
-                    ((BaseActivity) getActivity()).updateFragment(UserFragment.this, () ->
+                    getActivity().runOnUiThread(() ->
                             TastyToast.makeText(getContext(), "就这些用户啦", TastyToast.LENGTH_SHORT, TastyToast.WARNING).show());
                 }
                 mList.addAll(userList.getUsers());
-                ((BaseActivity) getActivity()).updateFragment(UserFragment.this, () -> {
+                getActivity().runOnUiThread(() -> {
                     mAdapter.updateDate(mList);
                     mView.loadOver();
                 });
             }
         });
         mPage++;
+    }
+
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
     }
 }

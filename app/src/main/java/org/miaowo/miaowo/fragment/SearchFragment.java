@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -12,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.materialdrawer.holder.ImageHolder;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.web.Post;
@@ -22,6 +21,7 @@ import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.bean.data.web.UserSearch;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseListAdapter;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.set.windows.UserWindows;
@@ -39,7 +39,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends BaseFragment {
 
     private ListView lv_list;
     private EditText et_topic;
@@ -134,7 +134,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void loadSearchTopic() {
-        new ImageHolder(FontAwesome.Icon.faw_calendar).applyTo(ib_search);
+        ib_search.setImageDrawable(new IconicsDrawable(getContext(), FontAwesome.Icon.faw_calculator).actionBar());
         lv_list.setAdapter(mTitleAdapter);
         lv_list.setOnItemClickListener((parent, view, position, id) -> {
             Post item = (Post) mTitleAdapter.getItem(position);
@@ -145,7 +145,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void loadSearchUser() {
-        new ImageHolder(FontAwesome.Icon.faw_user).applyTo(ib_search);
+        ib_search.setImageDrawable(new IconicsDrawable(getContext(), FontAwesome.Icon.faw_user).actionBar());
         lv_list.setAdapter(mUserAdapter);
         lv_list.setOnItemClickListener((parent, view, position, id) -> {
             User item = (User) mUserAdapter.getItem(position);
@@ -175,14 +175,23 @@ public class SearchFragment extends Fragment {
                     mQuestions = question.getPosts();
                 }
                 isUser = lastUser;
-                ((BaseActivity) getActivity()).updateFragment(SearchFragment.this, () -> loadSearch());
+                getActivity().runOnUiThread(() -> loadSearch());
             }
         });
-        new ImageHolder(FontAwesome.Icon.faw_ban).applyTo(ib_search);
+        ib_search.setImageDrawable(new IconicsDrawable(getContext(), FontAwesome.Icon.faw_ban).actionBar());
         ib_search.setOnClickListener(v -> {
             call.cancel();
             loadSearch();
         });
     }
 
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
+    }
 }

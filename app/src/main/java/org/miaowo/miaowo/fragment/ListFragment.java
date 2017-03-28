@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import org.miaowo.miaowo.adapter.TitleListAdapter;
 import org.miaowo.miaowo.bean.data.web.Title;
 import org.miaowo.miaowo.bean.data.web.TitleList;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.fragment.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
@@ -28,7 +28,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ListFragment extends Fragment implements Parcelable {
+public class ListFragment extends BaseFragment implements Parcelable {
     public static String TAG_URL = "url";
 
     private LoadMoreList mList;
@@ -102,7 +102,7 @@ public class ListFragment extends Fragment implements Parcelable {
             @Override
             public void onFailure(Call call, IOException e) {
                 mContext.handleError(Exceptions.E_WEB);
-                mContext.updateFragment(ListFragment.this, () -> mList.loadOver());
+                mContext.runOnUiThread(() -> mList.loadOver());
             }
 
             @Override
@@ -114,7 +114,7 @@ public class ListFragment extends Fragment implements Parcelable {
                     mItems.clear();
                     mItems.addAll(page.getTitles());
                 }
-                mContext.updateFragment(ListFragment.this, () -> {
+                mContext.runOnUiThread(() -> {
                     mAdapter.updateDate(mItems);
                     mList.loadOver();
                 });
@@ -128,7 +128,7 @@ public class ListFragment extends Fragment implements Parcelable {
             @Override
             public void onFailure(Call call, IOException e) {
                 mContext.handleError(Exceptions.E_WEB);
-                mContext.updateFragment(ListFragment.this, () -> mList.loadOver());
+                mContext.runOnUiThread(() -> mList.loadOver());
             }
 
             @Override
@@ -140,12 +140,22 @@ public class ListFragment extends Fragment implements Parcelable {
                     mItems.clear();
                     mItems.addAll(page.getTitles());
                 }
-                mContext.updateFragment(ListFragment.this, () -> {
+                mContext.runOnUiThread(() -> {
                     mAdapter.updateDate(mItems);
                     mList.loadOver();
                 });
             }
         });
+    }
+
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
     }
 
     public enum FragmentGetter {

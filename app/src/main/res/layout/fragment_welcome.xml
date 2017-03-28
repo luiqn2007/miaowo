@@ -1,19 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:background="@drawable/bg_btn_red"
+        android:enabled="false"
+        android:text="@string/login"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toTopOf="@+id/pb_process"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:alpha="0"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^*()_-+=`～"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/et_email"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/et_user"
+        app:layout_constraintRight_toRightOf="@+id/et_user" />
+
+    <EditText
+        android:id="@+id/et_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="1"
+        android:alpha="0"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/et_password"
+        app:layout_constraintLeft_toRightOf="@+id/tv_user"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp">
+        <requestFocus/>
+    </EditText>
+
+
+    <TextView
+        android:id="@+id/tv_user"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:alpha="0"
+        android:text="@string/user_name"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/et_user"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/et_user"
+        app:layout_constraintTop_toTopOf="@+id/et_user"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/tv_password"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:alpha="0"
+        android:text="@string/user_pwd"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/et_password"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_user"
+        app:layout_constraintTop_toTopOf="@+id/et_password"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/et_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="4dp"
+        android:alpha="0"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="textEmailAddress"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/cb_save"
+        app:layout_constraintLeft_toLeftOf="@+id/et_user"
+        android:layout_marginStart="4dp" />
+
+    <TextView
+        android:id="@+id/tv_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:alpha="0"
+        android:text="@string/user_email"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_user"
+        app:layout_constraintTop_toTopOf="@+id/et_email"
+        tools:ignore="RtlHardcoded"
+        app:layout_constraintBottom_toBottomOf="@+id/et_email"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cb_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:alpha="0"
+        android:enabled="false"
+        android:paddingBottom="5dp"
+        android:text="保存密码"
+        app:layout_constraintRight_toRightOf="@+id/et_email"
+        tools:ignore="HardcodedText"
+        tools:layout_constraintRight_creator="1"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_login" />
 
     <ImageView
         android:id="@+id/welcome_eyes"
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/welcome_eyes" />
+        android:src="@drawable/welcome_eyes"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/welcome_mouth"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/welcome_mouth"
+        app:layout_constraintRight_toRightOf="@+id/welcome_mouth" />
+
     <ImageView
         android:layout_width="40dp"
         android:layout_height="35dp"
-        android:layout_marginTop="4dp"
-        android:layout_below="@id/welcome_eyes"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/welcome_mouth" />
-</RelativeLayout>
+        android:src="@drawable/welcome_mouth"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/welcome_mouth"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_login"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <ProgressBar
+        android:id="@+id/pb_process"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_message" />
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:text="TextView"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="32dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_page"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/pb_process"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</android.support.constraint.ConstraintLayout>

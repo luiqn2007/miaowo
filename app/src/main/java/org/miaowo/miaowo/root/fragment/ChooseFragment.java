@@ -3,7 +3,6 @@ package org.miaowo.miaowo.root.fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
  * Created by luqin on 17-1-24.
  */
 
-public class ChooseFragment extends Fragment implements View.OnClickListener {
+public class ChooseFragment extends BaseFragment implements View.OnClickListener {
     public static String TAG_CONTAINER = "container";
     public static String TAG_DEFAULT = "default";
     public static String TAG_LAYOUT = "layout";
@@ -88,5 +87,15 @@ public class ChooseFragment extends Fragment implements View.OnClickListener {
             view.setOnClickListener(this);
             view.setTag(i);
         }
+    }
+
+    @Override
+    protected AnimatorController setAnimatorController() {
+        return null;
+    }
+
+    @Override
+    protected ProcessController setProcessController() {
+        return null;
     }
 }

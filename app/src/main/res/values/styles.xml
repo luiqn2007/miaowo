@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -27,11 +26,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="TranslateTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/translate</item>
-        <item name="colorPrimaryDark">@color/translate</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="TranslateTheme" parent="AppTheme">
         <item name="android:background">@color/translate</item>
     </style>
     <!--全屏加透明-->
@@ -50,5 +45,6 @@
         <item name="android:windowBackground">@color/translate</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
     <color name="translate">#00FFFFFF</color>
 </resources>

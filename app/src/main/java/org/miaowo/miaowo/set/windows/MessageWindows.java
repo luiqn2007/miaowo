@@ -52,7 +52,7 @@ public class MessageWindows extends BaseSet {
         FloatView view = new FloatView(mContext, "问题", R.layout.window_question);
         View v = view.getView();
 
-        TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
+        TextView tv_title = (TextView) v.findViewById(R.id.tv_page);
         TextView tv_count = (TextView) v.findViewById(R.id.tv_count);
         ListView lv_question = (ListView) v.findViewById(R.id.lv_question);
 
@@ -86,7 +86,7 @@ public class MessageWindows extends BaseSet {
         FloatView view = new FloatView(mContext, "回复: " + question.getUser().getUsername(), R.layout.window_reply);
         View v = view.getView();
 
-        TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
+        TextView tv_title = (TextView) v.findViewById(R.id.tv_page);
         Button btn_send = (Button) v.findViewById(R.id.btn_send);
         EditText et_content = (EditText) v.findViewById(R.id.et_content);
 

@@ -36,7 +36,7 @@
         android:textSize="13sp"/>
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_page"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_user"
@@ -47,8 +47,8 @@
         android:id="@+id/tv_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_title"
-        android:layout_alignLeft="@id/tv_title"
+        android:layout_below="@id/tv_page"
+        android:layout_alignLeft="@id/tv_page"
         android:textSize="13sp"/>
 
 </RelativeLayout>

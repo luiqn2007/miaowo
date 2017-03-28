@@ -3,8 +3,8 @@ package org.miaowo.miaowo.impl;
 import android.content.ContentValues;
 import android.text.TextUtils;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
+import org.greenrobot.eventbus.EventBus;
+import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
@@ -43,9 +43,8 @@ public class StateImpl implements State {
             loginMsg.put("user", user);
             loginMsg.put("password", pwd);
             HttpUtil.utils().login(mContext, loginMsg);
-            TastyToast.makeText(mContext, "登录中...", TastyToast.LENGTH_SHORT, TastyToast.CONFUSING).show();
         } catch (Exception e) {
-            mContext.handleError(e);
+            EventBus.getDefault().post(new ExceptionEvent(null, e));
         }
     }
 
@@ -65,7 +64,7 @@ public class StateImpl implements State {
             regMsg.put("email", email);
             HttpUtil.utils().register(mContext, regMsg);
         } catch (Exception e) {
-            mContext.handleError(e);
+            EventBus.getDefault().post(new ExceptionEvent(null, e));
         }
     }
 

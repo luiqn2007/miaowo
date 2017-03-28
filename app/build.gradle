@@ -12,6 +12,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         applicationId "org.miaowo.miaowo"
         minSdkVersion 15
@@ -20,10 +23,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        ndk {
-            // 设置支持的 SO 库构架，一般而言，取你所有的库支持的构架的`交集`。
-            abiFilters 'armeabi'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
-        }
         // 开启矢量支持
         vectorDrawables.setUseSupportLibrary(true)
         jackOptions {
@@ -42,15 +41,6 @@ android {
     }
 }
 
-apply plugin: 'com.bugtags.library.plugin'
-//BugTags 插件配置
-bugtags {
-    //自动上传符号表功能配置，如果需要根据 build varint 配置，请参考帮助中心->符号表->Android 符号表->配置自动上传符号表
-    appKey "d49a368c1c57f42f2096cfd3222da4e7"  //这里是你的 appKey
-    appSecret "a34478857dad3ae14055c766b176149f"    //这里是你的 appSecret，管理员在设置页可以查看
-    mappingUploadEnabled true
-}
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -61,14 +51,10 @@ dependencies {
     // Gson 用于解析 Json
     // EventBus 用于代替 Handler 和 广播
     // Picasso & PicassoTransformation 图片显示
-    // PullLoadMoreRecycleView 列表加载
-    // uCrop 图片引用
     // textDrawable 文字图标
-    // BugTags Bug反馈
-    // MaterialDrawer & CrossFadeDrawerLayout 侧栏
     // FontAwesome-typeface FontAwesome图标字体
     // TastyToast Toast通知
-    compile('com.mikepenz:materialdrawer:5.8.1@aar') { transitive = true }
+    // FanLayoutManager 实现导航页面选择
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:support-v4:25.3.0'
@@ -79,16 +65,16 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.1.0'
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-    compile 'com.bugtags.library:bugtags-lib:latest.integration'
-    compile 'com.yalantis:ucrop:2.2.0'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile "com.mikepenz:iconics-core:2.8.2@aar"
     compile 'com.mikepenz:fontawesome-typeface:4.7.0.0@aar'
-    compile 'com.mikepenz:crossfadedrawerlayout:1.0.0@aar'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     compile 'com.android.support:recyclerview-v7:25.3.0'
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.cleveroad:fan-layout-manager:1.0.4'
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:cardview-v7:25.3.0'
 }
 
 allprojects {
