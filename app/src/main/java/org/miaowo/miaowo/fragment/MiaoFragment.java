@@ -35,8 +35,6 @@ import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.view.load_more_list.ViewHolder;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -58,7 +56,7 @@ public class MiaoFragment extends BaseFragment {
         init(view);
         if (mState.isLogin()) {
             rv_page.setVisibility(View.VISIBLE);
-            getAnimatorController().startAnimatorGroup("showChooser");
+            getAnimatorController().startAnimatorGroups("showChooser");
             et_email.setEnabled(false);
             et_user.setEnabled(false);
             et_pwd.setEnabled(false);
@@ -271,7 +269,7 @@ public class MiaoFragment extends BaseFragment {
     public void loginSucceed() {
         rv_page.setVisibility(View.VISIBLE);
         getAnimatorController()
-                .startAnimatorGroup("hideLoginTable", "hideLoginButton", "showChooser", "showImg");
+                .startAnimatorGroups("hideLoginTable", "hideLoginButton", "showChooser", "showImg");
         et_email.setEnabled(false);
         et_user.setEnabled(false);
         et_pwd.setEnabled(false);
@@ -282,7 +280,7 @@ public class MiaoFragment extends BaseFragment {
 
     public void prepareLogin() {
         rv_page.setVisibility(View.GONE);
-        getAnimatorController().startAnimatorGroup("showLoginButton");
+        getAnimatorController().startAnimatorGroups("showLoginButton");
         btn_login.setText(R.string.login);
         btn_login.setEnabled(true);
         btn_login.setOnClickListener(v1 -> {
@@ -291,7 +289,7 @@ public class MiaoFragment extends BaseFragment {
             et_pwd.setEnabled(true);
             cb_save.setEnabled(true);
             getAnimatorController()
-                    .startAnimatorGroup("hideImg", "showLoginTable");
+                    .startAnimatorGroups("hideImg", "showLoginTable");
             btn_login.setText(R.string.rlogin);
             btn_login.setOnClickListener(v2 -> {
                 mState.login(
@@ -342,16 +340,16 @@ public class MiaoFragment extends BaseFragment {
         ObjectAnimator chooserHide = ObjectAnimator.ofFloat(rv_page, "alpha", 1, 0).setDuration(500);
 
         AnimatorController controller = new AnimatorController();
-        controller.addAnimatorGroup("showProcess", Arrays.asList(processShow, processMsgShow));
-        controller.addAnimatorGroup("hideProcess", Arrays.asList(processHide, processMsgHide));
-        controller.addAnimatorGroup("showLoginTable", Arrays.asList(userLabelShow, userInputShow, pwdLabelShow, pwdInputShow, emailLabelShow, emailInputShow, saveShow));
-        controller.addAnimatorGroup("hideLoginTable", Arrays.asList(userLabelHide, userInputHide, pwdLabelHide, pwdInputHide, emailLabelHide, emailInputHide, saveHide));
-        controller.addAnimatorGroup("showImg", Arrays.asList(imgEyeShow, imgMouthShow));
-        controller.addAnimatorGroup("hideImg", Arrays.asList(imgEyeHide, imgMouthHide));
-        controller.addAnimatorGroup("showLoginButton", Arrays.asList(loginButtonShow, imgEyeUp, imgMouthUp));
-        controller.addAnimatorGroup("hideLoginButton", Arrays.asList(loginButtonHide, imgEyeDown, imgMouthDown));
-        controller.addAnimatorGroup("showChooser", Collections.singletonList(chooserShow));
-        controller.addAnimatorGroup("hideChooser", Collections.singletonList(chooserHide));
+        controller.addAnimatorGroup("showProcess", processShow, processMsgShow);
+        controller.addAnimatorGroup("hideProcess", processHide, processMsgHide);
+        controller.addAnimatorGroup("showLoginTable", userLabelShow, userInputShow, pwdLabelShow, pwdInputShow, emailLabelShow, emailInputShow, saveShow);
+        controller.addAnimatorGroup("hideLoginTable", userLabelHide, userInputHide, pwdLabelHide, pwdInputHide, emailLabelHide, emailInputHide, saveHide);
+        controller.addAnimatorGroup("showImg", imgEyeShow, imgMouthShow);
+        controller.addAnimatorGroup("hideImg", imgEyeHide, imgMouthHide);
+        controller.addAnimatorGroup("showLoginButton", loginButtonShow, imgEyeUp, imgMouthUp);
+        controller.addAnimatorGroup("hideLoginButton", loginButtonHide, imgEyeDown, imgMouthDown);
+        controller.addAnimatorGroup("showChooser", chooserShow);
+        controller.addAnimatorGroup("hideChooser", chooserHide);
         return controller;
     }
 
@@ -363,7 +361,7 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void setProcess(int process, String message) {
                 if (!isShow) {
-                    getAnimatorController().startAnimatorGroup("showProcess");
+                    getAnimatorController().startAnimatorGroups("showProcess");
                     pb_process.setMax(100);
                     isShow = true;
                 }
@@ -375,7 +373,7 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void processError(Exception e) {
                 if (!isShow) {
-                    getAnimatorController().startAnimatorGroup("showProcess");
+                    getAnimatorController().startAnimatorGroups("showProcess");
                     pb_process.setMax(100);
                     isShow = true;
                 }
@@ -386,7 +384,7 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void stopProcess() {
                 if (isShow) {
-                    getAnimatorController().startAnimatorGroup("hideProcess");
+                    getAnimatorController().startAnimatorGroups("hideProcess");
                     isShow = false;
                 }
             }

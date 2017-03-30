@@ -3,6 +3,9 @@ package org.miaowo.miaowo.root.fragment;
 import android.animation.ObjectAnimator;
 import android.support.v4.app.Fragment;
 
+import org.miaowo.miaowo.util.LogUtil;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,27 +55,26 @@ public class BaseFragment extends Fragment {
 
     public class AnimatorController {
         private HashMap<String, List<ObjectAnimator>> mAnimators = new HashMap<>();
-        private String mLastAnimatorGroup = "default";
-
-        // Start an animator group ofter [delay(mm)]
-        public AnimatorController startAnimatorGroup(String groupName, long delay) {
-            mLastAnimatorGroup = groupName;
-            mAnimators.get(groupName).forEach(animator -> animator.setStartDelay(delay));
-            return this;
-        }
+        private String mLastAnimatorGroup;
 
         // Start an animator group immediately
-        public void startAnimatorGroup(String... groupNames) {
+        public void startAnimatorGroups(String... groupNames) {
             mLastAnimatorGroup = groupNames[groupNames.length - 1];
             for (String groupName : groupNames) {
-                mAnimators.get(groupName).forEach(ObjectAnimator::start);
+                if (!mAnimators.containsKey(groupName)) {
+                    LogUtil.e("无效动画组: " + groupName);
+                    return;
+                }
+                for (ObjectAnimator animator : mAnimators.get(groupName)) {
+                    animator.start();
+                }
             }
         }
 
         // Add a new animator group to the AnimatorMap
-        public void addAnimatorGroup(String groupName, List<ObjectAnimator> animators) {
+        public void addAnimatorGroup(String groupName, ObjectAnimator... animators) {
             mLastAnimatorGroup = groupName;
-            mAnimators.put(groupName, animators);
+            mAnimators.put(groupName, Arrays.asList(animators));
         }
 
         // Remove an animator group

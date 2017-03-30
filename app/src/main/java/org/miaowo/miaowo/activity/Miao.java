@@ -1,7 +1,5 @@
 package org.miaowo.miaowo.activity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.fragment.BaseFragment;
-import org.miaowo.miaowo.service.WebService;
 import org.miaowo.miaowo.set.Callbacks;
 import org.miaowo.miaowo.set.windows.ChatWindows;
 import org.miaowo.miaowo.set.windows.MessageWindows;
@@ -105,20 +102,6 @@ public class Miao extends BaseActivity
             });
             builder.show();
         }
-    }
-    private AlertDialog buildCloseDialog() {
-        AlertDialog ad = (new AlertDialog.Builder(this)).create();
-        ad.setMessage("关闭后是否继续接收消息？ 暂时无用");
-        ad.setButton(DialogInterface.BUTTON_NEGATIVE, "否", (dialog, which) -> {
-            stopService(new Intent(Miao.this, WebService.class));
-            dialog.dismiss();
-            finish();
-        });
-        ad.setButton(DialogInterface.BUTTON_POSITIVE, "是", (dialog, which) -> {
-            dialog.dismiss();
-            finish();
-        });
-        return ad;
     }
 
     // 消息

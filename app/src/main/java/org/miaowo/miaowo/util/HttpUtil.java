@@ -82,7 +82,7 @@ public class HttpUtil {
         Request login = new Request.Builder().url(context.getString(R.string.url_login))
                 .post(msg).addHeader("x-csrf-token", csrf)
                 .build();
-        LogUtil.i("连接Url: " + login.url());
+        context.setProcess(33, "正在登录...");
         client.newCall(login).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -91,10 +91,9 @@ public class HttpUtil {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                LogUtil.i(response.headers().toMultimap());
                 Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
                 LogUtil.i("连接Url: " + context.getString(R.string.url_home));
-                context.setProcess(50, "正在登录...");
+                context.setProcess(66, "正在获取用户信息...");
                 eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });
@@ -110,11 +109,12 @@ public class HttpUtil {
                 .add("username", user)
                 .add("password", pwd)
                 .add("email", email).build();
-        Request login = new Request.Builder().url(context.getString(R.string.url_register))
+        Request register = new Request.Builder().url(context.getString(R.string.url_register))
                 .post(msg).addHeader("x-csrf-token", csrf)
                 .build();
-        LogUtil.i("连接Url: " + login.url());
-        client.newCall(login).enqueue(new Callback() {
+        LogUtil.i("连接Url: " + register.url());
+        context.setProcess(33, "正在注册...");
+        client.newCall(register).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 eventBus.post(new ExceptionEvent(call, e));
@@ -127,7 +127,7 @@ public class HttpUtil {
                     throw new IOException(msg.substring(2, msg.length() - 2));
                 }
                 Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
-                context.setProcess(50, "正在注册...");
+                context.setProcess(66, "正在获取用户信息...");
                 eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
             }
         });

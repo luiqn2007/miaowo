@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.miaowo.miaowo.fragment.ListFragment;
-import org.miaowo.miaowo.util.FragmentUtil;
 
 import java.util.ArrayList;
 
@@ -62,8 +61,8 @@ public class ChooseFragment extends BaseFragment implements View.OnClickListener
             for (int id : controls) {
                 root.findViewById(id).setBackgroundColor(Color.rgb(255, 255, 255));
             }
-            FragmentUtil.manager(getChildFragmentManager()).show(container, fragments.get(index));
             root.findViewById(fragmentId).setBackgroundColor(Color.rgb(238, 238, 238));
+            getChildFragmentManager().beginTransaction().replace(container, fragments.get(index)).commit();
         }
     }
 
