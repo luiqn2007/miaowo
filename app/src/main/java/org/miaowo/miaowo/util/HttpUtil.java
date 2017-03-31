@@ -58,13 +58,11 @@ public class HttpUtil {
 
     public HttpUtil login(BaseActivity context, ContentValues loginMsg) {
         openCookiesWrite();
-        context.setProcess(0, "获取服务器信息...");
         csrf(context, loginMsg);
         return this;
     }
     public HttpUtil register(BaseActivity context, ContentValues regMsg) {
         openCookiesWrite();
-        context.setProcess(0, "获取服务器信息...");
         csrf(context, regMsg);
         return this;
     }
@@ -133,6 +131,7 @@ public class HttpUtil {
         });
     }
     private void csrf(BaseActivity context, ContentValues msg) {
+        context.setProcess(0, "获取服务器信息...");
         post(context.getString(R.string.url_login), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

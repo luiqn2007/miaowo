@@ -59,7 +59,7 @@ public class MessageWindows extends BaseSet {
         tv_title.setText("加载中");
         tv_count.setText("加载中");
 
-        HttpUtil.utils().post(mContext.getString(R.string.url_home) + mContext.getString(R.string.url_topic) + slug, new Callback() {
+        HttpUtil.utils().post(mContext.getString(R.string.url_topic) + slug, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 mContext.runOnUiThread(() -> {

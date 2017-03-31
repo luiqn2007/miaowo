@@ -3,6 +3,7 @@ package org.miaowo.miaowo.fragment;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import org.miaowo.miaowo.adapter.TitleListAdapter;
 import org.miaowo.miaowo.bean.data.web.Title;
 import org.miaowo.miaowo.bean.data.web.TitleList;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.root.fragment.BaseFragment;
+import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
@@ -87,43 +88,26 @@ public class ListFragment extends BaseFragment implements Parcelable {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_list, container, false);
-        mList = (LoadMoreList) v.findViewById(R.id.list_item);
+        return inflater.inflate(R.layout.fragment_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mList = (LoadMoreList) view.findViewById(R.id.list_item);
         mItems = new ArrayList<>();
         mContext = (BaseActivity) getActivity();
         MessageWindows mMessageWindows = MessageWindows.windows((BaseActivity) getActivity());
         initList();
-
-        return v;
     }
+
     private void initList() {
         mList.setAdapter(mAdapter);
-        mList.setPullRefresher(() -> HttpUtil.utils().post(url, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mContext.handleError(Exceptions.E_WEB);
-                mContext.runOnUiThread(() -> mList.loadOver());
-            }
+        mList.setPullRefresher(this::loadFirstPage);
+        mList.setPushRefresher(this::loadNextPage);
+        loadFirstPage();
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                TitleList page = BeanUtil.utils().buildFromLastJson(response, TitleList.class);
-                if (page == null) {
-                    mItems = new ArrayList<>();
-                } else {
-                    mItems.clear();
-                    mItems.addAll(page.getTitles());
-                }
-                mContext.runOnUiThread(() -> {
-                    mAdapter.updateDate(mItems);
-                    mList.loadOver();
-                });
-            }
-        }));
-        mList.setPushRefresher(() -> {
-            mContext.handleError(Exceptions.E_NONE);
-            mList.loadOver();
-        });
+    private void loadFirstPage() {
         HttpUtil.utils().post(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -148,9 +132,9 @@ public class ListFragment extends BaseFragment implements Parcelable {
         });
     }
 
-    @Override
-    protected AnimatorController setAnimatorController() {
-        return null;
+    private void loadNextPage() {
+        mContext.handleError(Exceptions.E_NONE);
+        mList.loadOver();
     }
 
     @Override

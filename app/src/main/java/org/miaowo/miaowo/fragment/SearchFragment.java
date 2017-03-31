@@ -21,7 +21,7 @@ import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.bean.data.web.UserSearch;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseListAdapter;
-import org.miaowo.miaowo.root.fragment.BaseFragment;
+import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.set.windows.UserWindows;
@@ -156,8 +156,7 @@ public class SearchFragment extends BaseFragment {
 
     public void search(String key) {
         boolean lastUser = isUser;
-        String url = getString(R.string.url_home)
-                + getString(R.string.url_search) + key
+        String url = getString(R.string.url_search) + key
                 + getString(isUser ? R.string.url_search_user : R.string.url_search_title);
         Call call = HttpUtil.utils().post(url, new Callback() {
             @Override
@@ -183,11 +182,6 @@ public class SearchFragment extends BaseFragment {
             call.cancel();
             loadSearch();
         });
-    }
-
-    @Override
-    protected AnimatorController setAnimatorController() {
-        return null;
     }
 
     @Override

@@ -2,8 +2,11 @@ package org.miaowo.miaowo.activity;
 
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.transition.Fade;
+import android.view.View;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -27,10 +30,8 @@ import org.miaowo.miaowo.fragment.UserFragment;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.root.fragment.BaseFragment;
+import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.Callbacks;
-import org.miaowo.miaowo.set.windows.ChatWindows;
-import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.SpUtil;
@@ -48,9 +49,7 @@ public class Miao extends BaseActivity
 
     // 组件
     private State mState;
-    private ChatWindows mChatWindows;
     private StateWindows mStateWindows;
-    private MessageWindows mMessageWindows;
     private SpUtil mDefaultSp;
 
     // 加载
@@ -67,9 +66,7 @@ public class Miao extends BaseActivity
     }
     private void prepareValues() {
         mState = new StateImpl(this);
-        mChatWindows = ChatWindows.windows(this);
         mStateWindows = StateWindows.windows(this);
-        mMessageWindows = MessageWindows.windows(this);
         mDefaultSp = SpUtil.defaultSp(this);
     }
     private void initFragment() {
@@ -148,22 +145,22 @@ public class Miao extends BaseActivity
     }
 
     @Override
-    public void onChooserClick(int position) {
+    public void onChooserClick(int position, View sharedView) {
         switch (position) {
             case 0:
-                loadFragment(fg_square);
+                loadFragment(fg_square, sharedView);
                 break;
             case 1:
-                loadFragment(fg_unread);
+                loadFragment(fg_unread, sharedView);
                 break;
             case 2:
-                loadFragment(fg_topic);
+                loadFragment(fg_topic, sharedView);
                 break;
             case 3:
-                loadFragment(fg_user);
+                loadFragment(fg_user, sharedView);
                 break;
             case 4:
-                loadFragment(fg_search);
+                loadFragment(fg_search, sharedView);
                 break;
             case 5:
                 mState.logout();
@@ -172,10 +169,17 @@ public class Miao extends BaseActivity
                 break;
         }
     }
-    private void loadFragment(BaseFragment fragment) {
+    private void loadFragment(BaseFragment fragment, View sharedView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fragment.setSharedElementEnterTransition(new MyTransitionSet());
+            fg_miao.setExitTransition(new Fade());
+            fragment.setEnterTransition(new Fade());
+            fragment.setSharedElementReturnTransition(new MyTransitionSet());
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
+                .addSharedElement(sharedView, getString(R.string.fg_ani_page))
                 .replace(R.id.container, fragment)
                 .commit();
     }

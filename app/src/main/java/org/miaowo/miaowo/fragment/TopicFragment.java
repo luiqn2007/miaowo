@@ -20,7 +20,7 @@ import org.miaowo.miaowo.bean.data.web.TopicList;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseListAdapter;
-import org.miaowo.miaowo.root.fragment.BaseFragment;
+import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.FormatUtil;
@@ -161,11 +161,6 @@ public class TopicFragment extends BaseFragment {
             }
         });
         return true;
-    }
-
-    @Override
-    protected AnimatorController setAnimatorController() {
-        return null;
     }
 
     @Override

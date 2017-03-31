@@ -3,6 +3,7 @@ package org.miaowo.miaowo.activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.fragment.MiaoFragment;
@@ -50,7 +51,7 @@ public class Splish extends BaseActivity implements MiaoFragment.OnFragmentInter
     }
 
     @Override
-    public void onChooserClick(int position) {
+    public void onChooserClick(int position, View view) {
 
     }
 

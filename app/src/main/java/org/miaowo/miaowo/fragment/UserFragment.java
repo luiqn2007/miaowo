@@ -13,7 +13,7 @@ import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.bean.data.web.UserList;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.root.fragment.BaseFragment;
+import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.windows.UserWindows;
 import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.HttpUtil;
@@ -120,11 +120,6 @@ public class UserFragment extends BaseFragment {
             }
         });
         mPage++;
-    }
-
-    @Override
-    protected AnimatorController setAnimatorController() {
-        return null;
     }
 
     @Override
