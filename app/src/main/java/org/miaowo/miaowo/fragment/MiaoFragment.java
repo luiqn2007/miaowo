@@ -1,14 +1,14 @@
 package org.miaowo.miaowo.fragment;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
+import android.support.transition.ChangeBounds;
+import android.support.transition.Fade;
+import android.support.transition.TransitionManager;
+import android.support.transition.TransitionSet;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -27,17 +27,18 @@ import com.cleveroad.fanlayoutmanager.FanLayoutManager;
 import com.cleveroad.fanlayoutmanager.FanLayoutManagerSettings;
 import com.cleveroad.fanlayoutmanager.callbacks.FanChildDrawingOrderCallback;
 
+import java.util.List;
+import java.util.Random;
+
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
+import org.miaowo.miaowo.transition.MoveTransition;
 import org.miaowo.miaowo.util.SpUtil;
 import org.miaowo.miaowo.view.load_more_list.ViewHolder;
-
-import java.util.List;
-import java.util.Random;
 
 public class MiaoFragment extends BaseFragment {
     private final String sp_save = "save_password";
@@ -46,9 +47,11 @@ public class MiaoFragment extends BaseFragment {
     /* ================================================================================ */
     // 构造，创建，绑定及与 Activity 交互
     OnFragmentInteractionListener mListener;
+    ViewGroup mContainer;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mContainer = container;
         return inflater.inflate(R.layout.fragment_welcome, container, false);
     }
     @Override
@@ -107,15 +110,16 @@ public class MiaoFragment extends BaseFragment {
     private CheckBox cb_save;
     private EditText et_user, et_pwd, et_email;
     private RecyclerView rv_page;
-    // 动画
-    private AnimatorSet mShowLoginButton, mHideLoginButton;
-    private AnimatorSet mShowLogin, mHideLogin;
-    private AnimatorSet mShowProcess, mHideProcess;
-    private AnimatorSet mShowImg, mHideImg;
+
+    private TransitionSet mTransitionTogether;
 
     private void init(View v) {
         mSpUtil = SpUtil.defaultSp(getContext());
         mState = new StateImpl((BaseActivity) getActivity());
+        mTransitionTogether = new TransitionSet();
+        mTransitionTogether.setOrdering(TransitionSet.ORDERING_TOGETHER);
+        mTransitionTogether.setDuration(300);
+        mTransitionTogether.addTransition(new Fade()).addTransition(new ChangeBounds()).addTransition(new MoveTransition());
 
         pb_process = (ProgressBar) v.findViewById(R.id.pb_process);
         tv_message = (TextView) v.findViewById(R.id.tv_message);
@@ -131,7 +135,6 @@ public class MiaoFragment extends BaseFragment {
         et_user = (EditText) v.findViewById(R.id.et_user);
         rv_page = (RecyclerView) v.findViewById(R.id.rv_page);
         initPageChooser();
-        initAnimators();
         cb_save.setChecked(mSpUtil.getBoolean(sp_save, false));
         et_pwd.setText(mSpUtil.getString(sp_pwd, ""));
         et_user.setText(mSpUtil.getString(sp_user, ""));
@@ -221,8 +224,6 @@ public class MiaoFragment extends BaseFragment {
                     holder.getImageView(R.id.iv_page).setImageDrawable(icons.get(position));
                     holder.getView().setBackgroundColor(mColors[(mRndIndex * position) % mColors.length]);
 
-                    ViewCompat.setTransitionName(holder.getImageView(R.id.iv_page), getString(R.string.fg_ani_page));
-
                     holder.getView().setOnClickListener(v -> {
                         if (layout.getSelectedItemPosition() == position) {
                             layout.straightenSelectedItem(new Animator.AnimatorListener() {
@@ -233,7 +234,7 @@ public class MiaoFragment extends BaseFragment {
 
                                 @Override
                                 public void onAnimationEnd(Animator animator) {
-                                    mListener.onChooserClick(position, holder.getImageView(R.id.iv_page));
+                                    mListener.onChooserClick(position, holder.getView());
                                 }
 
                                 @Override
@@ -261,66 +262,16 @@ public class MiaoFragment extends BaseFragment {
             rv_page.setChildDrawingOrderCallback(new FanChildDrawingOrderCallback(rv_page.getLayoutManager()));
         }
     }
-
-    private void initAnimators() {
-        ObjectAnimator processShow = ObjectAnimator.ofFloat(pb_process, "alpha", 0, 1);
-        ObjectAnimator processHide = ObjectAnimator.ofFloat(pb_process, "alpha", 1, 0);
-        ObjectAnimator processMsgShow = ObjectAnimator.ofFloat(tv_message, "alpha", 0, 1);
-        ObjectAnimator processMsgHide = ObjectAnimator.ofFloat(tv_message, "alpha", 1, 0);
-        ObjectAnimator loginButtonShow = ObjectAnimator.ofFloat(btn_login, "alpha", 0, 1);
-        ObjectAnimator loginButtonHide = ObjectAnimator.ofFloat(btn_login, "alpha", 1, 0);
-        ObjectAnimator userLabelShow = ObjectAnimator.ofFloat(tv_user, "alpha", 0, 1);
-        ObjectAnimator userLabelHide = ObjectAnimator.ofFloat(tv_user, "alpha", 1, 0);
-        ObjectAnimator userInputShow = ObjectAnimator.ofFloat(et_user, "alpha", 0, 1);
-        ObjectAnimator userInputHide = ObjectAnimator.ofFloat(et_user, "alpha", 1, 0);
-        ObjectAnimator pwdLabelShow = ObjectAnimator.ofFloat(tv_pwd, "alpha", 0, 1);
-        ObjectAnimator pwdLabelHide = ObjectAnimator.ofFloat(tv_pwd, "alpha", 1, 0);
-        ObjectAnimator pwdInputShow = ObjectAnimator.ofFloat(et_pwd, "alpha", 0, 1);
-        ObjectAnimator pwdInputHide = ObjectAnimator.ofFloat(et_pwd, "alpha", 1, 0);
-        ObjectAnimator emailLabelShow = ObjectAnimator.ofFloat(tv_email, "alpha", 0, 1);
-        ObjectAnimator emailLabelHide = ObjectAnimator.ofFloat(tv_email, "alpha", 1, 0);
-        ObjectAnimator emailInputShow = ObjectAnimator.ofFloat(et_email, "alpha", 0, 1);
-        ObjectAnimator emailInputHide = ObjectAnimator.ofFloat(et_email, "alpha", 1, 0);
-        ObjectAnimator saveShow = ObjectAnimator.ofFloat(cb_save, "alpha", 0, 1);
-        ObjectAnimator saveHide = ObjectAnimator.ofFloat(cb_save, "alpha", 1, 0);
-        ObjectAnimator imgEyeShow = ObjectAnimator.ofPropertyValuesHolder(iv_eyes,
-                PropertyValuesHolder.ofFloat("alpha", 0, 1), PropertyValuesHolder.ofFloat("translationY", -500, -200));
-        ObjectAnimator imgEyeHide = ObjectAnimator.ofPropertyValuesHolder(iv_eyes,
-                PropertyValuesHolder.ofFloat("alpha", 1, 0), PropertyValuesHolder.ofFloat("translationY", -200, -500));
-        ObjectAnimator imgEyeUp = ObjectAnimator.ofFloat(iv_eyes, "translationY", 0, -200);
-        ObjectAnimator imgEyeDown = ObjectAnimator.ofFloat(iv_eyes, "translationY", -500, 0);
-        ObjectAnimator imgMouthShow = ObjectAnimator.ofPropertyValuesHolder(iv_mouth,
-                PropertyValuesHolder.ofFloat("alpha", 0, 1), PropertyValuesHolder.ofFloat("translationY", -500, -200));
-        ObjectAnimator imgMouthHide = ObjectAnimator.ofPropertyValuesHolder(iv_mouth,
-                PropertyValuesHolder.ofFloat("alpha", 1, 0), PropertyValuesHolder.ofFloat("translationY", -200, -500));
-        ObjectAnimator imgMouthUp = ObjectAnimator.ofFloat(iv_mouth, "translationY", 0, -200);
-        ObjectAnimator imgMouthDown = ObjectAnimator.ofFloat(iv_mouth, "translationY", -500, 0);
-        
-        mShowLoginButton = new AnimatorSet().setDuration(300);
-        mShowLoginButton.playTogether(loginButtonShow, imgEyeUp, imgMouthUp);
-        mHideLoginButton = new AnimatorSet().setDuration(300);
-        mHideLoginButton.playTogether(loginButtonHide, imgEyeDown, imgMouthDown);
-        mShowLogin = new AnimatorSet().setDuration(300);
-        mShowLogin.playTogether(userLabelShow, userInputShow, pwdLabelShow, pwdInputShow, emailLabelShow, emailInputShow, saveShow);
-        mHideLogin = new AnimatorSet().setDuration(300);
-        mHideLogin.playTogether(userLabelHide, userInputHide, pwdLabelHide, pwdInputHide, emailLabelHide, emailInputHide, saveHide);
-        mShowProcess = new AnimatorSet().setDuration(300);
-        mShowProcess.playTogether(processShow, processMsgShow);
-        mHideProcess = new AnimatorSet().setDuration(300);
-        mHideProcess.playTogether(processHide, processMsgHide);
-        mShowImg = new AnimatorSet().setDuration(300);
-        mShowImg.playTogether(imgEyeShow, imgMouthShow);
-        mHideImg = new AnimatorSet().setDuration(300);
-        mHideImg.playTogether(imgEyeHide, imgMouthHide);
-    }
     
     public void loginSucceed() {
         rv_page.setVisibility(View.VISIBLE);
-        
-        mHideLoginButton.start();
-        mHideLogin.start();
-        mShowImg.start();
-        
+
+        TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+        hide(et_email, et_user, et_pwd, cb_save, btn_login);
+        hide(tv_email, tv_user, tv_pwd);
+        show(iv_eyes, iv_mouth);
+        move(0, 500, iv_eyes, iv_mouth);
+
         et_email.setEnabled(false);
         et_user.setEnabled(false);
         et_pwd.setEnabled(false);
@@ -331,7 +282,11 @@ public class MiaoFragment extends BaseFragment {
 
     public void prepareLogin() {
         rv_page.setVisibility(View.GONE);
-        mShowLoginButton.start();
+
+        TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+        move(0, -200, iv_eyes, iv_mouth);
+        show(btn_login);
+
         btn_login.setText(R.string.login);
         btn_login.setEnabled(true);
         btn_login.setOnClickListener(v1 -> {
@@ -339,18 +294,23 @@ public class MiaoFragment extends BaseFragment {
             et_user.setEnabled(true);
             et_pwd.setEnabled(true);
             cb_save.setEnabled(true);
-            
-            mHideImg.start();
-            mShowLogin.start();
-            
+
+            TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+            show(et_email, et_user, et_pwd, cb_save);
+            show(tv_email, tv_user, tv_pwd);
+            hide(iv_eyes, iv_mouth);
+            move(0, -300, iv_eyes, iv_mouth);
+
             btn_login.setText(R.string.rlogin);
             btn_login.setOnClickListener(v2 -> {
                 mState.login(
                         et_user.getText().toString(),
                         et_pwd.getText().toString());
-                mSpUtil.putString(sp_user, et_user.getText().toString());
-                mSpUtil.putString(sp_pwd, et_pwd.getText().toString());
                 mSpUtil.putBoolean(sp_save, cb_save.isChecked());
+                if (cb_save.isChecked()) {
+                    mSpUtil.putString(sp_user, et_user.getText().toString());
+                    mSpUtil.putString(sp_pwd, et_pwd.getText().toString());
+                }
             });
         });
     }
@@ -363,7 +323,8 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void setProcess(int process, String message) {
                 if (!isShow) {
-                    mShowProcess.start();
+                    TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+                    show(pb_process, tv_message);
                     pb_process.setMax(100);
                     isShow = true;
                 }
@@ -375,7 +336,8 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void processError(Exception e) {
                 if (!isShow) {
-                    mShowProcess.start();
+                    TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+                    show(pb_process, tv_message);
                     pb_process.setMax(100);
                     isShow = true;
                 }
@@ -386,10 +348,32 @@ public class MiaoFragment extends BaseFragment {
             @Override
             public void stopProcess() {
                 if (isShow) {
-                    mHideProcess.start();
+                    TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
+                    hide(pb_process, tv_message);
                     isShow = false;
                 }
             }
         };
+    }
+
+    private void hide(View... views) {
+        for (View view : views) {
+            view.setVisibility(View.INVISIBLE);
+            view.setEnabled(false);
+        }
+    }
+
+    private void show(View... views) {
+        for (View view : views) {
+            view.setVisibility(View.VISIBLE);
+            view.setEnabled(true);
+        }
+    }
+
+    private void move(float dx, float dy, View... views) {
+        for (View view : views) {
+            view.setX(view.getX() + dx);
+            view.setY(view.getY() + dy);
+        }
     }
 }

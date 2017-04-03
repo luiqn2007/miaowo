@@ -15,6 +15,7 @@ public class Exceptions {
     public static Exception E_EMPTY_MESSAGE = new Exception("内容不能为空");
     public static Exception E_NON_MESSAGE = new Exception("未获得数据");
 
+    public static Exception E_NON_PICTURE = new Exception("无图片");
     public static Exception E_BAD_CAMERA = new Exception("无法打开摄像头应用");
 
     public static Exception E_NONE = new Exception("暂未实现");

@@ -1,11 +1,11 @@
 package org.miaowo.miaowo.activity;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.transition.Fade;
 import android.view.View;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -163,6 +163,9 @@ public class Miao extends BaseActivity
                 loadFragment(fg_search, sharedView);
                 break;
             case 5:
+                startActivity(new Intent(this, Setting.class));
+                break;
+            case 6:
                 mState.logout();
                 fg_miao.prepareLogin();
                 fg_miao.getProcessController().stopProcess();
@@ -170,24 +173,21 @@ public class Miao extends BaseActivity
         }
     }
     private void loadFragment(BaseFragment fragment, View sharedView) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            fragment.setSharedElementEnterTransition(new MyTransitionSet());
-            fg_miao.setExitTransition(new Fade());
-            fragment.setEnterTransition(new Fade());
-            fragment.setSharedElementReturnTransition(new MyTransitionSet());
-        }
         getSupportFragmentManager()
                 .beginTransaction()
-                .addToBackStack(null)
-                .addSharedElement(sharedView, getString(R.string.fg_ani_page))
                 .replace(R.id.container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
+                .addToBackStack(null)
                 .commit();
     }
+
     @Override
     public List<String> setItemNames() {
         return Arrays.asList(
                 getString(R.string.square), getString(R.string.unread), getString(R.string.topic),
-                getString(R.string.user), getString(R.string.search), getString(R.string.logout));
+                getString(R.string.user), getString(R.string.search), getString(R.string.setting),
+                getString(R.string.logout));
     }
 
     @Override
@@ -195,7 +195,8 @@ public class Miao extends BaseActivity
         return Arrays.asList(
                 getIcon(FontAwesome.Icon.faw_calendar_check_o), getIcon(FontAwesome.Icon.faw_inbox),
                 getIcon(FontAwesome.Icon.faw_tags), getIcon(FontAwesome.Icon.faw_github_alt),
-                getIcon(FontAwesome.Icon.faw_search), getIcon(FontAwesome.Icon.faw_sign_out));
+                getIcon(FontAwesome.Icon.faw_search), getIcon(FontAwesome.Icon.faw_wrench),
+                getIcon(FontAwesome.Icon.faw_sign_out));
     }
     private Drawable getIcon(IIcon iicon) {
         return new IconicsDrawable(Miao.this, iicon).actionBar();

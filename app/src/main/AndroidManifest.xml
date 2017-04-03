@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".activity.Setting" />
         <activity android:name=".activity.Miao" />
+        <activity android:name=".activity.Photo" />
 
         <service
             android:name=".service.WebService"

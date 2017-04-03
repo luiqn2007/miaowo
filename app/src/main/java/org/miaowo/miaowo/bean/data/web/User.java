@@ -171,7 +171,6 @@ public class User implements Parcelable {
     private List<?> groups;
     private List<?> profile_links;
     private List<?> sso;
-    private List<?> custom_profile_info;
     private List<Post> posts;
     private boolean isEmailConfirmSent;
     private String aboutme;

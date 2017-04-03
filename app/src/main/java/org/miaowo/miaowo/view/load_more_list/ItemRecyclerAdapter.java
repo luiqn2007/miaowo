@@ -20,15 +20,13 @@ public class ItemRecyclerAdapter<E>
 
     private List<E> mItems;
     private ViewLoader<E> mLoader;
-    private DataSort<E> mSort;
 
     public ItemRecyclerAdapter(@Nullable List<E> items, @NonNull ViewLoader<E> loader) {
         mItems = items;
         mLoader = loader;
     }
 
-    protected ItemRecyclerAdapter(Parcel in) {
-    }
+    protected ItemRecyclerAdapter(Parcel in) {}
 
     public static final Creator<ItemRecyclerAdapter> CREATOR = new Creator<ItemRecyclerAdapter>() {
         @Override
@@ -70,14 +68,6 @@ public class ItemRecyclerAdapter<E>
         notifyDataSetChanged();
     }
 
-    public void setSort(DataSort<E> sortType) {
-        mSort = sortType;
-    }
-
-    public DataSort<E> getSort() {
-        return mSort;
-    }
-
     public List<E> getItems() {
         return mItems;
     }
@@ -95,9 +85,5 @@ public class ItemRecyclerAdapter<E>
         ViewHolder createHolder(ViewGroup parent, int viewType);
         void bindView(E item, ViewHolder holder);
         int setType(E item, int position);
-    }
-    public interface DataSort<E> {
-        int sortByHot(E o1, E o2);
-        int sortByNew(E o1, E o2);
     }
 }

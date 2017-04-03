@@ -8,26 +8,20 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.Toast;
-
-import com.google.gson.annotations.SerializedName;
 
 import org.miaowo.miaowo.util.LogUtil;
-
-import java.io.Serializable;
 
 /**
  * 原来用的 PullLoadMoreRecycleView 不能直接滑动到列表指定位置，弃之
  * Created by luqin on 17-1-1.
  */
 
-public class LoadMoreList extends SwipeRefreshLayout implements Serializable {
+public class LoadMoreList extends SwipeRefreshLayout {
     private RecyclerView mRecyclerView;
     private OnRefreshListener mPushRefresher;
     private OnRefreshListener mPullRefresher;
 
     private float startY;
-    private Toast loading;
 
     public LoadMoreList(Context context) {
         super(context);
@@ -72,19 +66,17 @@ public class LoadMoreList extends SwipeRefreshLayout implements Serializable {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startY = ev.getY();
-                    LogUtil.i("start: " + startY);
                     break;
                 case MotionEvent.ACTION_UP:
                     float endY = ev.getY();
-                    LogUtil.i("end: " + endY);
                     if (startY - endY >= 300 &&isEnd()) {
                         setRefreshing(true);
                         mPushRefresher.onRefresh();
                     }
-                    break;
+                    return true;
             }
         }
-        return super.dispatchTouchEvent(ev);
+        return false;
     }
 
     private boolean isEnd() {

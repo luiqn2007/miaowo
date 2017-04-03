@@ -3,9 +3,6 @@ package org.miaowo.miaowo.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.List;
-import java.util.Set;
-
 /**
  * 用于获取/修改配置信息
  * Created by lq2007 on 16-11-26.

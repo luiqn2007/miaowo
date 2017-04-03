@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import org.greenrobot.eventbus.EventBus;
 import org.miaowo.miaowo.bean.config.VersionMessage;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
-import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.set.Exceptions;
 
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class BeanUtil {
             return jsons;
         }
         String[] start = new String[]{
-                "JSON.parse(\'",
+                "JSON.parse('",
                 "<script id=\"ajaxify-data\" type=\"application/json\">"
         };
         String[] end = new String[]{
@@ -68,24 +67,6 @@ public class BeanUtil {
             }
         }
         return jsons;
-    }
-    public User buildUser(Response response) {
-        ArrayList<String> jsons = getJsons(response);
-        if (!jsons.isEmpty()) {
-            for (String json : jsons) {
-                if (json.contains("uid") && json.contains("username")) {
-                    User user =null;
-                    try {
-                        user = gson.fromJson(json, User.class);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return user;
-                }
-            }
-        }
-        EventBus.getDefault().post(new ExceptionEvent(null, Exceptions.E_NON_MESSAGE));
-        return null;
     }
     public VersionMessage buildVersion(Response response) {
         return new VersionMessage(99, "更新测试", "更新测试啊啊啊", "http://www.baidu.com");

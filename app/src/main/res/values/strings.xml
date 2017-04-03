@@ -1,22 +1,23 @@
 <resources>
     <string name="app_name">喵窝</string>
     <string name="app_ns">http://schemas.android.com/apk/res-auto</string>
+    <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
-    <string name="url_home" formatted="false">https://miaowo.org</string>
-    <string name="url_user" formatted="false">https://miaowo.org/user/</string>
-    <string name="url_topic" formatted="false">https://miaowo.org/topic/</string>
-    <string name="url_search" formatted="false">https://miaowo.org/search?term=</string>
+    <string name="url_home" formatted="false">https://www.miaowo.org</string>
+    <string name="url_user" formatted="false">https://www.miaowo.org/user/</string>
+    <string name="url_topic" formatted="false">https://www.miaowo.org/topic/</string>
+    <string name="url_search" formatted="false">https://www.miaowo.org/search?term=</string>
     <string name="url_search_title" formatted="false">&amp;in=titlesposts&amp;showAs=posts</string>
     <string name="url_search_user" formatted="false">&amp;in=users</string>
-    <string name="url_login" formatted="false">https://miaowo.org/login</string>
-    <string name="url_register" formatted="false">https://miaowo.org/register</string>
-    <string name="url_announce" formatted="false">https://miaowo.org/category/1/announcements</string>
-    <string name="url_daily" formatted="false">https://miaowo.org/category/7/%E6%AF%8F%E6%97%A5%E9%97%AE%E9%A2%98</string>
-    <string name="url_question" formatted="false">https://miaowo.org/category/5/%E6%8F%90%E9%97%AE</string>
-    <string name="url_water" formatted="false">https://miaowo.org/category/6/%E7%81%8C%E6%B0%B4</string>
-    <string name="url_unread" formatted="false">https://miaowo.org/unread</string>
-    <string name="url_tags" formatted="false">https://miaowo.org/tags/</string>
-    <string name="url_users" formatted="false">https://miaowo.org/users?page=</string>
+    <string name="url_login" formatted="false">https://www.miaowo.org/login</string>
+    <string name="url_register" formatted="false">https://www.miaowo.org/register</string>
+    <string name="url_announce" formatted="false">https://www.miaowo.org/category/1/announcements</string>
+    <string name="url_daily" formatted="false">https://www.miaowo.org/category/7/%E6%AF%8F%E6%97%A5%E9%97%AE%E9%A2%98</string>
+    <string name="url_question" formatted="false">https://www.miaowo.org/category/5/%E6%8F%90%E9%97%AE</string>
+    <string name="url_water" formatted="false">https://www.miaowo.org/category/6/%E7%81%8C%E6%B0%B4</string>
+    <string name="url_unread" formatted="false">https://www.miaowo.org/unread</string>
+    <string name="url_tags" formatted="false">https://www.miaowo.org/tags/</string>
+    <string name="url_users" formatted="false">https://www.miaowo.org/users?page=</string>
 
     <string name="reply">回复</string>
     <string name="square">广场</string>
@@ -28,7 +29,6 @@
     <string name="chat">聊天</string>
     <string name="setting">设置</string>
     <string name="logout">登出</string>
-    <string name="exit">退出</string>
     <string name="login">登录/注册</string>
     <string name="question">问题</string>
     <string name="daily">每日</string>
@@ -54,15 +54,7 @@
     <string name="from_camera">从相机</string>
     <string name="from_text">文字头像</string>
     <string name="hint_reply">回复正文</string>
-    <string name="title_activity_miao">Miao</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="rlogin">登录</string>
     <string name="rregister">注册</string>
-
-    <string name="fg_ani_page">loadPage</string>
 </resources>

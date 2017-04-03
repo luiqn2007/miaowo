@@ -27,4 +27,9 @@ public interface Users {
      * 更新用户信息
      */
     void updateUser(String user, String pwd, String email);
+
+    /**
+     * 更新用户头像信息
+     */
+    void updateUserHead(String headString);
 }

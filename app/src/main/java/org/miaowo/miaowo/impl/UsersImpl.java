@@ -32,4 +32,9 @@ public class UsersImpl implements Users {
     public void updateUser(String user, String pwd, String email) {
         mContext.handleError(new Exception("暂时搞不懂怎么修改的"));
     }
+
+    @Override
+    public void updateUserHead(String headString) {
+
+    }
 }

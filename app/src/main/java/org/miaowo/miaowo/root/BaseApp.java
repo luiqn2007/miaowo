@@ -12,7 +12,6 @@ import org.miaowo.miaowo.util.LogUtil;
 public class BaseApp extends Application {
     // 信息传递
     final public static String EXTRA_ITEM = "extra_item";
-    final public static String FILE_PROVIDER_URI = "org.miaowo.miaowo.fileProvider";
 
     @Override
     public void onCreate() {

@@ -51,7 +51,7 @@ public class Splish extends BaseActivity implements MiaoFragment.OnFragmentInter
     }
 
     @Override
-    public void onChooserClick(int position, View view) {
+    public void onChooserClick(int position, View shared) {
 
     }
 

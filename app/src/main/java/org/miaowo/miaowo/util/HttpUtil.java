@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.event.ExceptionEvent;
 import org.miaowo.miaowo.bean.data.event.UserEvent;
+import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.root.BaseActivity;
 
 import java.io.IOException;
@@ -89,10 +90,13 @@ public class HttpUtil {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
-                LogUtil.i("连接Url: " + context.getString(R.string.url_home));
+                String msg = response.body().string();
+                if (msg.startsWith("[[error")) {
+                    throw new IOException(msg.substring(2, msg.length() - 2));
+                }
                 context.setProcess(66, "正在获取用户信息...");
-                eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
+                Request index = new Request.Builder().url(context.getString(R.string.url_user) + user).build();
+                eventBus.post(new UserEvent(call, bean.buildFromLastJson(client.newCall(index).execute(), User.class)));
             }
         });
     }
@@ -124,9 +128,9 @@ public class HttpUtil {
                 if (msg.startsWith("[[error")) {
                     throw new IOException(msg.substring(2, msg.length() - 2));
                 }
-                Request index = new Request.Builder().url(context.getString(R.string.url_home)).build();
                 context.setProcess(66, "正在获取用户信息...");
-                eventBus.post(new UserEvent(call, bean.buildUser(client.newCall(index).execute())));
+                Request index = new Request.Builder().url(context.getString(R.string.url_user) + user).build();
+                eventBus.post(new UserEvent(call, bean.buildFromLastJson(client.newCall(index).execute(), User.class)));
             }
         });
     }
@@ -142,6 +146,7 @@ public class HttpUtil {
             public void onResponse(Call call, Response response) throws IOException {
                 String csrf = "";
                 ArrayList<String> jsons = bean.getJsons(response);
+                LogUtil.i(jsons);
                 for (String json : jsons) {
                     JSONObject jsonObject;
                     try {
