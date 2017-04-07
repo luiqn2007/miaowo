@@ -91,7 +91,7 @@ public class MiaoFragment extends BaseFragment {
         mListener = null;
     }
     public interface OnFragmentInteractionListener {
-        void onChooserClick(int position, View sharedView);
+        void onChooserClick(int position);
         List<String> setItemNames();
         List<Drawable> setItemIcons();
     }
@@ -234,7 +234,7 @@ public class MiaoFragment extends BaseFragment {
 
                                 @Override
                                 public void onAnimationEnd(Animator animator) {
-                                    mListener.onChooserClick(position, holder.getView());
+                                    mListener.onChooserClick(position);
                                 }
 
                                 @Override

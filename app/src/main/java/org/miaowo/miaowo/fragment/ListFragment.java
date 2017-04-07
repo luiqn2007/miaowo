@@ -16,7 +16,6 @@ import org.miaowo.miaowo.bean.data.web.TitleList;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.set.Exceptions;
-import org.miaowo.miaowo.set.windows.MessageWindows;
 import org.miaowo.miaowo.util.BeanUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.view.load_more_list.ItemRecyclerAdapter;
@@ -95,7 +94,6 @@ public class ListFragment extends BaseFragment implements Parcelable {
         mList = (LoadMoreList) view.findViewById(R.id.list_item);
         mItems = new ArrayList<>();
         mContext = (BaseActivity) getActivity();
-        MessageWindows mMessageWindows = MessageWindows.windows((BaseActivity) getActivity());
         initList();
     }
 

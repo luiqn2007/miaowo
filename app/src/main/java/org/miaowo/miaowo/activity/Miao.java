@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -36,7 +35,6 @@ import org.miaowo.miaowo.set.windows.StateWindows;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -136,7 +134,6 @@ public class Miao extends BaseActivity
     }
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onUpdate(FileEvent event) {
-        File apk = event.file;
         TastyToast.makeText(this, "模拟升级", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
     }
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
@@ -145,22 +142,22 @@ public class Miao extends BaseActivity
     }
 
     @Override
-    public void onChooserClick(int position, View sharedView) {
+    public void onChooserClick(int position) {
         switch (position) {
             case 0:
-                loadFragment(fg_square, sharedView);
+                loadFragment(fg_square);
                 break;
             case 1:
-                loadFragment(fg_unread, sharedView);
+                loadFragment(fg_unread);
                 break;
             case 2:
-                loadFragment(fg_topic, sharedView);
+                loadFragment(fg_topic);
                 break;
             case 3:
-                loadFragment(fg_user, sharedView);
+                loadFragment(fg_user);
                 break;
             case 4:
-                loadFragment(fg_search, sharedView);
+                loadFragment(fg_search);
                 break;
             case 5:
                 startActivity(new Intent(this, Setting.class));
@@ -172,7 +169,7 @@ public class Miao extends BaseActivity
                 break;
         }
     }
-    private void loadFragment(BaseFragment fragment, View sharedView) {
+    private void loadFragment(BaseFragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, fragment)

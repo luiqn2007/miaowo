@@ -1,5 +1,6 @@
 package org.miaowo.miaowo.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -11,8 +12,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import java.io.File;
-
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.web.User;
 import org.miaowo.miaowo.impl.StateImpl;
@@ -23,6 +22,8 @@ import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.LogUtil;
+
+import java.io.File;
 
 public class Setting extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
@@ -85,33 +86,37 @@ public class Setting extends BaseActivity
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_camera:
-                try {
-                    int uid = mState.isLogin() ? mState.loginedUser().getUid() : 1;
-                    File photoPath = new File(getCacheDir(),
-                            Integer.toString(uid));
-                    if (photoPath.exists()) photoPath.delete();
-                    photo = FileProvider.getUriForFile(this,
-                            getString(R.string.file_provider), photoPath);
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivityForResult(intent, IMG_CAMERA);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    handleError(Exceptions.E_BAD_CAMERA);
-                }
+                runWithPermission(() -> {
+                    try {
+                        int uid = mState.isLogin() ? mState.loginedUser().getUid() : 1;
+                        File photoPath = new File(getCacheDir(),
+                                Integer.toString(uid));
+                        if (photoPath.exists()) photoPath.delete();
+                        photo = FileProvider.getUriForFile(this,
+                                getString(R.string.file_provider), photoPath);
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photo);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivityForResult(intent, IMG_CAMERA);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        handleError(Exceptions.E_BAD_CAMERA);
+                    }
+                }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 break;
             case R.id.menu_file:
-                Intent intent = new Intent();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                } else {
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                }
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivityForResult(intent, IMG_ALBUM);
+                runWithPermission(() -> {
+                    Intent intent = new Intent();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                    } else {
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                    }
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivityForResult(intent, IMG_ALBUM);
+                }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 break;
             case R.id.menu_text:
                 mUsers.updateUserHead(null);
