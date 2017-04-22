@@ -29,7 +29,6 @@ import org.miaowo.miaowo.util.LogUtil;
 import java.io.File;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class Setting extends BaseActivity

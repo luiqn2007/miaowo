@@ -1,8 +1,10 @@
 package org.miaowo.miaowo.root;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,12 +18,22 @@ import android.support.v7.app.AppCompatActivity;
 import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.util.LogUtil;
+import org.miaowo.miaowo.util.UpdateUtil;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import okhttp3.Response;
 
 /**
  * 创建的所有Activity的基类
@@ -161,8 +173,35 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 进行升级操作
      */
-    public void update() {
-        runOnUiThreadIgnoreError(() -> TastyToast.makeText(this, "模拟升级", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show());
+    public void update(Response response) {
+        runWithPermission(() -> new Thread(() -> {
+            LogUtil.i("开始下载");
+            try {
+                if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                    BaseActivity.get.toast("储存不正确", TastyToast.ERROR);
+                    return;
+                }
+                File dir = Environment.getExternalStorageDirectory();
+                File app = new File(dir, "miaowo.apk");
+                if (app.exists()) {
+                    app.delete();
+                }
+                app.createNewFile();
+                FileOutputStream fis = new FileOutputStream(app);
+                BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
+                byte[] bs = new byte[1024 * 512];
+                int length = bis.read(bs);
+                while (length > 0) {
+                    fis.write(bs, 0, length);
+                    length = bis.read(bs);
+                }
+                bis.close();
+                fis.close();
+                UpdateUtil.utils().install(app);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).run(), Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**

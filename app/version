@@ -1,6 +1,6 @@
 {
   "version": 2,
   "versionName": "test0",
-  "message": "暂时无法获取正确的用户Token, 所以还是只能看看而已",
+  "message": "暂时无法获取正确的用户Token, 所以还是只能看看而已, 不过升级功能倒是正常",
   "url": "http://git.oschina.net/lq2007/miaowo/raw/master/app/app-release.apk"
 }

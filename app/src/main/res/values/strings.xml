@@ -21,6 +21,7 @@
     <string name="url_users">https://www.miaowo.org/api/users?page=%1$d</string>
     <string name="url_chat_message">https://www.miaowo.org/api/user/%1$s/chats/%2$d</string>
     <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>
+    <string name="url_update">http://git.oschina.net/lq2007/miaowo/raw/master/app/version</string>
 
     <string name="reply">回复</string>
     <string name="square">广场</string>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <file-path path="." name="app_files"/>
+    <root-path path="." name="root_path" />
+    <file-path path="." name="app_files" />
     <cache-path path="." name="app_caches" />
     <external-paht path="." name="sd_root" />
 </paths>

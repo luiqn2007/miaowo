@@ -2,10 +2,12 @@ package org.miaowo.miaowo.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.miaowo.miaowo.bean.config.VersionMessage;
+import org.miaowo.miaowo.root.BaseActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,8 +64,12 @@ public class JsonUtil {
         return jsons;
     }
     public VersionMessage buildVersion(Response response) {
-        response.close();
-        return new VersionMessage(99, "更新测试", "更新测试啊啊啊", "http://www.baidu.com");
+        try {
+            return buildFromAPI(response, VersionMessage.class);
+        } catch (IOException e) {
+            BaseActivity.get.toast("无法获取新版本信息", TastyToast.ERROR);
+            return null;
+        }
     }
     public<T> T buildFromAPI(Response response, Class<T> typeClass) throws IOException {
         return gson.fromJson(response.body().string(), typeClass);
