@@ -1,46 +1,50 @@
 package org.miaowo.miaowo.root;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
-public class BaseFragment extends Fragment {
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+public abstract class BaseFragment extends Fragment {
     private ProcessController mProcessController;
+    private Unbinder mUnbinder;
 
     public ProcessController getProcessController() {
-        if (mProcessController == null) {
-            mProcessController = setProcessController();
-        }
         return mProcessController;
     }
 
-    protected ProcessController setProcessController() {
-        return new ProcessController() {
-            @Override
-            public void setProcess(int process, String message) {
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mUnbinder = ButterKnife.bind(this, view);
+        initView(view);
+        super.onViewCreated(view, savedInstanceState);
+    }
 
-            }
+    /**
+     * 在此处初始化页面
+     * @param view 根视图
+     */
+    public abstract void initView(View view);
 
-            @Override
-            public void processError(Exception e) {
-
-            }
-
-            @Override
-            public void stopProcess() {
-
-            }
-        };
+    protected void setProcessController(ProcessController controller) {
+        mProcessController = controller;
     }
 
     public interface ProcessController {
-        // Do when the process is shown and its process is changed
-        // The maxValue is 100 and the minValue is 0
         void setProcess(int process, String message);
-
-        // Do when throw a exception while the process is running
         void processError(Exception e);
-
-        // Do if you need interrupt the process
         void stopProcess();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
+        super.onDestroyView();
     }
 }
 

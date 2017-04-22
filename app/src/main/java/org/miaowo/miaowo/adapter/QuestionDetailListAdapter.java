@@ -5,14 +5,16 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.Post;
-import org.miaowo.miaowo.bean.data.web.Question;
+import org.miaowo.miaowo.bean.data.Post;
+import org.miaowo.miaowo.bean.data.Question;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.root.BaseViewHolder;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.view.load_more_list.ViewHolder;
 
 import java.util.List;
 
@@ -51,16 +53,16 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.list_answer, null);
-            ViewHolder holder = new ViewHolder(convertView);
+            BaseViewHolder holder = new BaseViewHolder(convertView);
             convertView.setTag(holder);
         }
-        ViewHolder mHolder = (ViewHolder) convertView.getTag();
+        BaseViewHolder mHolder = (BaseViewHolder) convertView.getTag();
         Post question = (Post) getItem(position);
-        ImageUtil.utils(mContext).setUser(mHolder.getImageView(R.id.iv_user), question.getUser(), true);
-        mHolder.getTextView(R.id.tv_user).setText(question.getUser().getUsername());
-        mHolder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(question.getTimestamp()));
-        mHolder.getTextView(R.id.tv_context).setText(Html.fromHtml(question.getContent()));
-        mHolder.getTextView(R.id.tv_context).setMovementMethod(LinkMovementMethod.getInstance());
+        ImageUtil.utils().setUser((ImageView) mHolder.getView(R.id.iv_user), question.getUser(), true);
+        mHolder.setText(R.id.tv_user, question.getUser().getUsername());
+        mHolder.setText(R.id.tv_time, FormatUtil.format().time(question.getTimestamp()));
+        mHolder.setText(R.id.tv_context, Html.fromHtml(question.getContent()));
+        ((TextView) mHolder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
         return convertView;
     }
 }

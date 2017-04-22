@@ -3,6 +3,8 @@ package org.miaowo.miaowo.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.miaowo.miaowo.root.BaseActivity;
+
 /**
  * 用于获取/修改配置信息
  * Created by lq2007 on 16-11-26.
@@ -39,7 +41,7 @@ public class SpUtil {
     /* ======================================================================== */
 
     // 用于初始化 SharedPreferences
-    public static SpUtil defaultSp(Context context) {
-        return new SpUtil(context, "miaowo");
+    public static SpUtil defaultSp() {
+        return new SpUtil(BaseActivity.get, "miaowo");
     }
 }

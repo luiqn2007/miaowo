@@ -3,21 +3,24 @@
     <string name="app_ns">http://schemas.android.com/apk/res-auto</string>
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
-    <string name="url_home" formatted="false">https://www.miaowo.org</string>
-    <string name="url_user" formatted="false">https://www.miaowo.org/user/</string>
-    <string name="url_topic" formatted="false">https://www.miaowo.org/topic/</string>
-    <string name="url_search" formatted="false">https://www.miaowo.org/search?term=</string>
+    <string name="url_home">https://www.miaowo.org%1$s</string>
+    <string name="url_home_api" formatted="false">https://www.miaowo.org/api</string>
+    <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
+    <string name="url_topic">https://www.miaowo.org/api/topic/%1$s</string>
+    <string name="url_search">https://www.miaowo.org/api/search?term=%1$s%2$s</string>
     <string name="url_search_title" formatted="false">&amp;in=titlesposts&amp;showAs=posts</string>
     <string name="url_search_user" formatted="false">&amp;in=users</string>
     <string name="url_login" formatted="false">https://www.miaowo.org/login</string>
     <string name="url_register" formatted="false">https://www.miaowo.org/register</string>
-    <string name="url_announce" formatted="false">https://www.miaowo.org/category/1/announcements</string>
-    <string name="url_daily" formatted="false">https://www.miaowo.org/category/7/%E6%AF%8F%E6%97%A5%E9%97%AE%E9%A2%98</string>
-    <string name="url_question" formatted="false">https://www.miaowo.org/category/5/%E6%8F%90%E9%97%AE</string>
-    <string name="url_water" formatted="false">https://www.miaowo.org/category/6/%E7%81%8C%E6%B0%B4</string>
-    <string name="url_unread" formatted="false">https://www.miaowo.org/unread</string>
-    <string name="url_tags" formatted="false">https://www.miaowo.org/tags/</string>
-    <string name="url_users" formatted="false">https://www.miaowo.org/users?page=</string>
+    <string name="url_announce" formatted="false">https://www.miaowo.org/api/category/1/announcements</string>
+    <string name="url_daily" formatted="false">https://www.miaowo.org/api/category/7/%E6%AF%8F%E6%97%A5%E9%97%AE%E9%A2%98</string>
+    <string name="url_question" formatted="false">https://www.miaowo.org/api/category/5/%E6%8F%90%E9%97%AE</string>
+    <string name="url_water" formatted="false">https://www.miaowo.org/api/category/6/%E7%81%8C%E6%B0%B4</string>
+    <string name="url_unread" formatted="false">https://www.miaowo.org/api/unread</string>
+    <string name="url_tags">https://www.miaowo.org/api/tags/%1$s</string>
+    <string name="url_users">https://www.miaowo.org/api/users?page=%1$d</string>
+    <string name="url_chat_message">https://www.miaowo.org/api/user/%1$s/chats/%2$d</string>
+    <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>
 
     <string name="reply">回复</string>
     <string name="square">广场</string>
@@ -28,15 +31,12 @@
     <string name="ask">提问</string>
     <string name="chat">聊天</string>
     <string name="setting">设置</string>
-    <string name="logout">登出</string>
-    <string name="login">登录/注册</string>
-    <string name="question">问题</string>
+    <string name="question">提问</string>
     <string name="daily">每日</string>
     <string name="announcement">公告</string>
     <string name="water">灌水</string>
     <string name="answer">回答</string>
-    <string name="user_name">用户名: </string>
-    <string name="hint_title" translatable="false">标题</string>
+    <string name="hint_title">标题</string>
     <string name="send">发送</string>
     <string name="hint_content">提问正文</string>
     <string name="newer">最新</string>
@@ -44,17 +44,37 @@
     <string name="refresh">刷新</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
-    <string name="user_pwd">密码:</string>
-    <string name="user_email">"邮箱: "</string>
     <string name="scan">浏览</string>
     <string name="like">粉丝</string>
     <string name="focus">关注</string>
     <string name="post">帖子</string>
+    <string name="hint_reply">回复正文</string>
+
+    <string name="user_pwd">密码:</string>
+    <string name="user_email">"邮箱: "</string>
+    <string name="user_name">用户名: </string>
+    <string name="logout">登出</string>
+    <string name="login">登录/注册</string>
+    <string name="rlogin">登录</string>
+    <string name="rregister">注册</string>
+
     <string name="from_album">从相册</string>
     <string name="from_camera">从相机</string>
     <string name="from_text">文字头像</string>
-    <string name="hint_reply">回复正文</string>
 
-    <string name="rlogin">登录</string>
-    <string name="rregister">注册</string>
+    <string name="err_page_end">到底啦</string>
+    <string name="err_permissions">权限不足</string>
+    <string name="err_no_pic">无图片</string>
+    <string name="err_camera_app">无法打开摄像头应用</string>
+    <string name="err_username">用户名不合法</string>
+    <string name="err_password">密码不合法</string>
+    <string name="err_email">电子邮件不合法</string>
+    <string name="err_not_login">请先登录</string>
+    <string name="err_token">无法获取 Token</string>
+    <string name="err_load">加载失败</string>
+    <string name="err_msg_empty">消息不能为空</string>
+
+    <string name="data_empty"><![CDATA[<空>]]></string>
+    <string name="data_loading">加载中…</string>
+    <string name="data_loading_detail">正在加载: %1$s</string>
 </resources>

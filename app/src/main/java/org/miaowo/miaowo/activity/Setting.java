@@ -9,21 +9,28 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.sdsmdg.tastytoast.TastyToast;
+import com.squareup.picasso.Picasso;
+
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.StateImpl;
 import org.miaowo.miaowo.impl.UsersImpl;
 import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.set.Exceptions;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.LogUtil;
 
 import java.io.File;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class Setting extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
@@ -31,55 +38,60 @@ public class Setting extends BaseActivity
     final private int IMG_ALBUM = 2;
     final private int IMG_EDIT = 3;
 
-    private User user;
     private Users mUsers;
     private State mState;
     private Uri photo;
 
-    private EditText et_name, et_pwd, et_email;
-    private ImageView iv_head;
-    private PopupMenu mChoose;
+    @BindView(R.id.et_user) EditText et_name;
+    @BindView(R.id.et_password) EditText et_pwd;
+    @BindView(R.id.et_email) EditText et_email;
+    @BindView(R.id.iv_user) ImageView iv_head;
+    @BindView(R.id.iv_bg) ImageView iv_bg;
+    PopupMenu mChoose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        init();
     }
 
-    private void init() {
-        mUsers = new UsersImpl(this);
-        mState = new StateImpl(this);
-
-        iv_head = (ImageView) findViewById(R.id.iv_user);
-        et_name = (EditText) findViewById(R.id.et_user);
-        et_pwd = (EditText) findViewById(R.id.et_password);
-        et_email = (EditText) findViewById(R.id.et_email);
-
-        user = mState.loginedUser();
-        et_name.setText(user.getUsername());
-        et_pwd.setText("");
-        et_email.setText(user.getEmail());
-        ImageUtil.utils(this).setUser(iv_head, user, false);
+    @Override
+    public void initActivity() {
+        mUsers = new UsersImpl();
+        mState = new StateImpl();
 
         mChoose = new PopupMenu(this, iv_head);
         mChoose.inflate(R.menu.img_choose);
         mChoose.setOnMenuItemClickListener(this);
 
-        findViewById(R.id.btn_send).setOnClickListener(v -> send());
-        findViewById(R.id.btn_cancel).setOnClickListener(v -> finish());
-        iv_head.setOnClickListener(v -> mChoose.show());
+        loadUser();
+    }
+
+    @OnClick({R.id.btn_send, R.id.btn_cancel, R.id.iv_user})
+    public void click(View view) {
+        switch (view.getId()) {
+            case R.id.btn_send: send();break;
+            case R.id.btn_cancel: finish();break;
+            case R.id.iv_user: mChoose.show();break;
+        }
     }
 
     private void send() {
         String name = et_email.getText().toString();
         String pwd = et_pwd.getText().toString();
         String email = et_name.getText().toString();
-        try {
-            mUsers.updateUser(name, pwd, email);
-        } catch (Exception e) {
-            handleError(e);
-        }
+        mUsers.updateUser(name, pwd, email);
+
+        startActivity(new Intent(this, Test.class));
+    }
+
+    private void loadUser() {
+        User user = mState.loginUser();
+        et_name.setText(user.getUsername());
+        et_pwd.setText("");
+        et_email.setText(user.getEmail());
+        ImageUtil.utils().setUser(iv_head, user, false);
+        Picasso.with(this).load(String.format(getString(R.string.url_home), user.getCoverUrl())).into(iv_bg);
     }
 
     @Override
@@ -88,7 +100,7 @@ public class Setting extends BaseActivity
             case R.id.menu_camera:
                 runWithPermission(() -> {
                     try {
-                        int uid = mState.isLogin() ? mState.loginedUser().getUid() : 1;
+                        int uid = mState.isLogin() ? mState.loginUser().getUid() : 1;
                         File photoPath = new File(getCacheDir(),
                                 Integer.toString(uid));
                         if (photoPath.exists()) photoPath.delete();
@@ -100,7 +112,7 @@ public class Setting extends BaseActivity
                         startActivityForResult(intent, IMG_CAMERA);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        handleError(Exceptions.E_BAD_CAMERA);
+                        toast(getString(R.string.err_camera_app), TastyToast.ERROR);
                     }
                 }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 break;
@@ -141,11 +153,12 @@ public class Setting extends BaseActivity
             case IMG_EDIT:
                 String photo = data.getStringExtra("photo");
                 if (photo == null) {
-                    handleError(Exceptions.E_NON_PICTURE);
+                    toast(getString(R.string.err_no_pic), TastyToast.ERROR);
                     break;
                 }
                 mUsers.updateUserHead(photo);
                 break;
         }
+        loadUser();
     }
 }

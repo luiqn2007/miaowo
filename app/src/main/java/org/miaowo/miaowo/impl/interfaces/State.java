@@ -1,6 +1,6 @@
 package org.miaowo.miaowo.impl.interfaces;
 
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.User;
 
 /**
  * 用于注册和登录的相关操作
@@ -13,7 +13,7 @@ public interface State {
      * 当前登陆的用户
      * @return 已登录的用户
      */
-    User loginedUser();
+    User loginUser();
 
     /**
      * 登陆成功时，使用此方法记录登陆成功的用户

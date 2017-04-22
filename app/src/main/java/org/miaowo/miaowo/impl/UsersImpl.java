@@ -1,9 +1,11 @@
 package org.miaowo.miaowo.impl;
 
 
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
 import org.miaowo.miaowo.root.BaseActivity;
+import org.miaowo.miaowo.util.HttpUtil;
 
 
 /**
@@ -12,29 +14,30 @@ import org.miaowo.miaowo.root.BaseActivity;
  */
 
 public class UsersImpl implements Users {
-    private BaseActivity mContext;
 
-    public UsersImpl(BaseActivity mContext) {
-        this.mContext = mContext;
+    private HttpUtil http;
+
+    public UsersImpl() {
+        http = HttpUtil.utils();
     }
 
     @Override
-    public User getUser(String name) {
-        return null;
+    public void getUser(String name, HttpUtil.CallbackRun callback, HttpUtil.CallbackErr onErr) {
+        http.post(String.format(BaseActivity.get.getString(R.string.url_user), name), callback, onErr);
     }
 
     @Override
     public void focusUser(User u) {
-        mContext.handleError(new Exception("暂时搞不懂怎么关注的"));
+        // TODO: 关注用户
     }
 
     @Override
     public void updateUser(String user, String pwd, String email) {
-        mContext.handleError(new Exception("暂时搞不懂怎么修改的"));
+        // TODO: 更新用户
     }
 
     @Override
     public void updateUserHead(String headString) {
-
+        // TODO: 更新用户头像
     }
 }

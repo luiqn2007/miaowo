@@ -9,7 +9,6 @@ import okhttp3.Call;
 
 public class BaseEvent {
     public Call call;
-    public Object tag;
 
     public BaseEvent(Call call) {
         this.call = call;

@@ -1,0 +1,128 @@
+注意：当使用主令牌_uid请求时，在数据有效载荷中需要附加参数（），因此Write API可以在正确的用户上下文下执行请求的操作。
+这种限制意味着某些操作只适用于特定的uid。例如，PUT /:uid更新用户的个人资料信息，但只能由用户本身或管理员uid访问。
+所有传入的其他入口将导致错误。
+
+JSON Web令牌是一种开放的行业标准RFC 7519方法，用于在双方之间安全地声明声明。要使用JSON Web令牌而不是用户/主令牌进
+行请求，请以与插件中定义的相同的密码对整个请求的有效负载进行签名，并将其发送到POST正文中或作为查询字符串参数。在这两
+种情况下，都使用关键字“token”。
+
+/api/v1
+    /users
+        POST /
+            创建一个新用户
+            需要：username
+            接受：password，email
+            传入的任何其他数据将被保存到用户哈希中
+        PUT /:uid
+            更新用户的个人资料信息
+            接受：username，email，fullname，website，location，birthday，signature
+            也接受通过action:user.updateProfile挂钩暴露的任何值
+            将uid在布线路径指定是可选的。没有它，主叫用户的配置文件被编辑。
+        DELETE /:uid
+            从NodeBB中删除用户（小心：没有确认！）
+            接受：无参数
+            可以通过目标uid本身或一个管理uid来调用。
+        PUT /:uid/password
+            更改用户密码
+            要求：uid，new
+            接受：current
+            current 如果主叫用户不是管理员，则是必需的
+        POST /:uid/follow
+            跟随另一个用户
+            接受：无参数
+        DELETE /:uid/follow
+            取消关注其他用户
+            接受：无参数
+        POST /:uid/chats
+            向其他用户发送聊天消息
+            需要：message
+            接受：timestamp，quiet
+            timestamp （以ms为单位的unix时间戳）允许从过去发送消息（在导入聊天时有用）
+            quiet 如果设置，将不会通知用户聊天消息已被接收（在导入期间也很有用）
+        POST /:uid/ban
+            禁止用户
+        DELETE /:uid/ban
+            解除一个用户
+        GET /:uid/tokens
+            检索该用户的活动令牌列表
+            接受：无参数
+        POST /:uid/tokens
+            为传入的uid创建一个新的用户令牌
+            接受：无参数通常，将接受password代替承载令牌
+            可以使用该用户的活动令牌来调用
+            这是允许您password在请求正文中传入的唯一路线。生成一个新的令牌，然后在随后的调用中使用令牌。
+        DELETE /:uid/tokens/:token
+            撤销有效的用户令牌
+            接受：无参数
+    /categories
+        POST /
+            创建一个新的类别
+            需要：name
+            接受：description，bgColor，color，parentCid，class
+        PUT /:cid
+            更新类别的数据
+            接受：name，description，bgColor，color，parentCid
+        DELETE /:cid
+            清理一个类别，包括其中的所有主题和帖子（仔细：没有确认！）
+            接受：无参数
+        PUT /:cid/state
+            启用类别
+            接受：无参数
+        DELETE /:cid/state
+            禁用类别
+            接受：无参数
+    /groups
+        POST /
+            创建一个新组
+            需要：name
+            接受：description，hidden，private，ownerUid
+        DELETE /:slug
+            删除组（小心：没有确认！）
+            接受：无参数
+        POST /:slug/membership
+            加入组（如果是私人组，则请求成员）
+            接受：无参数
+        DELETE /:slug/membership
+            离开一个小组
+            接受：无参数
+    /topics
+        POST /
+            创建一个新主题
+            要求：cid，title，content
+            接受：tags (array)
+        POST /:tid
+            发表新主题回复
+            需要：content
+            接受：toPid
+        PUT /:tid
+            更新主题中的帖子
+            要求：pid，content
+            接受：handle，title，topic_thumb，tags
+        DELETE /:tid
+            删除主题（小心：没有确认！）
+            接受：无参数
+        POST /:tid/follow
+            为用户订阅主题
+            接受：无参数
+        DELETE /:tid/follow
+            取消订阅用户的主题
+            接受：无参数
+        POST /:tid/tags
+            创建或更新主题中的标签
+            需要：tags
+            此方法不附加标签，它会替换与主题关联的标签集
+        DELETE /:tid/tags
+            接受：无参数
+            清除与主题相关联的标签集
+    /posts
+        PUT /:pid
+            按帖子ID编辑帖子
+            需要：content
+            接受：title，topic_thumb，tags
+        DELETE /:pid
+            删除帖子（小心：没有确认！）
+            接受：无参数
+    /util
+        POST /upload
+            上传文件
+            接受：多部分文件数组files[]

@@ -30,13 +30,6 @@
         android:layout_alignParentTop="true"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
-    <CheckBox
-        android:id="@+id/cb_top"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:text="置顶"
-        android:layout_toLeftOf="@id/iv_close" />
-
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"

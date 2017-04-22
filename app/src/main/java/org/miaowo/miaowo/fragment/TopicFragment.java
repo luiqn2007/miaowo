@@ -9,43 +9,41 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sdsmdg.tastytoast.TastyToast;
+
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.Title;
-import org.miaowo.miaowo.bean.data.web.TitleList;
-import org.miaowo.miaowo.bean.data.web.Topic;
-import org.miaowo.miaowo.bean.data.web.TopicList;
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.Title;
+import org.miaowo.miaowo.bean.data.TitleList;
+import org.miaowo.miaowo.bean.data.Topic;
+import org.miaowo.miaowo.bean.data.TopicList;
+import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.root.BaseListAdapter;
 import org.miaowo.miaowo.root.BaseFragment;
-import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.util.BeanUtil;
+import org.miaowo.miaowo.root.BaseListAdapter;
+import org.miaowo.miaowo.root.BaseViewHolder;
+import org.miaowo.miaowo.set.MessageWindows;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.view.load_more_list.ViewHolder;
+import org.miaowo.miaowo.util.JsonUtil;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import butterknife.BindView;
 
 public class TopicFragment extends BaseFragment {
 
-    private ListView lv_list;
+    @BindView(R.id.list) ListView lv_list;
+    @BindView(R.id.et_topic) TextView tv_topic;
+    @BindView(R.id.ib_search) ImageButton ib_load;
     private PopupMenu mMenu;
-    private TextView tv_topic;
-    private ImageButton ib_load;
-    private BaseActivity mContext;
 
-    public TopicFragment() {
-        // Required empty public constructor
-    }
+    public TopicFragment() {}
     public static TopicFragment newInstance() {
         TopicFragment fragment = new TopicFragment();
         Bundle args = new Bundle();
@@ -56,43 +54,34 @@ public class TopicFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_topic, container, false);
-        bind(view);
-        return view;
+        return inflater.inflate(R.layout.fragment_topic, container, false);
     }
-    private void bind(View view) {
-        lv_list = (ListView) view.findViewById(R.id.list);
-        tv_topic = (TextView) view.findViewById(R.id.et_topic);
-        ib_load = (ImageButton) view.findViewById(R.id.ib_search);
-        mContext = (BaseActivity) getActivity();
-        mMenu = new PopupMenu(getContext(), ib_load);
-        start();
-    }
+
     /* ================================================================ */
     private List<Topic> mTopics;
-    private List<Title> mQuestions;
     private BaseListAdapter<Title> mAdapter;
 
-    private void start() {
+    @Override
+    public void initView(View view) {
+        mMenu = new PopupMenu(getContext(), ib_load);
         ib_load.setOnClickListener(v -> mMenu.show());
-        mAdapter = new BaseListAdapter<Title>(mQuestions) {
+        mAdapter = new BaseListAdapter<Title>(new ArrayList<>()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     convertView = View.inflate(getContext(), R.layout.list_question_title, null);
-                    ViewHolder holder = new ViewHolder(convertView);
+                    BaseViewHolder holder = new BaseViewHolder(convertView);
                     convertView.setTag(holder);
                 }
-                ViewHolder holder = (ViewHolder) convertView.getTag();
-                MessageWindows messageWindows = MessageWindows.windows(mContext);
+                BaseViewHolder holder = (BaseViewHolder) convertView.getTag();
+                MessageWindows messageWindows = MessageWindows.windows();
                 Title item = (Title) getItem(position);
                 User u =item.getUser();
-                holder.setOnClickListener((v) -> messageWindows.showQuestion(item.getSlug()), R.id.rl_item);
-                ImageUtil.utils(mContext).setUser(holder.getImageView(R.id.iv_user), u, true);
-                holder.getTextView(R.id.tv_user).setText(u.getUsername());
-                holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(item.getLastposttime()));
-                holder.getTextView(R.id.tv_page).setText(Html.fromHtml(item.getTitle()));
-                holder.getTextView(R.id.tv_count).setText(item.getPostcount() + " 帖子, " + item.getViewcount() + " 浏览");
+                holder.setClickListener(R.id.rl_item, (v) -> messageWindows.showQuestion(item.getSlug()));
+                ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, true);
+                holder.setText(R.id.tv_user, u.getUsername());
+                holder.setText(R.id.tv_time, FormatUtil.format().time(item.getLastposttime()));
+                holder.setText(R.id.tv_page, Html.fromHtml(item.getTitle()));
                 return convertView;
             }
         };
@@ -110,61 +99,46 @@ public class TopicFragment extends BaseFragment {
 
     private boolean loadTags() {
         initMenu();
-        HttpUtil.utils().post(getContext().getString(R.string.url_tags), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(() -> {
+        HttpUtil.utils().post(String.format(getContext().getString(R.string.url_tags), ""),
+                (call, response) -> {
+                    TopicList topicList = JsonUtil.utils().buildFromAPI(response, TopicList.class);
+                    mTopics = topicList.getTags();
+                    BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                        tv_topic.setText("请选择话题");
+                        Menu menu = mMenu.getMenu();
+                        menu.clear();
+                        for (Topic topic : mTopics) {
+                            menu.add(topic.getValue());
+                        }
+                        menu.addSubMenu("其他").add("重新加载");
+                        mMenu.setOnMenuItemClickListener(this::openTag);
+                    });
+                },
+                (call, e) -> {
                     tv_topic.setText("加载失败");
                     mMenu.getMenu().clear();
                     mMenu.getMenu().add("重新加载");
                     mMenu.setOnMenuItemClickListener(item -> loadTags());
                 });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                TopicList topicList = BeanUtil.utils().buildFromLastJson(response, TopicList.class);
-                mTopics = topicList.getTags();
-                getActivity().runOnUiThread(() -> {
-                    tv_topic.setText("请选择话题");
-                    Menu menu = mMenu.getMenu();
-                    menu.clear();
-                    for (Topic topic : mTopics) {
-                        menu.add(topic.getValue());
-                    }
-                    menu.addSubMenu("其他").add("重新加载");
-                    mMenu.setOnMenuItemClickListener(item -> openTag(item));
-                });
-            }
-        });
         return true;
     }
 
     private boolean openTag(MenuItem item) {
         if (item.getSubMenu() != null) return loadTags();
         String title = item.getTitle().toString();
-        tv_topic.setText("正在加载: " + title);
-        HttpUtil.utils().post(mContext.getString(R.string.url_tags) + title, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mContext.runOnUiThread(() -> tv_topic.setText("加载失败"));
-                mContext.handleError(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                TitleList topicPage = BeanUtil.utils().buildFromLastJson(response, TitleList.class);
-                mContext.runOnUiThread(() -> {
-                    tv_topic.setText(title);
-                    mAdapter.update(topicPage.getTitles());
+        tv_topic.setText(String.format(getString(R.string.data_loading_detail), title));
+        HttpUtil.utils().post(String.format(getString(R.string.url_tags), title),
+                (call, response) -> {
+                    TitleList topicPage = JsonUtil.utils().buildFromAPI(response, TitleList.class);
+                    BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                        tv_topic.setText(title);
+                        mAdapter.update(topicPage.getTitles());
+                    });
+                },
+                (call, e) -> {
+                    BaseActivity.get.runOnUiThreadIgnoreError(() -> tv_topic.setText("加载失败"));
+                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
                 });
-            }
-        });
         return true;
-    }
-
-    @Override
-    protected ProcessController setProcessController() {
-        return null;
     }
 }

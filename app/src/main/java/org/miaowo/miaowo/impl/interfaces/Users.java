@@ -1,7 +1,8 @@
 package org.miaowo.miaowo.impl.interfaces;
 
 
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.util.HttpUtil;
 
 /**
  * 用于用户的查询，点赞等相关操作
@@ -12,14 +13,12 @@ public interface Users {
     /**
      * 获取一个用户的信息
      * 获取的 User 包含除 password 的所有信息
-     * @return 返回的用户，若未登录则返回用户id为-1的用户(Guest)
      */
-    User getUser(String name);
+    void getUser(String name, HttpUtil.CallbackRun callback, HttpUtil.CallbackErr onErr);
 
     /**
      * 关注
      * @param u 用户
-     * @throws Exception 申请失败返回结果
      */
     void focusUser(User u);
 

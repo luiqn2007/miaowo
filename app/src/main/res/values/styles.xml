@@ -1,7 +1,5 @@
 <resources>
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -12,39 +10,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <!-- 底部 Tab 有关 -->
-    <style name="tab_bottom_text">
-        <item name="android:padding">10dp</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-    </style>
-
-    <!-- Base application theme. -->
     <style name="TranslateTheme" parent="AppTheme">
-        <item name="android:background">@color/translate</item>
-    </style>
-    <!--全屏加透明-->
-    <style name="TranslucentFullScreenTheme" parent="FullScreenTheme">
-        <item name="android:windowBackground">@color/translate</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/translate</item>
     </style>
-    <!--全屏-->
-    <style name="FullScreenTheme" parent="AppTheme">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
-    <!--透明，有任务栏电量时间等-->
+
     <style name="NoTitleTranslucentTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/translate</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
-
-    <color name="translate">#00FFFFFF</color>
 </resources>

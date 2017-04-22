@@ -7,16 +7,15 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.sdsmdg.tastytoast.TastyToast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.User;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.custom.CircleTransformation;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.set.Exceptions;
-import org.miaowo.miaowo.set.windows.UserWindows;
-
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+import org.miaowo.miaowo.set.UserWindows;
 
 /**
  * 图形处理类
@@ -24,14 +23,13 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
  */
 
 public class ImageUtil {
-    private ImageUtil(BaseActivity context) {
-        mContext = context;
+    private ImageUtil() {
+
     }
-    public static ImageUtil utils(BaseActivity context) {
-        return new ImageUtil(context);
+    public static ImageUtil utils() {
+        return new ImageUtil();
     }
 
-    private BaseActivity mContext;
 
     /**
      * 填充用户头像框
@@ -44,10 +42,12 @@ public class ImageUtil {
             return;
         }
         fillUserImage(iv, user);
-        UserWindows uv = UserWindows.windows(mContext);
+        UserWindows uv = UserWindows.windows();
+
         if (clickable) {
             if (user.getUid() <= 0) {
-                iv.setOnClickListener(v -> mContext.handleError(Exceptions.E_NON_LOGIN));
+                iv.setOnClickListener(v -> BaseActivity.get.toast(BaseActivity.get
+                        .getString(R.string.err_not_login), TastyToast.ERROR));
             } else {
                 iv.setOnClickListener(v -> uv.showUserWindow(user.getUsername()));
             }
@@ -56,10 +56,11 @@ public class ImageUtil {
     private void fillUserImage(ImageView iv, User user) {
         if (TextUtils.isEmpty(user.getPicture())) {
             if (TextUtils.isEmpty(user.getIconText())) return;
-            iv.setImageDrawable(textIcon(user));
+            iv.setImageDrawable(textIcon(user.getIconText(),
+                    new TextIconConfig(fromUser(user.getIconBgColor()), Color.WHITE)));
             return;
         }
-        fill(iv, mContext.getString(R.string.url_home) + user.getPicture(), null);
+        fill(iv, String.format(BaseActivity.get.getString(R.string.url_home), user.getPicture()), null);
     }
 
     /**
@@ -71,23 +72,17 @@ public class ImageUtil {
         if (config == null) {
             RequestCreator creator;
             if ("default".equals(imgRes)) {
-                creator = Picasso.with(mContext).load(R.drawable.def_user);
+                creator = Picasso.with(BaseActivity.get).load(R.drawable.def_user);
             } else {
-                creator = Picasso.with(mContext).load(imgRes);
+                creator = Picasso.with(BaseActivity.get).load(imgRes);
             }
-            mContext.runOnUiThread(() -> creator.transform(new CropCircleTransformation()).fit().into(iv));
+            BaseActivity.get.runOnUiThreadIgnoreError(() -> creator.transform(new CircleTransformation()).fit().into(iv));
         } else {
-            mContext.runOnUiThread(() -> iv.setImageDrawable(textIcon(imgRes, config)));
+            BaseActivity.get.runOnUiThreadIgnoreError(() -> iv.setImageDrawable(textIcon(imgRes, config)));
         }
     }
 
-    /**
-     * 转换文字图标
-     * @param text 转换的文字
-     * @param config 文字图标配置
-     * @return Drawable
-     */
-    public Drawable textIcon(String text, TextIconConfig config) {
+    private Drawable textIcon(String text, TextIconConfig config) {
         if (TextUtils.isEmpty(text) || config == null) {
             return null;
         }
@@ -97,16 +92,6 @@ public class ImageUtil {
                 .toUpperCase()
                 .endConfig()
                 .buildRound(text, config.bgColor);
-    }
-    /**
-     * 获取用户对象文字头像
-     * @param user 要转换的用户对象
-     * @return Drawable
-     */
-    public Drawable textIcon(User user) {
-        int bgColor = fromUser(user.getIconBgColor());
-        TextIconConfig config = new TextIconConfig(bgColor, Color.WHITE);
-        return textIcon(user.getIconText(), config);
     }
     private int fromUser(String color) {
         if (TextUtils.isEmpty(color) || color.length() < 6) {
@@ -118,28 +103,14 @@ public class ImageUtil {
         return Color.rgb(r, g, b);
     }
 
-    /**
-     * 文字图标配置对象, null 通常表示不是文字图标
-     */
-    public static class TextIconConfig {
+
+
+    private static class TextIconConfig {
         int bgColor;
         int textColor;
 
-        public TextIconConfig(@ColorInt int bgColor, @ColorInt int textColor) {
+        TextIconConfig(@ColorInt int bgColor, @ColorInt int textColor) {
             this.bgColor = bgColor;
-            this.textColor = textColor;
-        }
-        public void setBgColor(int bgColor) {
-            this.bgColor = bgColor;
-            this.textColor = Color.WHITE;
-        }
-        public int getBgColor() {
-            return bgColor;
-        }
-        public int getTextColor() {
-            return textColor;
-        }
-        public void setTextColor(int textColor) {
             this.textColor = textColor;
         }
     }

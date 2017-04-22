@@ -26,6 +26,11 @@
         <activity android:name=".activity.Setting" />
         <activity android:name=".activity.Miao" />
         <activity android:name=".activity.Photo" />
+        <activity android:name=".activity.Test" />
+        <activity android:name=".activity.Chat"/>
+        <activity
+            android:name=".activity.Add"
+            android:theme="@style/TranslateTheme" />
 
         <service
             android:name=".service.WebService"

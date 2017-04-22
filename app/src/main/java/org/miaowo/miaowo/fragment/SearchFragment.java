@@ -1,6 +1,7 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -8,43 +9,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.bean.data.web.Post;
-import org.miaowo.miaowo.bean.data.web.QuestionSearch;
-import org.miaowo.miaowo.bean.data.web.Title;
-import org.miaowo.miaowo.bean.data.web.User;
-import org.miaowo.miaowo.bean.data.web.UserSearch;
+import org.miaowo.miaowo.bean.data.Post;
+import org.miaowo.miaowo.bean.data.QuestionSearch;
+import org.miaowo.miaowo.bean.data.Title;
+import org.miaowo.miaowo.bean.data.User;
+import org.miaowo.miaowo.bean.data.UserSearch;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.root.BaseListAdapter;
 import org.miaowo.miaowo.root.BaseFragment;
-import org.miaowo.miaowo.set.Exceptions;
-import org.miaowo.miaowo.set.windows.MessageWindows;
-import org.miaowo.miaowo.set.windows.UserWindows;
-import org.miaowo.miaowo.util.BeanUtil;
+import org.miaowo.miaowo.root.BaseListAdapter;
+import org.miaowo.miaowo.root.BaseViewHolder;
+import org.miaowo.miaowo.set.MessageWindows;
+import org.miaowo.miaowo.set.UserWindows;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
-import org.miaowo.miaowo.view.load_more_list.ViewHolder;
+import org.miaowo.miaowo.util.JsonUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class SearchFragment extends BaseFragment {
 
-    private ListView lv_list;
-    private EditText et_topic;
-    private ImageButton ib_search;
-    private BaseActivity mContext;
+    @BindView(R.id.list) ListView lv_list;
+    @BindView(R.id.et_topic) EditText et_topic;
+    @BindView(R.id.ib_search) ImageButton ib_search;
     private boolean isUser = false;
 
     public SearchFragment() {
@@ -60,19 +60,9 @@ public class SearchFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
-        bind(view);
-        return view;
+        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
-    private void bind(View view) {
-        lv_list = (ListView) view.findViewById(R.id.list);
-        et_topic = (EditText) view.findViewById(R.id.et_topic);
-        ib_search = (ImageButton) view.findViewById(R.id.ib_search);
-        mContext = (BaseActivity) getActivity();
-        start();
-    }
 
     /* ================================================================ */
     private List<Post> mQuestions = new ArrayList<>();
@@ -83,25 +73,24 @@ public class SearchFragment extends BaseFragment {
     private MessageWindows mMessageWindows;
     private UserWindows mUserWindows;
 
-    private void start() {
-        mMessageWindows = MessageWindows.windows((BaseActivity) getActivity());
-        mUserWindows = UserWindows.windows((BaseActivity) getActivity());
+    @Override
+    public void initView(View view) {
+        mMessageWindows = MessageWindows.windows();
+        mUserWindows = UserWindows.windows();
         mTitleAdapter = new BaseListAdapter<Post>(mQuestions) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     convertView = View.inflate(getContext(), R.layout.list_answer, null);
-                    ViewHolder holder = new ViewHolder(convertView);
+                    BaseViewHolder holder = new BaseViewHolder(convertView);
                     convertView.setTag(holder);
                     Post question = (Post) getItem(position);
-                    ImageUtil.utils(mContext).setUser(holder.getImageView(R.id.iv_user), question.getUser(), true);
-                    holder.getTextView(R.id.tv_user).setText(question.getUser().getUsername());
-                    holder.getTextView(R.id.tv_time).setText(FormatUtil.format().time(question.getTimestamp()));
-                    holder.getTextView(R.id.tv_context).setText(Html.fromHtml(question.getContent()));
-                    holder.getTextView(R.id.tv_context).setMovementMethod(LinkMovementMethod.getInstance());
+                    ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), question.getUser(), true);
+                    holder.setText(R.id.tv_user, question.getUser().getUsername());
+                    holder.setText(R.id.tv_time, FormatUtil.format().time(question.getTimestamp()));
+                    holder.setText(R.id.tv_context, Html.fromHtml(question.getContent()));
+                    ((TextView) holder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
                 }
-                ViewHolder holder = (ViewHolder) convertView.getTag();
-
                 return convertView;
             }
         };
@@ -110,13 +99,13 @@ public class SearchFragment extends BaseFragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     convertView = View.inflate(getContext(), R.layout.list_user_h, null);
-                    ViewHolder holder = new ViewHolder(convertView);
+                    BaseViewHolder holder = new BaseViewHolder(convertView);
                     convertView.setTag(holder);
                 }
-                ViewHolder holder = (ViewHolder) convertView.getTag();
+                BaseViewHolder holder = (BaseViewHolder) convertView.getTag();
                 User u = (User) getItem(position);
-                holder.getTextView(R.id.tv_user).setText(u.getUsername());
-                ImageUtil.utils((BaseActivity) getActivity()).setUser(holder.getImageView(R.id.iv_user), u, false);
+                holder.setText(R.id.tv_user, u.getUsername());
+                ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, false);
                 return convertView;
             }
         };
@@ -156,36 +145,23 @@ public class SearchFragment extends BaseFragment {
 
     public void search(String key) {
         boolean lastUser = isUser;
-        String url = getString(R.string.url_search) + key
-                + getString(isUser ? R.string.url_search_user : R.string.url_search_title);
-        Call call = HttpUtil.utils().post(url, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                ((BaseActivity) getActivity()).handleError(Exceptions.E_WEB);
+        String url = String.format(getString(R.string.url_search),
+                key, getString(isUser ? R.string.url_search_user : R.string.url_search_title));
+        Call call = HttpUtil.utils().post(url, (call1, response) -> {
+            if (lastUser) {
+                UserSearch user = JsonUtil.utils().buildFromAPI(response, UserSearch.class);
+                mUsers = user.getUsers();
+            } else {
+                QuestionSearch question = JsonUtil.utils().buildFromAPI(response, QuestionSearch.class);
+                mQuestions = question.getPosts();
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (lastUser) {
-                    UserSearch user = BeanUtil.utils().buildFromLastJson(response, UserSearch.class);
-                    mUsers = user.getUsers();
-                } else {
-                    QuestionSearch question = BeanUtil.utils().buildFromLastJson(response, QuestionSearch.class);
-                    mQuestions = question.getPosts();
-                }
-                isUser = lastUser;
-                getActivity().runOnUiThread(() -> loadSearch());
-            }
+            isUser = lastUser;
+            BaseActivity.get.runOnUiThreadIgnoreError(this::loadSearch);
         });
         ib_search.setImageDrawable(new IconicsDrawable(getContext(), FontAwesome.Icon.faw_ban).actionBar());
         ib_search.setOnClickListener(v -> {
             call.cancel();
             loadSearch();
         });
-    }
-
-    @Override
-    protected ProcessController setProcessController() {
-        return null;
     }
 }
