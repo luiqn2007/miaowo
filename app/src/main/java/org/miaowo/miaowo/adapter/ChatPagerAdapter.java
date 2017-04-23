@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.bean.data.ChatRoom;
-import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.fragment.chat.ChatFragment;
 import org.miaowo.miaowo.fragment.chat.ChatListFragment;
 

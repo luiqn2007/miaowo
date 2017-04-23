@@ -26,13 +26,13 @@ import java.util.ArrayList;
 public class TitleListAdapter
         extends LMLAdapter<Title> {
 
-    public TitleListAdapter(BaseActivity context) {
+    public TitleListAdapter() {
         super(new ArrayList<>(), new ViewLoaderCreator<Title>() {
 
             @Override
             public RecyclerView.ViewHolder createHolder(ViewGroup parent, int viewType) {
                 return new BaseViewHolder(
-                        LayoutInflater.from(context).inflate(R.layout.list_question_title, parent, false)
+                        LayoutInflater.from(BaseActivity.get).inflate(R.layout.list_question_title, parent, false)
                 );
             }
 

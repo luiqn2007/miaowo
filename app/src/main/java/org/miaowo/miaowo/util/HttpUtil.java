@@ -1,8 +1,5 @@
 package org.miaowo.miaowo.util;
 
-import android.app.usage.NetworkStatsManager;
-import android.content.Context;
-
 import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.root.BaseActivity;

@@ -1,5 +1,6 @@
 package org.miaowo.miaowo.activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -10,10 +11,10 @@ import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.root.BaseActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class Photo extends BaseActivity {
     Uri photo;
+    Intent intent;
 
     @BindView(R.id.photo) ImageView iv_photo;
 
@@ -27,5 +28,7 @@ public class Photo extends BaseActivity {
     public void initActivity() {
         photo = getIntent().getParcelableExtra("photo");
         Picasso.with(this).load(photo).into(iv_photo);
+        intent = new Intent();
+        setResult(0, intent);
     }
 }

@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ public class UnreadFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         url = getString(R.string.url_unread);
-        mAdapter = new TitleListAdapter((BaseActivity) getActivity());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,6 +47,8 @@ public class UnreadFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
+        mList = (LoadMoreList) view;
+        mAdapter = new TitleListAdapter();
         mList.setAdapter(mAdapter);
         mList.setPullRefresher(() -> {
             mPageIndex = 0;

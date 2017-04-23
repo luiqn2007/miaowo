@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import okhttp3.Call;
 
 public class SearchFragment extends BaseFragment {

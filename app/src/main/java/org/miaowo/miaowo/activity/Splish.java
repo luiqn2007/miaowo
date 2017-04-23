@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.fragment.MiaoFragment;
 import org.miaowo.miaowo.impl.MsgImpl;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.service.WebService;

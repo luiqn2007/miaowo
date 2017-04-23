@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">喵窝</string>
-    <string name="app_ns">http://schemas.android.com/apk/res-auto</string>
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
     <string name="url_home">https://www.miaowo.org%1$s</string>
-    <string name="url_home_api" formatted="false">https://www.miaowo.org/api</string>
     <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
     <string name="url_topic">https://www.miaowo.org/api/topic/%1$s</string>
     <string name="url_search">https://www.miaowo.org/api/search?term=%1$s%2$s</string>
@@ -23,26 +21,19 @@
     <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>
     <string name="url_update">http://git.oschina.net/lq2007/miaowo/raw/master/app/version</string>
 
-    <string name="reply">回复</string>
     <string name="square">广场</string>
     <string name="unread">未读</string>
     <string name="topic">话题</string>
     <string name="user">会员</string>
     <string name="search">搜索</string>
     <string name="ask">提问</string>
-    <string name="chat">聊天</string>
     <string name="setting">设置</string>
     <string name="question">提问</string>
     <string name="daily">每日</string>
     <string name="announcement">公告</string>
     <string name="water">灌水</string>
-    <string name="answer">回答</string>
     <string name="hint_title">标题</string>
     <string name="send">发送</string>
-    <string name="hint_content">提问正文</string>
-    <string name="newer">最新</string>
-    <string name="hot">热门</string>
-    <string name="refresh">刷新</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="scan">浏览</string>
@@ -75,7 +66,6 @@
     <string name="err_load">加载失败</string>
     <string name="err_msg_empty">消息不能为空</string>
 
-    <string name="data_empty"><![CDATA[<空>]]></string>
     <string name="data_loading">加载中…</string>
     <string name="data_loading_detail">正在加载: %1$s</string>
 </resources>

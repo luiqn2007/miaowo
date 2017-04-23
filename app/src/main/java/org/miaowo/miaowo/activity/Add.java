@@ -3,7 +3,6 @@ package org.miaowo.miaowo.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.BindViews;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class Add extends BaseActivity {

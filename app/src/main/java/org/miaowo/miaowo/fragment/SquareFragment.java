@@ -6,7 +6,6 @@ import android.animation.PropertyValuesHolder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.util.SparseArray;
@@ -32,7 +31,6 @@ import org.miaowo.miaowo.util.JsonUtil;
 import org.miaowo.miaowo.util.LogUtil;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SquareFragment extends BaseFragment
@@ -93,7 +91,7 @@ public class SquareFragment extends BaseFragment
         mUrls.put(3, getString(R.string.url_water));
         if (mPageId < 0) mPageId = 0;
 
-        mAdapter = new TitleListAdapter((BaseActivity) getActivity());
+        mAdapter = new TitleListAdapter();
         mList.setAdapter(mAdapter);
         mList.setPullRefresher(() -> {
             mPageIndex = 0;
