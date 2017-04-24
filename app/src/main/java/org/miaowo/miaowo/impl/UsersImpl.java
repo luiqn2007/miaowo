@@ -1,6 +1,8 @@
 package org.miaowo.miaowo.impl;
 
 
+import android.graphics.Bitmap;
+
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.impl.interfaces.Users;
@@ -37,7 +39,7 @@ public class UsersImpl implements Users {
     }
 
     @Override
-    public void updateUserHead(String headString) {
+    public void updateUserHead(Bitmap head) {
         // TODO: 更新用户头像
     }
 }

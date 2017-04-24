@@ -99,13 +99,13 @@ public class ChatButton extends View {
     }
     private void init() {
         mSpUtil = SpUtil.defaultSp();
-        mPosition.set(mSpUtil.getInt("btn_x", 0), mSpUtil.getInt("btn_y", 0));
         mManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        mManager.getDefaultDisplay().getSize(mScreenSize);
+        mPosition.set(mSpUtil.getInt("btn_x", mScreenSize.x / 2), mSpUtil.getInt("btn_y", mScreenSize.y / 2));
         mPaintFill = new Paint();
         mPaintFill.setStyle(Paint.Style.FILL);
         int color = getResources().getColor(R.color.md_deep_purple_400);
         mPaintFill.setColor(Color.argb(100, Color.red(color), Color.green(color), Color.blue(color)));
-        mManager.getDefaultDisplay().getSize(mScreenSize);
         mLogo = getResources().getDrawable(R.drawable.chat);
     }
 

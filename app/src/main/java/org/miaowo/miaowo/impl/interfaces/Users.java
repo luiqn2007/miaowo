@@ -1,6 +1,8 @@
 package org.miaowo.miaowo.impl.interfaces;
 
 
+import android.graphics.Bitmap;
+
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.util.HttpUtil;
 
@@ -30,5 +32,5 @@ public interface Users {
     /**
      * 更新用户头像信息
      */
-    void updateUserHead(String headString);
+    void updateUserHead(Bitmap head);
 }

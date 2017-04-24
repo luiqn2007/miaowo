@@ -2,6 +2,8 @@ package org.miaowo.miaowo.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -150,12 +152,12 @@ public class Setting extends BaseActivity
                 startActivityForResult(intent, IMG_EDIT);
                 break;
             case IMG_EDIT:
-                String photo = data.getStringExtra("photo");
+                Bitmap photo = data.getParcelableExtra("photo");
                 if (photo == null) {
                     toast(getString(R.string.err_no_pic), TastyToast.ERROR);
                     break;
                 }
-                mUsers.updateUserHead(photo);
+                iv_head.setImageDrawable(new BitmapDrawable(getResources(), photo));
                 break;
         }
         loadUser();

@@ -64,7 +64,11 @@ public class StateImpl implements State {
                     http.newCall(login).enqueue(new HttpUtil.MyCallback((call1, response1) -> {
                         String msg = response1.body().string();
                         if (msg.startsWith("[[error")) {
-                            throw new IOException(msg.substring(2, msg.length() - 2));
+                            BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                                Miao.fg_miao.prepareLogin();
+                                BaseActivity.get.processError(new Exception(msg.substring(2, msg.length() - 2)));
+                            });
+                            return;
                         }
                         BaseActivity.get.setProcess(66, "正在获取用户信息...");
                         Request userR = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), user)).build();
@@ -73,7 +77,7 @@ public class StateImpl implements State {
                 } catch (JSONException e) {
                     throw new IOException(BaseActivity.get.getString(R.string.err_token));
                 }
-            }, (call, e) -> BaseActivity.get.processError(e));
+            });
         }
     }
 
@@ -104,7 +108,11 @@ public class StateImpl implements State {
                     http.newCall(login).enqueue(new HttpUtil.MyCallback((call1, response1) -> {
                         String msg = response.body().string();
                         if (msg.startsWith("[[error")) {
-                            throw new IOException(msg.substring(2, msg.length() - 2));
+                            BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                                Miao.fg_miao.prepareLogin();
+                                BaseActivity.get.processError(new Exception(msg.substring(2, msg.length() - 2)));
+                            });
+                            return;
                         }
                         BaseActivity.get.setProcess(66, "正在获取用户信息...");
                         Request userR = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), user)).build();
@@ -113,7 +121,7 @@ public class StateImpl implements State {
                 } catch (JSONException e) {
                     throw new IOException(BaseActivity.get.getString(R.string.err_token));
                 }
-            }, (call, e) -> BaseActivity.get.processError(e));
+            });
         }
     }
 
@@ -142,6 +150,7 @@ public class StateImpl implements State {
     private boolean checkUser(String username, String password, String email) {
         if (TextUtils.isEmpty(email) || !email.contains("@")) {
             BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_email), TastyToast.ERROR);
+            Miao.fg_miao.prepareLogin();
             return false;
         }
         return checkUser(username, password);
@@ -149,10 +158,12 @@ public class StateImpl implements State {
     private boolean checkUser(String username, String password) {
         if (TextUtils.isEmpty(username)) {
             BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_username), TastyToast.ERROR);
+            Miao.fg_miao.prepareLogin();
             return false;
         }
         if (TextUtils.isEmpty(password) || username.equals(password) || password.length() < 6) {
             BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_password), TastyToast.ERROR);
+            Miao.fg_miao.prepareLogin();
             return false;
         }
         return true;

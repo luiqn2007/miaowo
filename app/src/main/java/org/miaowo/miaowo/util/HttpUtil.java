@@ -74,7 +74,13 @@ public class HttpUtil {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                callback.onResponse(call, response);
+                try {
+                    callback.onResponse(call, response);
+                } catch (IOException e) {
+                    if (error != null) {
+                        error.onFailure(call, e);
+                    }
+                }
             }
         });
         return call;
