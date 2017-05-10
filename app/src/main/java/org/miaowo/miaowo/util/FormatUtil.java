@@ -1,5 +1,9 @@
 package org.miaowo.miaowo.util;
 
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
+
 /**
  * 格式化工具类
  * Created by luqin on 17-1-23.
@@ -31,5 +35,17 @@ public class FormatUtil {
         } else {
             return "片刻";
         }
+    }
+
+    public Spanned praseHtml(String html) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        else return Html.fromHtml(html);
+    }
+
+    public String toHtml(Spanned text) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return Html.toHtml(text, Html.FROM_HTML_OPTION_USE_CSS_COLORS);
+        else return Html.toHtml(text);
     }
 }

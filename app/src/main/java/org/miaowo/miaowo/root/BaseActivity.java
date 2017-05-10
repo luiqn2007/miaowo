@@ -18,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.UpdateUtil;
 
 import java.io.BufferedInputStream;
@@ -172,13 +171,13 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void update(Response response) {
         runWithPermission(() -> new Thread(() -> {
-            LogUtil.i("开始下载");
             try {
                 if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-                    BaseActivity.get.toast("储存不正确", TastyToast.ERROR);
+                    BaseActivity.get.toast(R.string.err_sdcard, TastyToast.ERROR);
                     return;
                 }
-                File dir = Environment.getExternalStorageDirectory();
+                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "miaowo");
+                if (!dir.isDirectory()) dir.mkdirs();
                 File app = new File(dir, "miaowo.apk");
                 if (app.exists()) {
                     app.delete();

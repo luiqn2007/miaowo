@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.adapter;
 
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,13 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     private Question mPage;
     private List<Post> mItems;
     private BaseActivity mContext;
+    private FormatUtil mFormat;
 
     public QuestionDetailListAdapter(BaseActivity context, Question page) {
         mPage = page;
         mContext = context;
         mItems = mPage.getPosts();
+        mFormat = FormatUtil.format();
     }
 
     @Override
@@ -60,8 +61,8 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         Post question = (Post) getItem(position);
         ImageUtil.utils().setUser((ImageView) mHolder.getView(R.id.iv_user), question.getUser(), true);
         mHolder.setText(R.id.tv_user, question.getUser().getUsername());
-        mHolder.setText(R.id.tv_time, FormatUtil.format().time(question.getTimestamp()));
-        mHolder.setText(R.id.tv_context, Html.fromHtml(question.getContent()));
+        mHolder.setText(R.id.tv_time, mFormat.time(question.getTimestamp()));
+        mHolder.setText(R.id.tv_context, mFormat.praseHtml(question.getContent()));
         ((TextView) mHolder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
         return convertView;
     }

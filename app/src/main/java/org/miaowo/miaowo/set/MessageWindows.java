@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.set;
 
-import android.text.Html;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -8,11 +7,14 @@ import android.widget.TextView;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.QuestionDetailListAdapter;
 import org.miaowo.miaowo.bean.data.Question;
+import org.miaowo.miaowo.custom.FloatView;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseSet;
+import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.JsonUtil;
-import org.miaowo.miaowo.custom.FloatView;
+
+import okhttp3.Request;
 
 /**
  * 有关消息，回复的弹窗集合
@@ -35,11 +37,11 @@ public class MessageWindows extends BaseSet {
         tv_title.setText(R.string.data_loading);
         tv_count.setText(R.string.data_loading);
 
-        HttpUtil.utils().post(String.format(BaseActivity.get.getString(R.string.url_topic), slug),
-                (call, response) -> {
+        Request request = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_topic), slug)).build();
+        HttpUtil.utils().post(request, (call, response) -> {
                     Question question = JsonUtil.utils().buildFromAPI(response, Question.class);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                        tv_title.setText(Html.fromHtml(question.getTitle()));
+                        tv_title.setText(FormatUtil.format().praseHtml(question.getTitle()));
                         tv_count.setText(question.getPostcount() + " 回复, " + question.getViewcount() + " 浏览");
                         lv_question.setAdapter(new QuestionDetailListAdapter(BaseActivity.get, question));
                     });

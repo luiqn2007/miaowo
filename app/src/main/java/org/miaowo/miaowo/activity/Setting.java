@@ -2,11 +2,10 @@ package org.miaowo.miaowo.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
@@ -17,18 +16,18 @@ import android.widget.ImageView;
 
 import com.sdsmdg.tastytoast.TastyToast;
 import com.squareup.picasso.Picasso;
+import com.yalantis.ucrop.UCrop;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.State;
-import org.miaowo.miaowo.impl.interfaces.Users;
+import org.miaowo.miaowo.custom.CircleTransformation;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.LogUtil;
 
 import java.io.File;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -37,18 +36,18 @@ public class Setting extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
     final private int IMG_CAMERA = 1;
     final private int IMG_ALBUM = 2;
-    final private int IMG_EDIT = 3;
 
-    private Users mUsers;
-    private State mState;
-    private Uri photo;
+    private Uri photo, pDst;
+    private File mDir;
 
     @BindView(R.id.et_user) EditText et_name;
     @BindView(R.id.et_password) EditText et_pwd;
     @BindView(R.id.et_email) EditText et_email;
     @BindView(R.id.iv_user) ImageView iv_head;
     @BindView(R.id.iv_bg) ImageView iv_bg;
-    PopupMenu mChoose;
+    private PopupMenu mChoose;
+    private User mUser;
+    private HashMap<String, String> mUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +57,14 @@ public class Setting extends BaseActivity
 
     @Override
     public void initActivity() {
-        mUsers = new UsersImpl();
-        mState = new StateImpl();
+        mUpdate = new HashMap<>();
 
         mChoose = new PopupMenu(this, iv_head);
         mChoose.inflate(R.menu.img_choose);
         mChoose.setOnMenuItemClickListener(this);
+
+        mDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "miaowo");
+        if (!mDir.isDirectory()) mDir.mkdirs();
 
         loadUser();
     }
@@ -78,21 +79,18 @@ public class Setting extends BaseActivity
     }
 
     private void send() {
-        String name = et_email.getText().toString();
         String pwd = et_pwd.getText().toString();
-        String email = et_name.getText().toString();
-        mUsers.updateUser(name, pwd, email);
-
-        startActivity(new Intent(this, Test.class));
+        mUpdate.put("username", et_email.getText().toString());
+        mUpdate.put("email", et_name.getText().toString());
     }
 
     private void loadUser() {
-        User user = mState.loginUser();
-        et_name.setText(user.getUsername());
-        et_pwd.setText("");
-        et_email.setText(user.getEmail());
-        ImageUtil.utils().setUser(iv_head, user, false);
-        Picasso.with(this).load(String.format(getString(R.string.url_home), user.getCoverUrl())).into(iv_bg);
+        mUser = API.loginUser;
+        et_name.setText(mUser.getUsername());
+        et_pwd.setText(mUser.getPassword());
+        et_email.setText(mUser.getEmail());
+        ImageUtil.utils().setUser(iv_head, mUser, false);
+        Picasso.with(this).load(String.format(getString(R.string.url_home), mUser.getCoverUrl())).into(iv_bg);
     }
 
     @Override
@@ -101,10 +99,16 @@ public class Setting extends BaseActivity
             case R.id.menu_camera:
                 runWithPermission(() -> {
                     try {
-                        int uid = mState.isLogin() ? mState.loginUser().getUid() : 1;
-                        File photoPath = new File(getCacheDir(),
-                                Integer.toString(uid));
-                        if (photoPath.exists()) photoPath.delete();
+                        int uid = mUser.getUid();
+                        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                            toast(R.string.err_sdcard, TastyToast.ERROR);
+                            return;
+                        }
+                        File photoPath = new File(mDir, Integer.toString(uid));
+                        if (photoPath.exists()) {
+                            photoPath.delete();
+                            photoPath.createNewFile();
+                        }
                         photo = FileProvider.getUriForFile(this,
                                 getString(R.string.file_provider), photoPath);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -132,7 +136,6 @@ public class Setting extends BaseActivity
                 }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 break;
             case R.id.menu_text:
-                mUsers.updateUserHead(null);
                 break;
         }
         mChoose.dismiss();
@@ -146,18 +149,29 @@ public class Setting extends BaseActivity
             case IMG_ALBUM:
                 photo = data.getData();
             case IMG_CAMERA:
-                Intent intent = new Intent(this, Photo.class);
-                LogUtil.i(photo);
-                intent.putExtra("photo", photo);
-                startActivityForResult(intent, IMG_EDIT);
-                break;
-            case IMG_EDIT:
-                Bitmap photo = data.getParcelableExtra("photo");
                 if (photo == null) {
                     toast(getString(R.string.err_no_pic), TastyToast.ERROR);
                     break;
                 }
-                iv_head.setImageDrawable(new BitmapDrawable(getResources(), photo));
+                File file = new File(mDir, "finalHead");
+                if (file.exists()) file.delete();
+                if (pDst == null)
+                    pDst = FileProvider.getUriForFile(this, getString(R.string.file_provider), file);
+                UCrop.of(photo, pDst).withAspectRatio(1, 1).start(this);
+                break;
+            case UCrop.REQUEST_CROP:
+                Throwable error = UCrop.getError(data);
+                if (resultCode == UCrop.RESULT_ERROR) {
+                    toast(error.getMessage(), TastyToast.ERROR);
+                    LogUtil.e(error);
+                } else {
+                    pDst = UCrop.getOutput(data);
+                    LogUtil.i(pDst);
+                    runOnUiThread(() -> Picasso.with(this)
+                            .load(UCrop.getOutput(data))
+                            .fit().transform(new CircleTransformation())
+                            .into(iv_head));
+                }
                 break;
         }
         loadUser();

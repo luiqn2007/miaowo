@@ -28,6 +28,6 @@ public abstract class BaseListAdapter<T> extends BaseAdapter {
 
     public void update(List<T> list) {
         mList = list;
-        notifyDataSetChanged();
+        BaseActivity.get.runOnUiThreadIgnoreError(this::notifyDataSetChanged);
     }
 }

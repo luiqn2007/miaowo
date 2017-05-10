@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,31 +18,34 @@ import android.view.ViewGroup;
 
 import com.sdsmdg.tastytoast.TastyToast;
 
+import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Add;
 import org.miaowo.miaowo.adapter.TitleListAdapter;
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.bean.data.Title;
 import org.miaowo.miaowo.bean.data.TitleList;
-import org.miaowo.miaowo.custom.load_more_list.LMLAdapter;
-import org.miaowo.miaowo.custom.load_more_list.LoadMoreList;
+import org.miaowo.miaowo.custom.load_more_list.LMLPageAdapter;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
-import org.miaowo.miaowo.util.HttpUtil;
+import org.miaowo.miaowo.root.BaseListFragment;
 import org.miaowo.miaowo.util.JsonUtil;
-import org.miaowo.miaowo.util.LogUtil;
+
+import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.FormBody;
+import okhttp3.Response;
 
 public class SquareFragment extends BaseFragment
         implements BottomNavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.fab) FloatingActionButton mFab;
-    @BindView(R.id.list) LoadMoreList mList;
     @BindView(R.id.bottomNavigation) BottomNavigationView mNavigation;
-    private LMLAdapter<Title> mAdapter;
-    private int mPageIndex;
-    private int mPageId = -1;
-    private SparseArray<String> mUrls;
+    private SparseArray<TitleListFragment> mFragments;
+    private int mFragmentId = -1;
+    private API mApi;
 
     public SquareFragment() {}
     public static SquareFragment newInstance() {
@@ -58,91 +62,102 @@ public class SquareFragment extends BaseFragment
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        mPageIndex = 0;
-        mPageId = item.getItemId();
+        getChildFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.container, mFragments.get(item.getItemId()))
+                .commit();
         if (!mFab.isEnabled()) {
             ObjectAnimator.ofPropertyValuesHolder(mFab
                     , PropertyValuesHolder.ofFloat("translationY", 500, 0)
                     , PropertyValuesHolder.ofFloat("alpha", 0, 1)).setDuration(300).start();
             mFab.setEnabled(true);
         }
-        loadPage();
         return true;
     }
 
     @Override
     public void initView(View view) {
-        mUrls = new SparseArray<>();
+        mApi = new API();
+        mFragments = new SparseArray<>();
         mNavigation.setOnNavigationItemSelectedListener(this);
-        mNavigation.setBackgroundColor(getResources().getColor(R.color.md_amber_100));
-        mNavigation.setItemIconTintList(getResources().getColorStateList(R.color.selector_icon));
+        mNavigation.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.md_amber_100, null));
+        mNavigation.setItemIconTintList(ResourcesCompat.getColorStateList(getResources(), R.color.selector_icon, null));
         Menu menu = mNavigation.getMenu();
         menu.add(0, 0, 0, getString(R.string.daily));
         menu.add(0, 1, 1, getString(R.string.announcement));
         menu.add(0, 2, 2, getString(R.string.ask));
         menu.add(0, 3, 3, getString(R.string.water));
-        menu.getItem(0).setIcon(getResources().getDrawable(R.drawable.daily));
-        mUrls.put(0, getString(R.string.url_daily));
-        menu.getItem(1).setIcon(getResources().getDrawable(R.drawable.announcement));
-        mUrls.put(1, getString(R.string.url_announce));
-        menu.getItem(2).setIcon(getResources().getDrawable(R.drawable.ask));
-        mUrls.put(2, getString(R.string.url_question));
-        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.water));
-        mUrls.put(3, getString(R.string.url_water));
-        if (mPageId < 0) mPageId = 0;
-
-        mAdapter = new TitleListAdapter();
-        mList.setAdapter(mAdapter);
-        mList.setPullRefresher(() -> {
-            mPageIndex = 0;
-            loadPage();
-        });
-        mList.setPushRefresher(this::loadPage);
-        mList.load();
+        menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.daily, null));
+        mFragments.put(menu.getItem(0).getItemId(), TitleListFragment.newInstance(getString(R.string.url_daily)));
+        menu.getItem(1).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.announcement, null));
+        mFragments.put(menu.getItem(1).getItemId(), TitleListFragment.newInstance(getString(R.string.url_announce)));
+        menu.getItem(2).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ask, null));
+        mFragments.put(menu.getItem(2).getItemId(), TitleListFragment.newInstance(getString(R.string.url_question)));
+        menu.getItem(3).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.water, null));
+        mFragments.put(menu.getItem(3).getItemId(), TitleListFragment.newInstance(getString(R.string.url_water)));
+        if (mFragmentId < 0) mFragmentId = menu.getItem(0).getItemId();
+        mNavigation.setSelectedItemId(mFragmentId);
     }
 
     @OnClick(R.id.fab)
     public void onFabClick() {
         Intent intent = new Intent(getContext(), Add.class);
-        intent.putExtra(Add.TAG, mPageId);
+        intent.putExtra(Add.TAG, mNavigation.getSelectedItemId());
         startActivityForResult(intent, 0);
-    }
-
-    private void loadPage() {
-        mList.loadMoreControl(false, false);
-        String url = mUrls.get(mPageId);
-        if (mPageIndex == 0) mAdapter.clear();
-        HttpUtil.utils().post(url + "?page=" + ++mPageIndex, (call, response) -> {
-                    mList.loadMoreControl(true, true);
-                    TitleList page = JsonUtil.utils().buildFromAPI(response, TitleList.class);
-                    BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                        mList.loadOver();
-                        if (page == null || page.getTitles().size() == 0) {
-                            mPageIndex--;
-                            TastyToast.makeText(getContext(), getString(R.string.err_page_end), TastyToast.LENGTH_SHORT, TastyToast.WARNING).show();
-                        } else {
-                            mAdapter.appendData(page.getTitles(), false);
-                        }
-                    });
-                }
-                , (call, e) -> {
-                    mList.loadMoreControl(true, true);
-                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
-                    BaseActivity.get.runOnUiThreadIgnoreError(() -> mList.loadOver());
-                });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        LogUtil.i(requestCode, resultCode);
         if (data != null && resultCode > 0) {
-            int pageId = data.getIntExtra(Add.TAG, mPageId);
+            int pageId = data.getIntExtra(Add.TAG, mNavigation.getSelectedItemId());
             String title = data.getStringExtra(Add.TITLE);
             String content = data.getStringExtra(Add.CONTENT);
-            LogUtil.i(pageId, title, content);
-        } else {
-            BaseActivity.get.toast("无", TastyToast.ERROR);
+            FormBody body = new FormBody.Builder()
+                    .add("cid", mFragments.get(pageId).getCid())
+                    .add("title", title)
+                    .add("content", content)
+                    .build();
+            mApi.useAPI(API.APIType.TOPICS, "", API.Method.POST, true, body, (call, response) -> {
+                try {
+                    JSONObject object = new JSONObject(response.body().string());
+                    if (!"ok".equals(object.getString("code"))) throw new Exception(object.getString("message"));
+                } catch (Exception e) {
+                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    public static class TitleListFragment extends BaseListFragment<Title> {
+
+        public TitleListFragment() {}
+        public static TitleListFragment newInstance(String url) {
+            Bundle args = new Bundle();
+            TitleListFragment fragment = new TitleListFragment();
+            fragment.mUrl = url;
+            args.putString(URL, url);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public LMLPageAdapter<Title> setAdapter() {
+            return new TitleListAdapter();
+        }
+
+        @Override
+        public List<Title> getItems(Response response) throws IOException {
+            TitleList list = JsonUtil.utils().buildFromAPI(response, TitleList.class);
+            if (list != null) {
+                return list.getTitles();
+            }
+            return null;
+        }
+
+        public String getCid() {
+            return mUrl.split("/")[5];
         }
     }
 }

@@ -30,7 +30,7 @@ public class HttpUtil {
         mCookieJar = new MyCookieJar();
         client = new OkHttpClient.Builder()
                 .cookieJar(mCookieJar)
-                .connectTimeout(20, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
                 .build();
     }
     private static HttpUtil util;
@@ -53,41 +53,28 @@ public class HttpUtil {
         return this;
     }
 
-    public Call post(String url, CallbackRun callback) {
-        return post(url, callback, null);
+    public Call post(Request request, CallbackRun callback) {
+        return post(request, callback, null);
     }
-    public Call post(String url, CallbackRun callback, CallbackErr error) {
-        if (url == null) {
-            return null;
-        }
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-        Call call = newCall(request);
+    public Call post(Request request, CallbackRun callback, CallbackErr error) {
+        LogUtil.i(request.url());
+        Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (error != null) {
-                    error.onFailure(call, e);
-                }
+                if (error != null) error.onFailure(call, e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    callback.onResponse(call, response);
+                    if (callback != null) callback.onResponse(call, response);
                 } catch (IOException e) {
-                    if (error != null) {
-                        error.onFailure(call, e);
-                    }
+                    if (error != null) error.onFailure(call, e);
                 }
             }
         });
         return call;
-    }
-    public Call newCall(Request request) {
-        LogUtil.i("URL: " + request.url());
-        return client.newCall(request);
     }
 
     private static class MyCookieJar implements CookieJar {

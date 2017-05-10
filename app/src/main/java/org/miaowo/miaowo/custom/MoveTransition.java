@@ -9,6 +9,10 @@ import android.support.transition.Transition;
 import android.support.transition.TransitionValues;
 import android.view.ViewGroup;
 
+/**
+ * MiaoFragment 界面动画集合中的移动动画
+ * 为了兼容老版本
+ */
 public class MoveTransition extends Transition {
     @Override
     public void captureEndValues(@NonNull TransitionValues transitionValues) {

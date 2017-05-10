@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,17 +36,19 @@ import java.util.List;
 
 import butterknife.BindView;
 import okhttp3.Call;
+import okhttp3.Request;
 
 public class SearchFragment extends BaseFragment {
 
     @BindView(R.id.list) ListView lv_list;
     @BindView(R.id.et_topic) EditText et_topic;
     @BindView(R.id.ib_search) ImageButton ib_search;
+
     private boolean isUser = false;
 
-    public SearchFragment() {
-        // Required empty public constructor
-    }
+    private FormatUtil mFormat = FormatUtil.format();
+
+    public SearchFragment() {}
 
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
@@ -85,8 +86,8 @@ public class SearchFragment extends BaseFragment {
                     Post question = (Post) getItem(position);
                     ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), question.getUser(), true);
                     holder.setText(R.id.tv_user, question.getUser().getUsername());
-                    holder.setText(R.id.tv_time, FormatUtil.format().time(question.getTimestamp()));
-                    holder.setText(R.id.tv_context, Html.fromHtml(question.getContent()));
+                    holder.setText(R.id.tv_time, mFormat.time(question.getTimestamp()));
+                    holder.setText(R.id.tv_context, mFormat.praseHtml(question.getContent()));
                     ((TextView) holder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
                 }
                 return convertView;
@@ -112,11 +113,8 @@ public class SearchFragment extends BaseFragment {
     }
 
     private void loadSearch() {
-        if (isUser) {
-            loadSearchUser();
-        } else {
-            loadSearchTopic();
-        }
+        if (isUser) loadSearchUser();
+        else loadSearchTopic();
         ib_search.setOnClickListener(v -> search(et_topic.getText().toString()));
     }
 
@@ -134,10 +132,8 @@ public class SearchFragment extends BaseFragment {
     private void loadSearchUser() {
         ib_search.setImageDrawable(new IconicsDrawable(getContext(), FontAwesome.Icon.faw_user).actionBar());
         lv_list.setAdapter(mUserAdapter);
-        lv_list.setOnItemClickListener((parent, view, position, id) -> {
-            User item = (User) mUserAdapter.getItem(position);
-            mUserWindows.showUserWindow(item.getUsername());
-        });
+        lv_list.setOnItemClickListener((parent, view, position, id) ->
+                mUserWindows.showUserWindow(((User) mUserAdapter.getItem(position)).getUsername()));
         mUserAdapter.update(mUsers);
     }
 
@@ -145,7 +141,8 @@ public class SearchFragment extends BaseFragment {
         boolean lastUser = isUser;
         String url = String.format(getString(R.string.url_search),
                 key, getString(isUser ? R.string.url_search_user : R.string.url_search_title));
-        Call call = HttpUtil.utils().post(url, (call1, response) -> {
+        Request request = new Request.Builder().url(url).build();
+        Call call = HttpUtil.utils().post(request, (call1, response) -> {
             if (lastUser) {
                 UserSearch user = JsonUtil.utils().buildFromAPI(response, UserSearch.class);
                 mUsers = user.getUsers();

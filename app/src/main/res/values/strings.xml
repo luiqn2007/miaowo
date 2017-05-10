@@ -3,6 +3,7 @@
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
     <string name="url_home">https://www.miaowo.org%1$s</string>
+    <string name="url_api">https://www.miaowo.org/api/v1/%1$s/%2$s</string>
     <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
     <string name="url_topic">https://www.miaowo.org/api/topic/%1$s</string>
     <string name="url_search">https://www.miaowo.org/api/search?term=%1$s%2$s</string>
@@ -15,8 +16,8 @@
     <string name="url_question" formatted="false">https://www.miaowo.org/api/category/5/%E6%8F%90%E9%97%AE</string>
     <string name="url_water" formatted="false">https://www.miaowo.org/api/category/6/%E7%81%8C%E6%B0%B4</string>
     <string name="url_unread" formatted="false">https://www.miaowo.org/api/unread</string>
+    <string name="url_users" formatted="false">https://www.miaowo.org/api/users</string>
     <string name="url_tags">https://www.miaowo.org/api/tags/%1$s</string>
-    <string name="url_users">https://www.miaowo.org/api/users?page=%1$d</string>
     <string name="url_chat_message">https://www.miaowo.org/api/user/%1$s/chats/%2$d</string>
     <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>
     <string name="url_update">http://git.oschina.net/lq2007/miaowo/raw/master/app/version</string>
@@ -28,7 +29,6 @@
     <string name="search">搜索</string>
     <string name="ask">提问</string>
     <string name="setting">设置</string>
-    <string name="question">提问</string>
     <string name="daily">每日</string>
     <string name="announcement">公告</string>
     <string name="water">灌水</string>
@@ -41,6 +41,8 @@
     <string name="focus">关注</string>
     <string name="post">帖子</string>
     <string name="hint_reply">回复正文</string>
+    <string name="reply">回复</string>
+    <string name="more99">99+</string>
 
     <string name="user_pwd">密码:</string>
     <string name="user_email">"邮箱: "</string>
@@ -65,6 +67,7 @@
     <string name="err_token">无法获取 Token</string>
     <string name="err_load">加载失败</string>
     <string name="err_msg_empty">消息不能为空</string>
+    <string name="err_sdcard">找不到储存空间</string>
 
     <string name="data_loading">加载中…</string>
     <string name="data_loading_detail">正在加载: %1$s</string>

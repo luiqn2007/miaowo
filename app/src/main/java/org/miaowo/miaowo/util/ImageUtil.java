@@ -103,8 +103,6 @@ public class ImageUtil {
         return Color.rgb(r, g, b);
     }
 
-
-
     private static class TextIconConfig {
         int bgColor;
         int textColor;

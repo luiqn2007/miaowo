@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">miao</string>
+
+    <string name="square">Square</string>
+    <string name="unread">Unread</string>
+    <string name="topic">Topic</string>
+    <string name="user">User</string>
+    <string name="search">Search</string>
+    <string name="ask">Question</string>
+    <string name="setting">Settings</string>
+    <string name="daily">Daily</string>
+    <string name="announcement">Announcement</string>
+    <string name="water">Water</string>
+    <string name="hint_title">Topic</string>
+    <string name="send">Send</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="scan">View</string>
+    <string name="like">Fans</string>
+    <string name="focus">Focus</string>
+    <string name="post">Topic</string>
+    <string name="hint_reply">Reply</string>
+
+    <string name="user_pwd">Password: </string>
+    <string name="user_email">Email: </string>
+    <string name="user_name">Username: </string>
+    <string name="logout">Logout</string>
+    <string name="login">Login/Register</string>
+    <string name="rlogin">Login</string>
+    <string name="rregister">Register</string>
+
+    <string name="from_album">From album</string>
+    <string name="from_camera">From camera</string>
+    <string name="from_text">Using text</string>
+
+    <string name="err_page_end">End</string>
+    <string name="err_permissions">Permission denied</string>
+    <string name="err_no_pic">No picture</string>
+    <string name="err_camera_app">Cannot open camera</string>
+    <string name="err_username">Invalid username</string>
+    <string name="err_password">Invalid password</string>
+    <string name="err_email">Invalid email</string>
+    <string name="err_not_login">Please login</string>
+    <string name="err_token">Cannot get Token</string>
+    <string name="err_load">Load failed</string>
+    <string name="err_msg_empty">The message cannot be empty</string>
+    <string name="err_sdcard">Memory card not found</string>
+
+    <string name="data_loading">Loading…</string>
+    <string name="data_loading_detail">Loading: %1$s</string>
+</resources>

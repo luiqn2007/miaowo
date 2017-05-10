@@ -2,6 +2,7 @@ package org.miaowo.miaowo.root;
 
 import android.app.Application;
 
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.util.LogUtil;
 
 /**
@@ -21,5 +22,11 @@ public class BaseApp extends Application {
                 + "幸好在 GC 前，小久等风纪组重新组织，系统菌重新创建网页版好奇喵，名为 喵窝\n"
                 + "\n向凯神团队，好奇喵风纪组等每一位为维护好奇喵健康发展的喵们致敬\n"
                 + "\n全体起立，敬礼\n");
+    }
+
+    @Override
+    public void onTerminate() {
+        new Thread(API::removeLogin).run();
+        super.onTerminate();
     }
 }

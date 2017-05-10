@@ -40,7 +40,7 @@ public class Title implements Parcelable {
 
     private int tid;
     private int uid;
-    private String cid;
+    private int cid;
     private String mainPid;
     private String title;
     private String slug;
@@ -71,7 +71,7 @@ public class Title implements Parcelable {
     protected Title(Parcel in) {
         tid = in.readInt();
         uid = in.readInt();
-        cid = in.readString();
+        cid = in.readInt();
         mainPid = in.readString();
         title = in.readString();
         slug = in.readString();
@@ -125,11 +125,11 @@ public class Title implements Parcelable {
         this.uid = uid;
     }
 
-    public String getCid() {
+    public int getCid() {
         return cid;
     }
 
-    public void setCid(String cid) {
+    public void setCid(int cid) {
         this.cid = cid;
     }
 
@@ -350,7 +350,7 @@ public class Title implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(tid);
         dest.writeInt(uid);
-        dest.writeString(cid);
+        dest.writeInt(cid);
         dest.writeString(mainPid);
         dest.writeString(title);
         dest.writeString(slug);

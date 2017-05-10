@@ -12,23 +12,24 @@ import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.adapter.ChatMsgAdapter;
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.bean.data.ChatMessage;
 import org.miaowo.miaowo.bean.data.ChatMessageList;
 import org.miaowo.miaowo.bean.data.ChatRoom;
+import org.miaowo.miaowo.custom.ChatListAnimator;
 import org.miaowo.miaowo.custom.load_more_list.LoadMoreList;
-import org.miaowo.miaowo.impl.ChatImpl;
-import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.JsonUtil;
+import org.miaowo.miaowo.util.LogUtil;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.FormBody;
+import okhttp3.Request;
 
 /**
  * 聊天内容
@@ -36,23 +37,19 @@ import butterknife.OnClick;
  */
 
 public class ChatFragment extends BaseFragment {
-
-    @BindView(R.id.list)
-    LoadMoreList lv_chat;
-    @BindView(R.id.et_msg)
-    EditText et_msg;
+    @BindView(R.id.list) LoadMoreList lv_chat;
+    @BindView(R.id.et_msg) EditText et_msg;
 
     private ChatMsgAdapter mAdapter;
-    public ChatRoom mRoom;
+    private ChatRoom mRoom;
+    private API mApi;
 
     public ChatFragment() {}
-
     public static ChatFragment newInstance(ChatRoom room) {
         ChatFragment fragment = new ChatFragment();
         fragment.mRoom = room;
         return fragment;
     }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container
@@ -63,17 +60,19 @@ public class ChatFragment extends BaseFragment {
     public void initView(View view) {
         HttpUtil mHttp = HttpUtil.utils();
         JsonUtil mJson = JsonUtil.utils();
-        State mState = new StateImpl();
+        mApi = new API();
 
         mAdapter = new ChatMsgAdapter();
         lv_chat.setAdapter(mAdapter);
         lv_chat.loadMoreControl(false, false);
+        lv_chat.setItemAnimator(new ChatListAnimator());
 
-        mHttp.post(String.format(BaseActivity.get.getString(R.string.url_chat_message),
-                mState.loginUser().getUsername().toLowerCase(), mRoom.getRoomId()), (call, response) ->
+        Request request = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_chat_message),
+                API.loginUser.getUsername().toLowerCase(), mRoom.getRoomId())).build();
+        mHttp.post(request, (call, response) ->
                 BaseActivity.get.runOnUiThreadIgnoreError(() -> {
                     try {
-                        mAdapter.updateDate(mJson.buildFromAPI(response, ChatMessageList.class).getMessages());
+                        mAdapter.update(mJson.buildFromAPI(response, ChatMessageList.class).getMessages());
                         lv_chat.scrollToPosition(mAdapter.getItemCount() - 1);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -88,12 +87,20 @@ public class ChatFragment extends BaseFragment {
             BaseActivity.get.toast(R.string.err_msg_empty, TastyToast.ERROR);
             return;
         }
-        new ChatImpl().send(mRoom, et_msg.getText().toString());
+        FormBody body = new FormBody.Builder()
+                .add("message", message)
+                .add("timestamp", String.valueOf(System.currentTimeMillis()))
+                .add("roomId", String.valueOf(mRoom.getRoomId()))
+                .build();
+        mApi.useAPI(API.APIType.USERS, mRoom.getLastUser().getUid() + "/chats", API.Method.POST, true, body, (call, response) -> {
+            // TODO: API-发送聊天信息
+            LogUtil.i(response);
+        });
         et_msg.setText("");
     }
 
     public void newMessage(ChatMessage message) {
-        mAdapter.appendData(Collections.singletonList(message), false);
+        mAdapter.insert(message, false);
         lv_chat.scrollToPosition(mAdapter.getItemCount() - 1);
     }
 

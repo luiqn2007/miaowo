@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.ChatRoom;
-import org.miaowo.miaowo.custom.load_more_list.LMLAdapter;
+import org.miaowo.miaowo.custom.load_more_list.LMLPageAdapter;
 import org.miaowo.miaowo.fragment.chat.ChatListFragment;
 import org.miaowo.miaowo.root.BaseViewHolder;
 import org.miaowo.miaowo.util.ImageUtil;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by luqin on 17-4-7.
  */
 
-public class ChatRoomListAdapter extends LMLAdapter<ChatRoom> {
+public class ChatRoomListAdapter extends LMLPageAdapter<ChatRoom> {
 
     public ChatRoomListAdapter(Context context, ChatListFragment.OnChatListener listener) {
         super(new ArrayList<>(), new ViewLoaderCreator<ChatRoom>() {

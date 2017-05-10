@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.custom.ChatButton;
 import org.miaowo.miaowo.fragment.MiaoFragment;
 import org.miaowo.miaowo.fragment.SearchFragment;
@@ -12,8 +13,6 @@ import org.miaowo.miaowo.fragment.SquareFragment;
 import org.miaowo.miaowo.fragment.TopicFragment;
 import org.miaowo.miaowo.fragment.UnreadFragment;
 import org.miaowo.miaowo.fragment.UserFragment;
-import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.util.SpUtil;
@@ -26,8 +25,8 @@ public class Miao extends BaseActivity
     public static MiaoFragment fg_miao;
 
     // 组件
-    private State mState;
     private SpUtil mDefaultSp;
+    private API mApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +35,7 @@ public class Miao extends BaseActivity
     }
     @Override
     public void initActivity() {
-        mState = new StateImpl();
+        mApi = new API();
         mDefaultSp = SpUtil.defaultSp();
         // 绑定Fragment
         fg_square = SquareFragment.newInstance();
@@ -81,7 +80,7 @@ public class Miao extends BaseActivity
                 startActivity(new Intent(this, Setting.class));
                 break;
             case 6:
-                mState.logout();
+                mApi.logout();
                 fg_miao.prepareLogin();
                 fg_miao.getProcessController().stopProcess();
                 ChatButton.hide();
@@ -93,8 +92,8 @@ public class Miao extends BaseActivity
     public void onBackPressed() {
         if (!fg_miao.isVisible()) {
             loadFragment(R.id.container, fg_miao);
-        } else if (mState.isLogin()) {
-            mState.logout();
+        } else if (API.loginUser != null) {
+            mApi.logout();
         } else {
             super.onBackPressed();
         }

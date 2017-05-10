@@ -3,7 +3,9 @@ package org.miaowo.miaowo.root;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -22,6 +24,7 @@ public abstract class BaseFragment extends Fragment {
         initView(view);
         super.onViewCreated(view, savedInstanceState);
     }
+
 
     /**
      * 在此处初始化页面

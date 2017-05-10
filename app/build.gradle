@@ -4,10 +4,12 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:8.5.1'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 25
@@ -26,7 +28,12 @@ android {
         }
     }
     buildTypes {
+        debug {
+            versionNameSuffix ".dev"
+        }
+
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -62,6 +69,7 @@ dependencies {
     compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     compile 'com.cleveroad:fan-layout-manager:1.0.4'
     compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.github.yalantis:ucrop:2.2.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
@@ -69,5 +77,6 @@ dependencies {
 allprojects {
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }

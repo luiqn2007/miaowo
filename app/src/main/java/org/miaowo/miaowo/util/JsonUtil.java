@@ -72,9 +72,10 @@ public class JsonUtil {
         }
     }
     public<T> T buildFromAPI(Response response, Class<T> typeClass) throws IOException {
-        return gson.fromJson(response.body().string(), typeClass);
+        String json = response.body().string();
+        return gson.fromJson(json, typeClass);
     }
-    public String getToken(Response response) throws IOException, JSONException {
+    public String getCsrf(Response response) throws IOException, JSONException {
         String token = "";
         ArrayList<String> jsons = getJsons(response);
         for (String json : jsons) {
@@ -85,5 +86,11 @@ public class JsonUtil {
             }
         }
         return token;
+    }
+    public String getToken(Response response) throws IOException, JSONException {
+        String json = response.body().string();
+        JSONObject object = new JSONObject(json);
+        if (!"ok".equals(object.getString("code").toLowerCase())) return null;
+        return object.getJSONObject("payload").getString("token");
     }
 }

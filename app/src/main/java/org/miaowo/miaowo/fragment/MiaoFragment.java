@@ -8,6 +8,7 @@ import android.support.transition.ChangeBounds;
 import android.support.transition.Fade;
 import android.support.transition.TransitionManager;
 import android.support.transition.TransitionSet;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -31,10 +32,9 @@ import com.mikepenz.iconics.typeface.IIcon;
 
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Miao;
+import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.custom.ChatButton;
 import org.miaowo.miaowo.custom.MoveTransition;
-import org.miaowo.miaowo.impl.StateImpl;
-import org.miaowo.miaowo.impl.interfaces.State;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.root.BaseViewHolder;
 import org.miaowo.miaowo.util.SpUtil;
@@ -124,8 +124,8 @@ public class MiaoFragment extends BaseFragment {
         void onChooserClick(int position);
     }
     /* ================================================================================ */
-    private State mState;
     private SpUtil mSpUtil;
+    private API mApi;
 
     // 进度条
     @BindView(R.id.pb_process) ProgressBar pb_process;
@@ -145,11 +145,32 @@ public class MiaoFragment extends BaseFragment {
     @BindView(R.id.rv_page) RecyclerView rv_page;
 
     private TransitionSet mTransitionTogether;
+    private int[] mColors;
 
     @Override
     public void initView(View view) {
+        mColors = new int[]{
+                ResourcesCompat.getColor(getResources(), R.color.md_amber_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_blue_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_brown_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_cyan_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_green_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_grey_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_indigo_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_lime_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_orange_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_pink_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_purple_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_red_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_teal_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_yellow_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_blue_grey_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_deep_orange_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_deep_purple_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_light_blue_300, null),
+                ResourcesCompat.getColor(getResources(), R.color.md_light_green_300, null)};
         mSpUtil = SpUtil.defaultSp();
-        mState = new StateImpl();
+        mApi = new API();
         mTransitionTogether = new TransitionSet();
         mTransitionTogether.setOrdering(TransitionSet.ORDERING_TOGETHER);
         mTransitionTogether.setDuration(300);
@@ -169,7 +190,7 @@ public class MiaoFragment extends BaseFragment {
                 if (s.length() == 0) {
                     btn_login.setText(R.string.rlogin);
                     btn_login.setOnClickListener(v1 -> {
-                        mState.login(
+                        mApi.login(
                                 tv_user.getText().toString(),
                                 tv_pwd.getText().toString());
                         mSpUtil.putString(sp_user, et_user.getText().toString());
@@ -179,7 +200,7 @@ public class MiaoFragment extends BaseFragment {
                 } else {
                     btn_login.setText(R.string.rregister);
                     btn_login.setOnClickListener(v1 -> {
-                        mState.register(
+                        mApi.register(
                                 tv_user.getText().toString(),
                                 tv_pwd.getText().toString(),
                                 s.toString());
@@ -196,7 +217,7 @@ public class MiaoFragment extends BaseFragment {
             }
         });
 
-        if (mState.isLogin()) {
+        if (API.loginUser != null) {
             rv_page.setVisibility(View.VISIBLE);
             et_email.setEnabled(false);
             et_user.setEnabled(false);
@@ -211,12 +232,20 @@ public class MiaoFragment extends BaseFragment {
     private void initPageChooser() {
         if (getActivity() instanceof Miao) {
             List<String> names = Arrays.asList(
-                    getString(R.string.square), getString(R.string.unread), getString(R.string.topic), getString(R.string.user), getString(R.string.search), getString(R.string.setting), getString(R.string.logout));
+                    getString(R.string.square), getString(R.string.unread), getString(R.string.topic), getString(R.string.user), getString(R.string.search),
+//                    getString(R.string.setting),
+                    getString(R.string.logout));
             List<Drawable> icons = Arrays.asList(
                     getIcon(FontAwesome.Icon.faw_calendar_check_o), getIcon(FontAwesome.Icon.faw_inbox),
                     getIcon(FontAwesome.Icon.faw_tags), getIcon(FontAwesome.Icon.faw_github_alt),
-                    getIcon(FontAwesome.Icon.faw_search), getIcon(FontAwesome.Icon.faw_wrench),
+                    getIcon(FontAwesome.Icon.faw_search),
+//                    getIcon(FontAwesome.Icon.faw_wrench),
                     getIcon(FontAwesome.Icon.faw_sign_out));
+            int[] colors = new int[names.size()];
+            Random random = new Random(System.currentTimeMillis());
+            for (int i = 0; i < names.size(); i++) {
+                colors[i] = mColors[random.nextInt(mColors.length)];
+            }
             FanLayoutManager layout = new FanLayoutManager(getContext(),
                     FanLayoutManagerSettings.newBuilder(getContext())
                     .withFanRadius(true)
@@ -226,31 +255,9 @@ public class MiaoFragment extends BaseFragment {
                     .build());
             rv_page.setLayoutManager(layout);
             rv_page.setAdapter(new RecyclerView.Adapter<BaseViewHolder>() {
-                private int[] mColors = new int[]{
-                        getResources().getColor(R.color.md_amber_300),
-                        getResources().getColor(R.color.md_blue_300),
-                        getResources().getColor(R.color.md_brown_300),
-                        getResources().getColor(R.color.md_cyan_300),
-                        getResources().getColor(R.color.md_green_300),
-                        getResources().getColor(R.color.md_grey_300),
-                        getResources().getColor(R.color.md_indigo_300),
-                        getResources().getColor(R.color.md_lime_300),
-                        getResources().getColor(R.color.md_orange_300),
-                        getResources().getColor(R.color.md_pink_300),
-                        getResources().getColor(R.color.md_purple_300),
-                        getResources().getColor(R.color.md_red_300),
-                        getResources().getColor(R.color.md_teal_300),
-                        getResources().getColor(R.color.md_yellow_300),
-                        getResources().getColor(R.color.md_blue_grey_300),
-                        getResources().getColor(R.color.md_deep_orange_300),
-                        getResources().getColor(R.color.md_deep_purple_300),
-                        getResources().getColor(R.color.md_light_blue_300),
-                        getResources().getColor(R.color.md_light_green_300)};
-                private int mRndIndex;
 
                 @Override
                 public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    mRndIndex = new Random(System.currentTimeMillis()).nextInt(mColors.length);
                     return new BaseViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.list_page, parent, false));
                 }
 
@@ -258,7 +265,7 @@ public class MiaoFragment extends BaseFragment {
                 public void onBindViewHolder(BaseViewHolder holder, int position) {
                     holder.setText(R.id.tv_page, names.get(position));
                     holder.setDrawable(R.id.iv_page, icons.get(position));
-                    holder.getView().setBackgroundColor(mColors[(mRndIndex * position) % mColors.length]);
+                    holder.getView().setBackgroundColor(colors[position]);
 
                     holder.getView().setOnClickListener(v -> {
                         if (layout.getSelectedItemPosition() == position) {
@@ -342,7 +349,7 @@ public class MiaoFragment extends BaseFragment {
             btn_login.setText(R.string.rlogin);
             btn_login.setOnClickListener(v2 -> {
                 btn_login.setEnabled(false);
-                mState.login(
+                mApi.login(
                         et_user.getText().toString(),
                         et_pwd.getText().toString());
                 mSpUtil.putBoolean(sp_save, cb_save.isChecked());

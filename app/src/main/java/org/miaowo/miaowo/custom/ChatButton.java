@@ -9,6 +9,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -37,11 +38,11 @@ public class ChatButton extends View {
     private PointF mStartTouch = new PointF();
     private PointF mEndTouch = new PointF();
     private PointF mChange = new PointF();
-    private PointF mSize = new PointF(194, 194);
     private Paint mPaintFill;
     private WindowManager mManager;
     private SpUtil mSpUtil;
     private Drawable mLogo;
+    private float mSize;
     private boolean mMoved = false;
     private Timer mMoveBack;
 
@@ -101,12 +102,13 @@ public class ChatButton extends View {
         mSpUtil = SpUtil.defaultSp();
         mManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         mManager.getDefaultDisplay().getSize(mScreenSize);
+        mSize = Math.max(mScreenSize.x, mScreenSize.y) / 32 * 3;
         mPosition.set(mSpUtil.getInt("btn_x", mScreenSize.x / 2), mSpUtil.getInt("btn_y", mScreenSize.y / 2));
         mPaintFill = new Paint();
         mPaintFill.setStyle(Paint.Style.FILL);
-        int color = getResources().getColor(R.color.md_deep_purple_400);
+        int color = ResourcesCompat.getColor(getResources(), R.color.md_deep_purple_400, null);
         mPaintFill.setColor(Color.argb(100, Color.red(color), Color.green(color), Color.blue(color)));
-        mLogo = getResources().getDrawable(R.drawable.chat);
+        mLogo = ResourcesCompat.getDrawable(getResources(), R.drawable.chat, null);
     }
 
     private void move(int dx, int dy) {
@@ -121,7 +123,7 @@ public class ChatButton extends View {
         int xTo, yTo;
         if (!moved) {
             int finalY = y;
-            if (x < 0 || x > mScreenSize.x - mSize.x) {
+            if (x < 0 || x > mScreenSize.x - mSize) {
                 if (x < 0) {
                     xTo = 0;
                     if (mMoveBack != null) {
@@ -136,7 +138,7 @@ public class ChatButton extends View {
                         }
                     }, 600);
                 } else {
-                    xTo = (int) (mScreenSize.x - mSize.x);
+                    xTo = (int) (mScreenSize.x - mSize);
                     if (mMoveBack != null) {
                         mMoveBack.cancel();
                     }
@@ -145,7 +147,7 @@ public class ChatButton extends View {
                         @Override
                         public void run() {
                             BaseActivity.get.runOnUiThreadIgnoreError(() ->
-                                    clickAction((int) (mScreenSize.x - mSize.x + 1), finalY, true));
+                                    clickAction((int) (mScreenSize.x - mSize + 1), finalY, true));
                             mMoveBack = null;
                         }
                     }, 600);
@@ -155,11 +157,11 @@ public class ChatButton extends View {
                 return;
             }
         } else {
-            xTo = x < 0 ? (int) (-mSize.x * 2 / 3) :
-                    (int) (x > mScreenSize.x - mSize.x ? mScreenSize.x - mSize.x / 3 : x);
+            xTo = x < 0 ? (int) (-mSize * 2 / 3) :
+                    (int) (x > mScreenSize.x - mSize ? mScreenSize.x - mSize / 3 : x);
         }
         yTo = y < 0 ? 1 :
-                (int) (y > mScreenSize.y - mSize.y ? mScreenSize.y - mSize.y : y);
+                (int) (y > mScreenSize.y - mSize ? mScreenSize.y - mSize : y);
         int dx = x > xTo ? -1 : x < xTo ? 1 : 0;
         int dy = y > yTo ? -1 : y < yTo ? 1 : 0;
         while (x != xTo || y != yTo) {
@@ -178,19 +180,19 @@ public class ChatButton extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mSize.set(getMeasuredWidth(), getMeasuredHeight());
-        canvas.drawCircle(mSize.x / 2, mSize.y / 2, Math.min(mSize.x, mSize.y) / 2, mPaintFill);
-        mLogo.setBounds((int) (mSize.x / 4), (int) (mSize.y / 4)
-                , (int) (mSize.x * 3 / 4), (int) (mSize.y * 3 / 4));
+        mSize = getMeasuredWidth();
+        canvas.drawCircle(mSize / 2, mSize / 2, Math.min(mSize, mSize) / 2, mPaintFill);
+        mLogo.setBounds((int) (mSize / 4), (int) (mSize / 4)
+                , (int) (mSize * 3 / 4), (int) (mSize * 3 / 4));
         mLogo.draw(canvas);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
-                        ? MeasureSpec.getSize(widthMeasureSpec) : (int) mSize.x,
+                        ? MeasureSpec.getSize(widthMeasureSpec) : (int) mSize,
                 MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY
-                        ? MeasureSpec.getSize(heightMeasureSpec) : (int) mSize.y);
+                        ? MeasureSpec.getSize(heightMeasureSpec) : (int) mSize);
     }
 
     @Override

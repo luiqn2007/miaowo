@@ -5,16 +5,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sdsmdg.tastytoast.TastyToast;
+
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.api.API;
+import org.miaowo.miaowo.bean.data.ServerMessage;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.impl.UsersImpl;
-import org.miaowo.miaowo.impl.interfaces.Users;
+import org.miaowo.miaowo.custom.FloatView;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.JsonUtil;
-import org.miaowo.miaowo.custom.FloatView;
+
+import okhttp3.FormBody;
+import okhttp3.Request;
 
 /**
  * 与用户有关的弹窗
@@ -22,10 +27,13 @@ import org.miaowo.miaowo.custom.FloatView;
  */
 
 public class UserWindows {
-    private Users mUsers;
+
+    private API mApi;
+    private JsonUtil mJson;
 
     private UserWindows() {
-        mUsers = new UsersImpl();
+        mApi = new API();
+        mJson = JsonUtil.utils();
     }
     public static UserWindows windows() { return new UserWindows(); }
 
@@ -42,8 +50,8 @@ public class UserWindows {
         fillCount(v, R.id.tv_like, 0);
         fillCount(v, R.id.tv_focus, 0);
 
-        HttpUtil.utils().post(String.format(BaseActivity.get.getString(R.string.url_user), username),
-                (call, response) -> {
+        Request request = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), username)).build();
+        HttpUtil.utils().post(request, (call, response) -> {
                     User user = JsonUtil.utils().buildFromAPI(response, User.class);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
                         ImageUtil.utils().setUser((ImageView) v.findViewById(R.id.iv_user), user, false);
@@ -54,7 +62,17 @@ public class UserWindows {
                         fillCount(v, R.id.tv_scan, user.getProfileviews());
                         fillCount(v, R.id.tv_like, user.getFollowerCount());
                         fillCount(v, R.id.tv_focus, user.getFollowingCount());
-                        v.findViewById(R.id.btn_focus).setOnClickListener(v1 -> mUsers.focusUser(user));
+                        v.findViewById(R.id.btn_focus).setOnClickListener(v1 -> {
+                            FormBody body = new FormBody.Builder().build();
+                            mApi.useAPI(API.APIType.USERS, user.getUid() + "/follow", API.Method.POST, true, body, (call1, response1) -> {
+                                ServerMessage message = mJson.buildFromAPI(response1, ServerMessage.class);
+                                BaseActivity activity = BaseActivity.get;
+                                if (message == null) activity.toast("未知错误", TastyToast.ERROR);
+                                else if ("ok".equals(message.getCode())) activity.toast("关注成功", TastyToast.SUCCESS);
+                                else if ("already-following".equals(message.getMessage())) activity.toast("请勿重复关注", TastyToast.WARNING);
+                                else if ("you-cant-follow-yourself".equals(message.getMessage())) activity.toast("无法关注自身", TastyToast.ERROR);
+                            });
+                        });
                     });
                 }
                 , (call, e) -> {
@@ -72,15 +90,15 @@ public class UserWindows {
         int n = tv.getText().length();
         if (n == 3) {
             if (count <= 99) {
-                tv.setText(count + "");
+                tv.setText(String.valueOf(count));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() * 3 / 2);
             }
         } else {
             if (count > 99) {
-                tv.setText("99+");
+                tv.setText(R.string.more99);
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() / 3 * 2);
             } else {
-                tv.setText(count + "");
+                tv.setText(String.valueOf(count));
             }
         }
     }

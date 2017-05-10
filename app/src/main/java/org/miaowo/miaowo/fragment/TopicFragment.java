@@ -2,7 +2,6 @@ package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import okhttp3.Request;
 
 public class TopicFragment extends BaseFragment {
 
@@ -42,6 +42,7 @@ public class TopicFragment extends BaseFragment {
     @BindView(R.id.et_topic) TextView tv_topic;
     @BindView(R.id.ib_search) ImageButton ib_load;
     private PopupMenu mMenu;
+    private FormatUtil format = FormatUtil.format();
 
     public TopicFragment() {}
     public static TopicFragment newInstance() {
@@ -80,8 +81,8 @@ public class TopicFragment extends BaseFragment {
                 holder.setClickListener(R.id.rl_item, (v) -> messageWindows.showQuestion(item.getSlug()));
                 ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, true);
                 holder.setText(R.id.tv_user, u.getUsername());
-                holder.setText(R.id.tv_time, FormatUtil.format().time(item.getLastposttime()));
-                holder.setText(R.id.tv_page, Html.fromHtml(item.getTitle()));
+                holder.setText(R.id.tv_time, format.time(item.getLastposttime()));
+                holder.setText(R.id.tv_page, format.praseHtml(item.getTitle()));
                 return convertView;
             }
         };
@@ -99,8 +100,8 @@ public class TopicFragment extends BaseFragment {
 
     private boolean loadTags() {
         initMenu();
-        HttpUtil.utils().post(String.format(getContext().getString(R.string.url_tags), ""),
-                (call, response) -> {
+        Request request = new Request.Builder().url(String.format(getContext().getString(R.string.url_tags), "")).build();
+        HttpUtil.utils().post(request, (call, response) -> {
                     TopicList topicList = JsonUtil.utils().buildFromAPI(response, TopicList.class);
                     mTopics = topicList.getTags();
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
@@ -127,13 +128,11 @@ public class TopicFragment extends BaseFragment {
         if (item.getSubMenu() != null) return loadTags();
         String title = item.getTitle().toString();
         tv_topic.setText(String.format(getString(R.string.data_loading_detail), title));
-        HttpUtil.utils().post(String.format(getString(R.string.url_tags), title),
-                (call, response) -> {
+        Request request = new Request.Builder().url(String.format(getString(R.string.url_tags), title)).build();
+        HttpUtil.utils().post(request, (call, response) -> {
                     TitleList topicPage = JsonUtil.utils().buildFromAPI(response, TitleList.class);
-                    BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                        tv_topic.setText(title);
-                        mAdapter.update(topicPage.getTitles());
-                    });
+                    BaseActivity.get.runOnUiThreadIgnoreError(() -> tv_topic.setText(title));
+                    mAdapter.update(topicPage.getTitles());
                 },
                 (call, e) -> {
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> tv_topic.setText("加载失败"));

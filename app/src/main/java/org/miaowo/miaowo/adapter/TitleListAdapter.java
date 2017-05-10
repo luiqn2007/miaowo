@@ -1,15 +1,16 @@
 package org.miaowo.miaowo.adapter;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.activity.Detail;
 import org.miaowo.miaowo.bean.data.Title;
 import org.miaowo.miaowo.bean.data.User;
-import org.miaowo.miaowo.custom.load_more_list.LMLAdapter;
+import org.miaowo.miaowo.custom.load_more_list.LMLPageAdapter;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseViewHolder;
 import org.miaowo.miaowo.util.FormatUtil;
@@ -24,10 +25,11 @@ import java.util.ArrayList;
  */
 
 public class TitleListAdapter
-        extends LMLAdapter<Title> {
+        extends LMLPageAdapter<Title> {
 
     public TitleListAdapter() {
         super(new ArrayList<>(), new ViewLoaderCreator<Title>() {
+            FormatUtil format = FormatUtil.format();
 
             @Override
             public RecyclerView.ViewHolder createHolder(ViewGroup parent, int viewType) {
@@ -43,8 +45,13 @@ public class TitleListAdapter
                 vh.setClickListener(R.id.rl_item, (v) -> LogUtil.i("click"));
                 ImageUtil.utils().setUser((ImageView) vh.getView(R.id.iv_user), u, true);
                 vh.setText(R.id.tv_user, u.getUsername());
-                vh.setText(R.id.tv_time, FormatUtil.format().time(item.getLastposttime()));
-                vh.setText(R.id.tv_page, Html.fromHtml(item.getTitle()));
+                vh.setText(R.id.tv_time, format.time(item.getLastposttime()));
+                vh.setText(R.id.tv_page, format.praseHtml(item.getTitle()));
+                vh.itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(BaseActivity.get, Detail.class);
+                    intent.putExtra(Detail.TITLE, item);
+                    BaseActivity.get.startActivity(intent);
+                });
             }
 
             @Override
