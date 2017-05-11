@@ -47,7 +47,7 @@ public class ChatMsgAdapter extends LMLPageAdapter<ChatMessage> {
                         (RelativeLayout.LayoutParams) h.getView(R.id.tv_msg).getLayoutParams();
                 layoutParams.addRule(my ? RelativeLayout.ALIGN_PARENT_RIGHT : RelativeLayout.ALIGN_PARENT_LEFT);
                 h.getView(R.id.tv_msg).setLayoutParams(layoutParams);
-                h.setText(R.id.tv_msg, format.praseHtml(item.getContent()));
+                h.setText(R.id.tv_msg, format.parseHtml(item.getContent()));
             }
 
             @Override

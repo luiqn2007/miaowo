@@ -82,7 +82,7 @@ public class TopicFragment extends BaseFragment {
                 ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, true);
                 holder.setText(R.id.tv_user, u.getUsername());
                 holder.setText(R.id.tv_time, format.time(item.getLastposttime()));
-                holder.setText(R.id.tv_page, format.praseHtml(item.getTitle()));
+                holder.setText(R.id.tv_page, format.parseHtml(item.getTitle()));
                 return convertView;
             }
         };

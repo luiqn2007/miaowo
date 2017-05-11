@@ -46,7 +46,7 @@ public class TitleListAdapter
                 ImageUtil.utils().setUser((ImageView) vh.getView(R.id.iv_user), u, true);
                 vh.setText(R.id.tv_user, u.getUsername());
                 vh.setText(R.id.tv_time, format.time(item.getLastposttime()));
-                vh.setText(R.id.tv_page, format.praseHtml(item.getTitle()));
+                vh.setText(R.id.tv_page, format.parseHtml(item.getTitle()));
                 vh.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(BaseActivity.get, Detail.class);
                     intent.putExtra(Detail.TITLE, item);

@@ -44,7 +44,7 @@ public class TitleContentAdapter extends BaseListAdapter<Post> {
         ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, true);
         holder.setText(R.id.tv_user, u.getUsername());
         holder.setText(R.id.tv_time, format.time(item.getTimestamp()));
-        holder.setText(R.id.tv_page, format.praseHtml(item.getContent()));
+        holder.setText(R.id.tv_page, format.parseHtml(item.getContent()));
         holder.setClickListener(R.id.tv_reply, v -> {
             Intent intent = new Intent(BaseActivity.get, Add.class);
             intent.putExtra(Add.TAG, -1);

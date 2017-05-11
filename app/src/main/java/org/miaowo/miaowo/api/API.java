@@ -9,6 +9,7 @@ import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.custom.ChatButton;
+import org.miaowo.miaowo.fragment.MiaoFragment;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.JsonUtil;
@@ -23,7 +24,7 @@ import okhttp3.Response;
 
 public class API {
     public static User loginUser;
-    private static String mToken;
+    public static String token;
 
     private String mUrl;
     private HttpUtil mHttp;
@@ -40,7 +41,7 @@ public class API {
         Request.Builder request = new Request.Builder()
                 .url(url)
                 .method(method.method(), body);
-        if (useToken) request.addHeader("Authorization", "Bearer " + mToken);
+        if (useToken) request.addHeader("Authorization", "Bearer " + token);
         mHttp.post(request.build(), callback);
     }
     public enum Method {
@@ -58,6 +59,11 @@ public class API {
             @Override
             String method() {
                 return "GET";
+            }
+        }, DELETE() {
+            @Override
+            String method() {
+                return "DELETE";
             }
         };
 
@@ -144,9 +150,11 @@ public class API {
     }
     public void logout() {
         HttpUtil.utils().clearCookies();
-        ChatButton.hide();
-        Miao.fg_miao.prepareLogin();
+        BaseActivity.get.runOnUiThreadIgnoreError(ChatButton::hide);
+        MiaoFragment miao = Miao.fg_miao;
+        if (miao != null) BaseActivity.get.runOnUiThreadIgnoreError(miao::prepareLogin);
         new Thread(API::removeLogin);
+        loginUser = null;
     }
     public void register(String user, String pwd, String email) {
         if (checkUser(user, pwd, email)) {
@@ -165,7 +173,7 @@ public class API {
                             .build();
                     BaseActivity.get.setProcess(25, "正在注册...");
                     mHttp.post(reg, (call1, response1) -> {
-                        String msg = response.body().string();
+                        String msg = response1.body().string();
                         if (msg.startsWith("[[error")) {
                             BaseActivity.get.runOnUiThreadIgnoreError(() -> {
                                 Miao.fg_miao.prepareLogin();
@@ -197,8 +205,8 @@ public class API {
         FormBody body = new FormBody.Builder().add("password", user.getPassword()).build();
         useAPI(APIType.USERS, user.getUid() + "/tokens", Method.POST, false, body, (call, response) -> {
             try {
-                mToken = mJson.getToken(response);
-                LogUtil.i(mToken);
+                token = mJson.getToken(response);
+                LogUtil.i(token);
             } catch (JSONException e) {
                 activity.processError(e);
             }
@@ -230,23 +238,20 @@ public class API {
         }
         return true;
     }
-
-    public static void removeLogin() {
-        if (mToken == null) return;
-        String url = String.format(BaseActivity.get.getString(R.string.url_api), APIType.USERS.api(), loginUser.getUid() + "/tokens/" + mToken);
-        Request.Builder request = new Request.Builder()
-                .url(url)
-                .delete()
-                .addHeader("Authorization", "Bearer " + mToken);
+    private static void removeLogin() {
         try {
+            String url = String.format(BaseActivity.get.getString(R.string.url_api), APIType.USERS.api(), loginUser.getUid() + "/tokens/" + token);
+            LogUtil.i(url);
+            Request.Builder request = new Request.Builder()
+                    .url(url)
+                    .delete()
+                    .addHeader("Authorization", "Bearer " + token);
             Response execute = new OkHttpClient().newCall(request.build()).execute();
             LogUtil.i(execute);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            mToken = null;
-            loginUser = null;
+            token = null;
         }
-        mToken = null;
     }
 }

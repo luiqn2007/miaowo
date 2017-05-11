@@ -2,6 +2,7 @@ package org.miaowo.miaowo.set;
 
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,14 +63,37 @@ public class UserWindows {
                         fillCount(v, R.id.tv_scan, user.getProfileviews());
                         fillCount(v, R.id.tv_like, user.getFollowerCount());
                         fillCount(v, R.id.tv_focus, user.getFollowingCount());
-                        v.findViewById(R.id.btn_focus).setOnClickListener(v1 -> {
+                        Button focus = (Button) v.findViewById(R.id.btn_focus);
+                        focus.setText(user.isIsFollowing() ? "取消关注" : "关注");
+                        focus.setOnClickListener(v1 -> {
                             FormBody body = new FormBody.Builder().build();
                             mApi.useAPI(API.APIType.USERS, user.getUid() + "/follow", API.Method.POST, true, body, (call1, response1) -> {
                                 ServerMessage message = mJson.buildFromAPI(response1, ServerMessage.class);
                                 BaseActivity activity = BaseActivity.get;
-                                if (message == null) activity.toast("未知错误", TastyToast.ERROR);
-                                else if ("ok".equals(message.getCode())) activity.toast("关注成功", TastyToast.SUCCESS);
-                                else if ("already-following".equals(message.getMessage())) activity.toast("请勿重复关注", TastyToast.WARNING);
+                                if (message == null) {
+                                    activity.toast("未知错误", TastyToast.ERROR);
+                                }
+                                else if ("ok".equals(message.getCode())) {
+                                    activity.toast("关注成功", TastyToast.SUCCESS);
+                                    user.setFollowerCount(user.getFollowerCount() + 1);
+                                    BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                                        fillCount(v, R.id.tv_like, user.getFollowerCount());
+                                        focus.setText("取消关注");
+                                    });
+                                }
+                                else if ("already-following".equals(message.getMessage())) {
+                                    mApi.useAPI(API.APIType.USERS, user.getUid() + "/follow", API.Method.DELETE, true, null, (call2, response2) -> {
+                                        ServerMessage nMessage = mJson.buildFromAPI(response2, ServerMessage.class);
+                                        if ("ok".equals(nMessage.getCode())) {
+                                            activity.toast("已取消关注", TastyToast.SUCCESS);
+                                            user.setFollowerCount(user.getFollowerCount() - 1);
+                                            BaseActivity.get.runOnUiThreadIgnoreError(() -> {
+                                                fillCount(v, R.id.tv_like, user.getFollowerCount());
+                                                focus.setText("关注");
+                                            });
+                                        }
+                                    });
+                                }
                                 else if ("you-cant-follow-yourself".equals(message.getMessage())) activity.toast("无法关注自身", TastyToast.ERROR);
                             });
                         });

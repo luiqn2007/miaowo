@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,20 +31,29 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Miao;
 import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.custom.ChatButton;
 import org.miaowo.miaowo.custom.MoveTransition;
+import org.miaowo.miaowo.custom.PwdShowListener;
+import org.miaowo.miaowo.fragment.setting.AppSetting;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.root.BaseViewHolder;
+import org.miaowo.miaowo.util.HttpUtil;
+import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class MiaoFragment extends BaseFragment {
     private final String sp_save = "save_password";
@@ -143,6 +153,7 @@ public class MiaoFragment extends BaseFragment {
     @BindView(R.id.et_password) EditText et_pwd;
     @BindView(R.id.et_email) EditText et_email;
     @BindView(R.id.rv_page) RecyclerView rv_page;
+    @BindView(R.id.show) ImageButton btn_show;
 
     private TransitionSet mTransitionTogether;
     private int[] mColors;
@@ -176,6 +187,7 @@ public class MiaoFragment extends BaseFragment {
         mTransitionTogether.setDuration(300);
         mTransitionTogether.addTransition(new Fade()).addTransition(new ChangeBounds()).addTransition(new MoveTransition());
         initPageChooser();
+        btn_show.setOnTouchListener(new PwdShowListener(et_pwd));
         cb_save.setChecked(mSpUtil.getBoolean(sp_save, false));
         et_pwd.setText(mSpUtil.getString(sp_pwd, ""));
         et_user.setText(mSpUtil.getString(sp_user, ""));
@@ -191,8 +203,8 @@ public class MiaoFragment extends BaseFragment {
                     btn_login.setText(R.string.rlogin);
                     btn_login.setOnClickListener(v1 -> {
                         mApi.login(
-                                tv_user.getText().toString(),
-                                tv_pwd.getText().toString());
+                                et_user.getText().toString(),
+                                et_pwd.getText().toString());
                         mSpUtil.putString(sp_user, et_user.getText().toString());
                         mSpUtil.putString(sp_pwd, et_pwd.getText().toString());
                         mSpUtil.putBoolean(sp_save, cb_save.isChecked());
@@ -201,8 +213,8 @@ public class MiaoFragment extends BaseFragment {
                     btn_login.setText(R.string.rregister);
                     btn_login.setOnClickListener(v1 -> {
                         mApi.register(
-                                tv_user.getText().toString(),
-                                tv_pwd.getText().toString(),
+                                et_user.getText().toString(),
+                                et_pwd.getText().toString(),
                                 s.toString());
                         mSpUtil.putString(sp_user, et_user.getText().toString());
                         mSpUtil.putString(sp_pwd, et_pwd.getText().toString());
@@ -232,14 +244,12 @@ public class MiaoFragment extends BaseFragment {
     private void initPageChooser() {
         if (getActivity() instanceof Miao) {
             List<String> names = Arrays.asList(
-                    getString(R.string.square), getString(R.string.unread), getString(R.string.topic), getString(R.string.user), getString(R.string.search),
-//                    getString(R.string.setting),
-                    getString(R.string.logout));
+                    getString(R.string.square), getString(R.string.unread), getString(R.string.topic), getString(R.string.user), getString(R.string.search), getString(R.string.setting), getString(R.string.logout));
             List<Drawable> icons = Arrays.asList(
                     getIcon(FontAwesome.Icon.faw_calendar_check_o), getIcon(FontAwesome.Icon.faw_inbox),
                     getIcon(FontAwesome.Icon.faw_tags), getIcon(FontAwesome.Icon.faw_github_alt),
                     getIcon(FontAwesome.Icon.faw_search),
-//                    getIcon(FontAwesome.Icon.faw_wrench),
+                    getIcon(FontAwesome.Icon.faw_wrench),
                     getIcon(FontAwesome.Icon.faw_sign_out));
             int[] colors = new int[names.size()];
             Random random = new Random(System.currentTimeMillis());
@@ -311,7 +321,7 @@ public class MiaoFragment extends BaseFragment {
 
         TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
         hide(et_email, et_user, et_pwd, cb_save, btn_login);
-        hide(tv_email, tv_user, tv_pwd);
+        hide(tv_email, tv_user, tv_pwd, btn_show);
         show(iv_eyes, iv_mouth);
         move(-250, iv_eyes, iv_mouth);
 
@@ -319,10 +329,31 @@ public class MiaoFragment extends BaseFragment {
         et_user.setEnabled(false);
         et_pwd.setEnabled(false);
         cb_save.setEnabled(false);
+        btn_show.setEnabled(false);
         btn_login.setEnabled(false);
         getProcessController().stopProcess();
 
+        cleanTokens();
+
         ChatButton.show(getActivity());
+    }
+
+    private void cleanTokens() {
+        if (mSpUtil.getBoolean(AppSetting.SETTING_APP_CLEAN, true) && API.token != null) {
+            int uid = API.loginUser.getUid();
+            mApi.useAPI(API.APIType.USERS, uid + "/tokens", API.Method.GET, true, null, (call, response) -> {
+                try {
+                    JSONArray tokenArray = new JSONObject(response.body().string()).getJSONObject("payload").getJSONArray("tokens");
+                    for (int i = 0; i < tokenArray.length(); i++) {
+                        String token = tokenArray.getString(i);
+                        if (!API.token.equals(token))
+                            mApi.useAPI(API.APIType.USERS, uid + "/tokens/" + token, API.Method.DELETE, true, null, (call1, response1) -> LogUtil.i(response1));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     public void prepareLogin() {
@@ -342,10 +373,11 @@ public class MiaoFragment extends BaseFragment {
 
             TransitionManager.beginDelayedTransition(mContainer, mTransitionTogether);
             show(et_email, et_user, et_pwd, cb_save);
-            show(tv_email, tv_user, tv_pwd);
+            show(tv_email, tv_user, tv_pwd, btn_show);
             hide(iv_eyes, iv_mouth);
             move(-500, iv_eyes, iv_mouth);
 
+            btn_show.setEnabled(true);
             btn_login.setText(R.string.rlogin);
             btn_login.setOnClickListener(v2 -> {
                 btn_login.setEnabled(false);

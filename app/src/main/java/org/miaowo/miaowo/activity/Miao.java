@@ -95,7 +95,7 @@ public class Miao extends BaseActivity
         } else if (API.loginUser != null) {
             mApi.logout();
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 }

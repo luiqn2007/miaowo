@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -26,10 +27,12 @@ import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.bean.data.Title;
 import org.miaowo.miaowo.bean.data.TitleList;
 import org.miaowo.miaowo.custom.load_more_list.LMLPageAdapter;
+import org.miaowo.miaowo.fragment.setting.AppSetting;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.root.BaseListFragment;
 import org.miaowo.miaowo.util.JsonUtil;
+import org.miaowo.miaowo.util.SpUtil;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +44,13 @@ import okhttp3.Response;
 
 public class SquareFragment extends BaseFragment
         implements BottomNavigationView.OnNavigationItemSelectedListener {
+
+    private int ID_0;
+    private int ID_1;
+    private int ID_2;
+    private int ID_3;
+
+    @BindView(R.id.tab) TabLayout mTab;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.bottomNavigation) BottomNavigationView mNavigation;
     private SparseArray<TitleListFragment> mFragments;
@@ -62,41 +72,92 @@ public class SquareFragment extends BaseFragment
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        getChildFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.container, mFragments.get(item.getItemId()))
-                .commit();
+        mFragmentId = item.getItemId();
         if (!mFab.isEnabled()) {
             ObjectAnimator.ofPropertyValuesHolder(mFab
                     , PropertyValuesHolder.ofFloat("translationY", 500, 0)
                     , PropertyValuesHolder.ofFloat("alpha", 0, 1)).setDuration(300).start();
             mFab.setEnabled(true);
         }
+        getChildFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.container, mFragments.get(mFragmentId))
+                .commit();
+        TabLayout.Tab tab = mTab.getTabAt(mFragmentId);
+        if (tab != null) tab.select();
         return true;
     }
 
     @Override
     public void initView(View view) {
         mApi = new API();
+        initTabLayout();
+        initNavigation();
+        if (mFragmentId < 0) mNavigation.setSelectedItemId(ID_0);
+
+        boolean modeTab = SpUtil.defaultSp().getBoolean(AppSetting.SETTING_APP_TAB, false);
+        mTab.setVisibility(modeTab ? View.VISIBLE : View.GONE);
+        mNavigation.setVisibility(modeTab ? View.GONE : View.VISIBLE);
+    }
+
+    private void initTabLayout() {
+        TabLayout.Tab tab_daily = mTab.newTab().setText(getString(R.string.daily));
+//        tab_daily.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.daily, null));
+        TabLayout.Tab tab_announcement = mTab.newTab().setText(getString(R.string.announcement));
+//        tab_daily.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.announcement, null));
+        TabLayout.Tab tab_question = mTab.newTab().setText(getString(R.string.ask));
+//        tab_daily.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ask, null));
+        TabLayout.Tab tab_water = mTab.newTab().setText(getString(R.string.water));
+//        tab_daily.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.water, null));
+        mTab.addTab(tab_daily);
+        mTab.addTab(tab_announcement);
+        mTab.addTab(tab_question);
+        mTab.addTab(tab_water);
+
+        ID_0 = tab_daily.getPosition();
+        ID_1 = tab_announcement.getPosition();
+        ID_2 = tab_question.getPosition();
+        ID_3 = tab_water.getPosition();
+
         mFragments = new SparseArray<>();
+        mFragments.put(ID_0, TitleListFragment.newInstance(getString(R.string.url_daily)));
+        mFragments.put(ID_1, TitleListFragment.newInstance(getString(R.string.url_announce)));
+        mFragments.put(ID_2, TitleListFragment.newInstance(getString(R.string.url_question)));
+        mFragments.put(ID_3, TitleListFragment.newInstance(getString(R.string.url_water)));
+
+        mTab.setTabMode(TabLayout.MODE_FIXED);
+        mTab.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (mFragmentId == tab.getPosition()) return;
+                mNavigation.setSelectedItemId(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    private void initNavigation() {
         mNavigation.setOnNavigationItemSelectedListener(this);
         mNavigation.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.md_amber_100, null));
         mNavigation.setItemIconTintList(ResourcesCompat.getColorStateList(getResources(), R.color.selector_icon, null));
         Menu menu = mNavigation.getMenu();
-        menu.add(0, 0, 0, getString(R.string.daily));
-        menu.add(0, 1, 1, getString(R.string.announcement));
-        menu.add(0, 2, 2, getString(R.string.ask));
-        menu.add(0, 3, 3, getString(R.string.water));
+        menu.add(0, ID_0, 0, getString(R.string.daily));
+        menu.add(0, ID_1, 1, getString(R.string.announcement));
+        menu.add(0, ID_2, 2, getString(R.string.ask));
+        menu.add(0, ID_3, 3, getString(R.string.water));
         menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.daily, null));
-        mFragments.put(menu.getItem(0).getItemId(), TitleListFragment.newInstance(getString(R.string.url_daily)));
         menu.getItem(1).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.announcement, null));
-        mFragments.put(menu.getItem(1).getItemId(), TitleListFragment.newInstance(getString(R.string.url_announce)));
         menu.getItem(2).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ask, null));
-        mFragments.put(menu.getItem(2).getItemId(), TitleListFragment.newInstance(getString(R.string.url_question)));
         menu.getItem(3).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.water, null));
-        mFragments.put(menu.getItem(3).getItemId(), TitleListFragment.newInstance(getString(R.string.url_water)));
-        if (mFragmentId < 0) mFragmentId = menu.getItem(0).getItemId();
-        mNavigation.setSelectedItemId(mFragmentId);
     }
 
     @OnClick(R.id.fab)

@@ -202,4 +202,19 @@
         app:layout_constraintBottom_toTopOf="@+id/pb_process"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageButton
+        android:id="@+id/show"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_brightness"
+        android:visibility="invisible"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="@+id/et_password"
+        app:layout_constraintLeft_toRightOf="@+id/et_password"
+        app:layout_constraintTop_toTopOf="@+id/et_password"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

@@ -37,7 +37,7 @@ public class FormatUtil {
         }
     }
 
-    public Spanned praseHtml(String html) {
+    public Spanned parseHtml(String html) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
         else return Html.fromHtml(html);

@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.UpdateUtil;
 
 import java.io.BufferedInputStream;
@@ -45,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private ArrayList<Runnable> mPermissionRequestList;
     private Unbinder mUnbinder = null;
-    private boolean firstFragment = true;
+    private BaseFragment mIndexFragment = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -216,20 +217,20 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示 Fragment
      * @param container 容器 id
-     * @param fragment 要显示的 Fragment
+     * @param show 要显示的 Fragment
      */
-    public void loadFragment(@IdRes int container, BaseFragment fragment) {
+    public void loadFragment(@IdRes int container, BaseFragment show) {
         FragmentManager manager = getSupportFragmentManager();
-        if (firstFragment) {
-            manager.beginTransaction().add(container, fragment).show(fragment).commit();
-            firstFragment = false;
-        } else manager
-                .beginTransaction()
-                .replace(container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
-                .addToBackStack(null)
-                .commit();
+        if (manager.getFragments() == null || manager.getFragments().isEmpty()) {
+            manager.beginTransaction().add(container, show).show(show).commit();
+        } else {
+            manager.beginTransaction()
+                    .replace(container, show)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override

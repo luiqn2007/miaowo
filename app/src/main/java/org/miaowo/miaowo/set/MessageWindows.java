@@ -41,7 +41,7 @@ public class MessageWindows extends BaseSet {
         HttpUtil.utils().post(request, (call, response) -> {
                     Question question = JsonUtil.utils().buildFromAPI(response, Question.class);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                        tv_title.setText(FormatUtil.format().praseHtml(question.getTitle()));
+                        tv_title.setText(FormatUtil.format().parseHtml(question.getTitle()));
                         tv_count.setText(question.getPostcount() + " 回复, " + question.getViewcount() + " 浏览");
                         lv_question.setAdapter(new QuestionDetailListAdapter(BaseActivity.get, question));
                     });

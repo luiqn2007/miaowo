@@ -33,8 +33,8 @@ public class Splish extends BaseActivity {
         }
 
         new Thread(this::checkUpdate);
-        startService(new Intent(Splish.this, WebService.class));
-        Intent intent = new Intent(Splish.this, Miao.class);
+        startService(new Intent(this, WebService.class));
+        Intent intent = new Intent(this, Miao.class);
         startActivity(intent);
         stopProcess();
         finish();

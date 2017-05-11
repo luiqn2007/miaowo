@@ -87,7 +87,7 @@ public class SearchFragment extends BaseFragment {
                     ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), question.getUser(), true);
                     holder.setText(R.id.tv_user, question.getUser().getUsername());
                     holder.setText(R.id.tv_time, mFormat.time(question.getTimestamp()));
-                    holder.setText(R.id.tv_context, mFormat.praseHtml(question.getContent()));
+                    holder.setText(R.id.tv_context, mFormat.parseHtml(question.getContent()));
                     ((TextView) holder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
                 }
                 return convertView;

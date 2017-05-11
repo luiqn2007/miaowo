@@ -62,7 +62,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         ImageUtil.utils().setUser((ImageView) mHolder.getView(R.id.iv_user), question.getUser(), true);
         mHolder.setText(R.id.tv_user, question.getUser().getUsername());
         mHolder.setText(R.id.tv_time, mFormat.time(question.getTimestamp()));
-        mHolder.setText(R.id.tv_context, mFormat.praseHtml(question.getContent()));
+        mHolder.setText(R.id.tv_context, mFormat.parseHtml(question.getContent()));
         ((TextView) mHolder.getView(R.id.tv_context)).setMovementMethod(LinkMovementMethod.getInstance());
         return convertView;
     }
