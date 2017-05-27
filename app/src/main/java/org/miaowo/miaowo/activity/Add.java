@@ -8,8 +8,6 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.data.Post;
 import org.miaowo.miaowo.root.BaseActivity;
@@ -32,7 +30,6 @@ public class Add extends BaseActivity {
     private int mSelectedType;
     private Intent result;
     private boolean canSend = false;
-    private boolean isReply;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +41,8 @@ public class Add extends BaseActivity {
     public void initActivity() {
         mSelectedType = getIntent().getIntExtra(TAG, -1);
         assert title.getEditText() != null;
-        isReply = mSelectedType == -1;
-        if (isReply) {
+        if (mSelectedType == -1) {
+            // 回复
             canSend = true;
             mTypes.forEach(textView -> {
                 textView.setEnabled(false);
@@ -56,6 +53,7 @@ public class Add extends BaseActivity {
             title.setEnabled(false);
             title.getEditText().setText("回复: " + item.getUser().getUsername());
         } else {
+            // 新主题
             mTypes.get(mSelectedType).setActivated(true);
             for (int i = 0; i < mTypes.size(); i++) {
                 int pos = i;
@@ -106,7 +104,7 @@ public class Add extends BaseActivity {
             setResult(1, result);
             finish();
         } else {
-            BaseActivity.get.toast("错误", TastyToast.ERROR);
+            handleError(R.string.err_no_message);
         }
     }
 }

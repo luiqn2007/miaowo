@@ -42,18 +42,14 @@ import org.miaowo.miaowo.custom.PwdShowListener;
 import org.miaowo.miaowo.fragment.setting.AppSetting;
 import org.miaowo.miaowo.root.BaseFragment;
 import org.miaowo.miaowo.root.BaseViewHolder;
-import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import okhttp3.Call;
-import okhttp3.Response;
 
 public class MiaoFragment extends BaseFragment {
     private final String sp_save = "save_password";

@@ -1,9 +1,5 @@
 package org.miaowo.miaowo.util;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
-import org.miaowo.miaowo.root.BaseActivity;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,26 +91,7 @@ public class HttpUtil {
             mCookies.clear();
         }
     }
-    public static class MyCallback implements Callback {
-        private CallbackErr error;
-        private CallbackRun action;
 
-        public MyCallback(CallbackRun action) {
-            this.action = action;
-            this.error = (call, e) -> BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            error.onFailure(call, e);
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            action.onResponse(call, response);
-        }
-
-    }
     public interface CallbackRun {
         void onResponse(Call call, Response response) throws IOException;
     }

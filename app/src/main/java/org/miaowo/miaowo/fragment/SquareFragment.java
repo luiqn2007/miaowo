@@ -17,8 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
 import org.json.JSONObject;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Add;
@@ -184,8 +182,7 @@ public class SquareFragment extends BaseFragment
                     JSONObject object = new JSONObject(response.body().string());
                     if (!"ok".equals(object.getString("code"))) throw new Exception(object.getString("message"));
                 } catch (Exception e) {
-                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
-                    e.printStackTrace();
+                    BaseActivity.get.handleError(e);
                 }
             });
         }

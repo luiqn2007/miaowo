@@ -2,6 +2,7 @@ package org.miaowo.miaowo.root;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,13 +41,18 @@ public abstract class BaseListFragment<ITEM> extends BaseFragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public void initView(View view) {
         mUrl = getArguments().getString("url");
         mPage = 1;
-
         mList = (LoadMoreList) view;
         mAdapter = setAdapter();
         mList.setAdapter(mAdapter);
+        mList.setLayoutManager(new LinearLayoutManager(getContext()));
         mList.setPullRefresher(this::loadBackPage, true);
         mList.setPushRefresher(this::loadPage, true);
         mList.load();
@@ -72,7 +78,7 @@ public abstract class BaseListFragment<ITEM> extends BaseFragment {
             });
         }, (call, e) -> {
             mList.loadMoreControl(true, true);
-            BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
+            BaseActivity.get.handleError(e);
             BaseActivity.get.runOnUiThreadIgnoreError(() -> mList.loadOver());
         });
     }
@@ -99,7 +105,7 @@ public abstract class BaseListFragment<ITEM> extends BaseFragment {
                 }
                 , (call, e) -> {
                     mList.loadMoreControl(true, true);
-                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
+                    BaseActivity.get.handleError(e);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> mList.loadOver());
                 });
     }

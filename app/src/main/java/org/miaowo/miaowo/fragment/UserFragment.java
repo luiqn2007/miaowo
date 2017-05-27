@@ -10,13 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.activity.Detail;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.bean.data.UserList;
 import org.miaowo.miaowo.custom.load_more_list.LMLPageAdapter;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseListFragment;
 import org.miaowo.miaowo.root.BaseViewHolder;
-import org.miaowo.miaowo.set.UserWindows;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.JsonUtil;
 
@@ -27,8 +27,6 @@ import java.util.List;
 import okhttp3.Response;
 
 public class UserFragment extends BaseListFragment<User> {
-
-    private UserWindows mUserWindows;
 
     public UserFragment() {}
     public static UserFragment newInstance() {
@@ -42,7 +40,6 @@ public class UserFragment extends BaseListFragment<User> {
     @Override
     public void initView(View view) {
         super.initView(view);
-        mUserWindows = UserWindows.windows();
         mList.setLayoutManager(new GridLayoutManager(getContext(), 3));
     }
 
@@ -57,7 +54,7 @@ public class UserFragment extends BaseListFragment<User> {
 
             @Override
             public void bindView(User item, RecyclerView.ViewHolder holder, int type) {
-                holder.itemView.setOnClickListener(v -> mUserWindows.showUserWindow(item.getUsername()));
+                holder.itemView.setOnClickListener(v -> Detail.showUser(item.getUsername()));
                 ImageView iv_user = (ImageView) holder.itemView.findViewById(R.id.iv_user);
                 iv_user.setContentDescription("用户：" + item.getUsername());
                 ImageUtil.utils().setUser(iv_user, item, true);

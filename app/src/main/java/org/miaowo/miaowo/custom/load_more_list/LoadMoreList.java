@@ -9,6 +9,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import org.miaowo.miaowo.root.BaseViewHolder;
+
 /**
  * 原来用的 PullLoadMoreRecycleView 不能直接滑动到列表指定位置，弃之
  * Created by luqin on 17-1-1.

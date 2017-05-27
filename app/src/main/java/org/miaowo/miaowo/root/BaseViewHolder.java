@@ -5,7 +5,9 @@ import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +26,14 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mChildViews = new SparseArray<>();
         reflect = ReflectUtil.utils();
+    }
+
+    public BaseViewHolder(int viewId, ViewGroup parent, boolean attach) {
+        this(LayoutInflater.from(BaseActivity.get).inflate(viewId, parent, attach));
+    }
+
+    public BaseViewHolder(int viewId, ViewGroup parent) {
+        this(viewId, parent, false);
     }
 
     /**
@@ -119,6 +129,14 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      */
     public void setClickListener(@IdRes int id, View.OnClickListener listener) {
         getView(id).setOnClickListener(listener);
+    }
+
+    /**
+     * 为该 View 设置点击监听
+     * @param listener 监听方法
+     */
+    public void setClickListener(View.OnClickListener listener) {
+        getView().setOnClickListener(listener);
     }
 
     /**

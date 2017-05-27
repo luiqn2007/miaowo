@@ -18,15 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import com.sdsmdg.tastytoast.TastyToast;
 
 import org.miaowo.miaowo.R;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.UpdateUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -46,7 +45,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private ArrayList<Runnable> mPermissionRequestList;
     private Unbinder mUnbinder = null;
-    private BaseFragment mIndexFragment = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -178,12 +176,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                     return;
                 }
                 File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "miaowo");
-                if (!dir.isDirectory()) dir.mkdirs();
+                if (!dir.isDirectory()) if (!dir.mkdirs()) throw new Exception("无法创建安装文件文件夹");
                 File app = new File(dir, "miaowo.apk");
-                if (app.exists()) {
-                    app.delete();
-                }
-                app.createNewFile();
+                if (app.exists()) if (!app.delete()) throw new Exception("无法删除已存在安装包");
+                if (!app.createNewFile()) throw new Exception("无法创建安装文件");
                 FileOutputStream fis = new FileOutputStream(app);
                 BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
                 byte[] bs = new byte[1024 * 512];
@@ -195,10 +191,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 bis.close();
                 fis.close();
                 UpdateUtil.utils().install(app);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).run(), Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }).run(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
@@ -231,6 +227,44 @@ public abstract class BaseActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    /**
+     * 自定义处理错误信息
+     * @param err 错误信息
+     * @param handler 自定义处理方法
+     */
+    public void handleError(Throwable err, Consumer<Throwable> handler) {
+        Throwable hErr = err == null ? new Exception(getString(R.string.err_empty)) : err;
+        Consumer<Throwable> hHandler = handler == null ? throwable -> {
+                throwable.printStackTrace();
+                toast(hErr.getMessage(), TastyToast.ERROR);
+            } : handler;
+
+        hHandler.accept(hErr);
+    }
+
+    /**
+     * 处理错误信息 弹出ERROR主题的Toast
+     * @param err 错误信息
+     */
+    public void handleError(Throwable err) {
+        handleError(err, throwable -> {
+            throwable.printStackTrace();
+            toast(err.getMessage(), TastyToast.ERROR);
+        });
+    }
+
+    /**
+     * 处理错误信息 弹出ERROR主题的Toast
+     * @param err 错误信息
+     */
+    public void handleError(@StringRes int err) {
+        Exception rErr = new Exception(get.getString(err));
+        handleError(rErr, throwable -> {
+            throwable.printStackTrace();
+            toast(throwable.getMessage(), TastyToast.ERROR);
+        });
     }
 
     @Override

@@ -31,10 +31,12 @@ public class UserWindows {
 
     private API mApi;
     private JsonUtil mJson;
+    private FormatUtil mFormat;
 
     private UserWindows() {
         mApi = new API();
         mJson = JsonUtil.utils();
+        mFormat = FormatUtil.format();
     }
     public static UserWindows windows() { return new UserWindows(); }
 
@@ -46,12 +48,12 @@ public class UserWindows {
         ((TextView) v.findViewById(R.id.tv_user)).setText(username);
         ((TextView) v.findViewById(R.id.tv_email)).setText("加载中");
         ((TextView) v.findViewById(R.id.tv_regist_time)).setText("加载中");
-        fillCount(v, R.id.tv_ask, 0);
-        fillCount(v, R.id.tv_scan,0);
-        fillCount(v, R.id.tv_like, 0);
-        fillCount(v, R.id.tv_focus, 0);
+        mFormat.fillCount(v, R.id.tv_ask, 0);
+        mFormat.fillCount(v, R.id.tv_scan,0);
+        mFormat.fillCount(v, R.id.tv_like, 0);
+        mFormat.fillCount(v, R.id.tv_focus, 0);
 
-        Request request = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), username)).build();
+        Request request = new Request.Builder().url(BaseActivity.get.getString(R.string.url_user, username)).build();
         HttpUtil.utils().post(request, (call, response) -> {
                     User user = JsonUtil.utils().buildFromAPI(response, User.class);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
@@ -59,10 +61,10 @@ public class UserWindows {
                         ((TextView) v.findViewById(R.id.tv_user)).setText(username);
                         ((TextView) v.findViewById(R.id.tv_email)).setText(user.getEmail());
                         ((TextView) v.findViewById(R.id.tv_regist_time)).setText(FormatUtil.format().time(user.getJoindate()));
-                        fillCount(v, R.id.tv_ask, user.getPostcount());
-                        fillCount(v, R.id.tv_scan, user.getProfileviews());
-                        fillCount(v, R.id.tv_like, user.getFollowerCount());
-                        fillCount(v, R.id.tv_focus, user.getFollowingCount());
+                        mFormat.fillCount(v, R.id.tv_ask, user.getPostcount());
+                        mFormat.fillCount(v, R.id.tv_scan, user.getProfileviews());
+                        mFormat.fillCount(v, R.id.tv_like, user.getFollowerCount());
+                        mFormat.fillCount(v, R.id.tv_focus, user.getFollowingCount());
                         Button focus = (Button) v.findViewById(R.id.btn_focus);
                         focus.setText(user.isIsFollowing() ? "取消关注" : "关注");
                         focus.setOnClickListener(v1 -> {
@@ -71,13 +73,13 @@ public class UserWindows {
                                 ServerMessage message = mJson.buildFromAPI(response1, ServerMessage.class);
                                 BaseActivity activity = BaseActivity.get;
                                 if (message == null) {
-                                    activity.toast("未知错误", TastyToast.ERROR);
+                                    activity.handleError(R.string.err_no_err);
                                 }
                                 else if ("ok".equals(message.getCode())) {
                                     activity.toast("关注成功", TastyToast.SUCCESS);
                                     user.setFollowerCount(user.getFollowerCount() + 1);
                                     BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                                        fillCount(v, R.id.tv_like, user.getFollowerCount());
+                                        mFormat.fillCount(v, R.id.tv_like, user.getFollowerCount());
                                         focus.setText("取消关注");
                                     });
                                 }
@@ -88,13 +90,13 @@ public class UserWindows {
                                             activity.toast("已取消关注", TastyToast.SUCCESS);
                                             user.setFollowerCount(user.getFollowerCount() - 1);
                                             BaseActivity.get.runOnUiThreadIgnoreError(() -> {
-                                                fillCount(v, R.id.tv_like, user.getFollowerCount());
+                                                mFormat.fillCount(v, R.id.tv_like, user.getFollowerCount());
                                                 focus.setText("关注");
                                             });
                                         }
                                     });
                                 }
-                                else if ("you-cant-follow-yourself".equals(message.getMessage())) activity.toast("无法关注自身", TastyToast.ERROR);
+                                else if ("you-cant-follow-yourself".equals(message.getMessage())) activity.handleError(R.string.err_focus_self);
                             });
                         });
                     });
@@ -106,24 +108,5 @@ public class UserWindows {
                     v.findViewById(R.id.btn_focus).setOnClickListener(null);
                 });
         return view.defaultBar().show();
-    }
-
-    // 填充数字
-    private void fillCount(View v, int viewId, int count) {
-        TextView tv = (TextView) v.findViewById(viewId);
-        int n = tv.getText().length();
-        if (n == 3) {
-            if (count <= 99) {
-                tv.setText(String.valueOf(count));
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() * 3 / 2);
-            }
-        } else {
-            if (count > 99) {
-                tv.setText(R.string.more99);
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() / 3 * 2);
-            } else {
-                tv.setText(String.valueOf(count));
-            }
-        }
     }
 }

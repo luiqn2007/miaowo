@@ -2,8 +2,6 @@ package org.miaowo.miaowo.api;
 
 import android.text.TextUtils;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
 import org.json.JSONException;
 import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.activity.Miao;
@@ -135,7 +133,7 @@ public class API {
                             return;
                         }
                         BaseActivity.get.setProcess(50, "正在获取用户信息...");
-                        Request userR = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), user)).build();
+                        Request userR = new Request.Builder().url(BaseActivity.get.getString(R.string.url_user, user)).build();
                         mHttp.post(userR, (call2, response2) -> {
                             User l = mJson.buildFromAPI(response2, User.class);
                             l.setPassword(pwd);
@@ -182,7 +180,7 @@ public class API {
                             return;
                         }
                         BaseActivity.get.setProcess(50, "正在获取用户信息...");
-                        Request userR = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_user), user)).build();
+                        Request userR = new Request.Builder().url(BaseActivity.get.getString(R.string.url_user, user)).build();
                         mHttp.post(userR, (call2, response2) -> {
                             User l = mJson.buildFromAPI(response2, User.class);
                             l.setPassword(pwd);
@@ -219,7 +217,7 @@ public class API {
     }
     private boolean checkUser(String username, String password, String email) {
         if (TextUtils.isEmpty(email) || !email.contains("@")) {
-            BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_email), TastyToast.ERROR);
+            BaseActivity.get.handleError(R.string.err_email);
             Miao.fg_miao.prepareLogin();
             return false;
         }
@@ -227,12 +225,12 @@ public class API {
     }
     private boolean checkUser(String username, String password) {
         if (TextUtils.isEmpty(username)) {
-            BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_username), TastyToast.ERROR);
+            BaseActivity.get.handleError(R.string.err_username);
             Miao.fg_miao.prepareLogin();
             return false;
         }
         if (TextUtils.isEmpty(password) || username.equals(password) || password.length() < 6) {
-            BaseActivity.get.toast(BaseActivity.get.getString(R.string.err_password), TastyToast.ERROR);
+            BaseActivity.get.handleError(R.string.err_password);
             Miao.fg_miao.prepareLogin();
             return false;
         }
@@ -240,7 +238,7 @@ public class API {
     }
     private static void removeLogin() {
         try {
-            String url = String.format(BaseActivity.get.getString(R.string.url_api), APIType.USERS.api(), loginUser.getUid() + "/tokens/" + token);
+            String url = BaseActivity.get.getString(R.string.url_api, APIType.USERS.api(), loginUser.getUid() + "/tokens/" + token);
             LogUtil.i(url);
             Request.Builder request = new Request.Builder()
                     .url(url)

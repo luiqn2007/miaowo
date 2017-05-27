@@ -58,7 +58,7 @@ public class ChatListFragment extends BaseFragment {
 
     private void loadChatList() {
         mList.loadMoreControl(false, false);
-        Request request = new Request.Builder().url(String.format(getActivity().getString(R.string.url_chat_room), API.loginUser.getUsername().toLowerCase())).build();
+        Request request = new Request.Builder().url(getActivity().getString(R.string.url_chat_room, API.loginUser.getUsername().toLowerCase())).build();
         mHttp.post(request, (call, response) -> BaseActivity.get.runOnUiThreadIgnoreError(() -> {
                     try {
                         mAdapter.update(mJson.buildFromAPI(response, ChatRoomList.class).getRooms());

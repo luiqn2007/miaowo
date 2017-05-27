@@ -67,7 +67,7 @@ public class ChatFragment extends BaseFragment {
         lv_chat.loadMoreControl(false, false);
         lv_chat.setItemAnimator(new ChatListAnimator());
 
-        Request request = new Request.Builder().url(String.format(BaseActivity.get.getString(R.string.url_chat_message),
+        Request request = new Request.Builder().url(BaseActivity.get.getString(R.string.url_chat_message,
                 API.loginUser.getUsername().toLowerCase(), mRoom.getRoomId())).build();
         mHttp.post(request, (call, response) ->
                 BaseActivity.get.runOnUiThreadIgnoreError(() -> {

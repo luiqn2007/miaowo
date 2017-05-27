@@ -105,7 +105,6 @@ public class Question implements Parcelable {
     private String relative_path;
     private String url;
     private String bodyClass;
-    private User loggedInUser;
     private List<?> tags;
     private List<Post> posts;
     private List<?> thread_tools;
@@ -515,14 +514,6 @@ public class Question implements Parcelable {
 
     public void setBodyClass(String bodyClass) {
         this.bodyClass = bodyClass;
-    }
-
-    public User getLoggedInUser() {
-        return loggedInUser;
-    }
-
-    public void setLoggedInUser(User loggedInUser) {
-        this.loggedInUser = loggedInUser;
     }
 
     public List<?> getTags() {

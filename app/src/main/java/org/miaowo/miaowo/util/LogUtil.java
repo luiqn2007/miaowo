@@ -2,6 +2,8 @@ package org.miaowo.miaowo.util;
 
 import android.util.Log;
 
+import org.jsoup.nodes.Element;
+
 import okhttp3.Response;
 
 /**
@@ -48,9 +50,9 @@ public class LogUtil {
             }
             sb.append("<--\n");
         }
-        sb.append("信息 -->\n");
+        if (printStack) sb.append("信息 -->\n");
         for (Object object : objects) sb.append(toString(object)).append('\n');
-        sb.append("<--");
+        if (printStack) sb.append("<--");
         return sb.toString();
     }
 
@@ -60,6 +62,14 @@ public class LogUtil {
                 return "null";
             } else if (object instanceof Response) {
                 return ((Response) object).body().string();
+            } else if (object instanceof Element) {
+                return "Element Start-->" +
+                        "\ndata\t" + ((Element) object).data() +
+                        "\nattrs\t" + ((Element) object).attributes().toString() +
+                        "\ntag\t" + ((Element) object).tag() +
+                        "\nhasText\t" + ((Element) object).hasText() +
+                        "\ntext\t" + ((Element) object).text() +
+                        "\nElement end";
             } else {
                 return object.toString();
             }

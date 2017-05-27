@@ -1,6 +1,5 @@
 package org.miaowo.miaowo.adapter;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -24,8 +23,7 @@ import java.util.ArrayList;
  * Created by luqin on 17-3-15.
  */
 
-public class TitleListAdapter
-        extends LMLPageAdapter<Title> {
+public class TitleListAdapter extends LMLPageAdapter<Title> {
 
     public TitleListAdapter() {
         super(new ArrayList<>(), new ViewLoaderCreator<Title>() {
@@ -42,16 +40,11 @@ public class TitleListAdapter
             public void bindView(Title item, RecyclerView.ViewHolder holder, int type) {
                 User u = item.getUser();
                 BaseViewHolder vh = (BaseViewHolder) holder;
-                vh.setClickListener(R.id.rl_item, (v) -> LogUtil.i("click"));
                 ImageUtil.utils().setUser((ImageView) vh.getView(R.id.iv_user), u, true);
                 vh.setText(R.id.tv_user, u.getUsername());
                 vh.setText(R.id.tv_time, format.time(item.getLastposttime()));
-                vh.setText(R.id.tv_page, format.parseHtml(item.getTitle()));
-                vh.itemView.setOnClickListener(v -> {
-                    Intent intent = new Intent(BaseActivity.get, Detail.class);
-                    intent.putExtra(Detail.TITLE, item);
-                    BaseActivity.get.startActivity(intent);
-                });
+                format.parseHtml(item.getTitle(), spanned -> vh.setText(R.id.tv_page, spanned));
+                vh.setClickListener(v -> Detail.showTitle(item));
             }
 
             @Override

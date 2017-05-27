@@ -7,15 +7,14 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.sdsmdg.tastytoast.TastyToast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.activity.Detail;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.custom.CircleTransformation;
 import org.miaowo.miaowo.root.BaseActivity;
-import org.miaowo.miaowo.set.UserWindows;
 
 /**
  * 图形处理类
@@ -42,14 +41,12 @@ public class ImageUtil {
             return;
         }
         fillUserImage(iv, user);
-        UserWindows uv = UserWindows.windows();
 
         if (clickable) {
             if (user.getUid() <= 0) {
-                iv.setOnClickListener(v -> BaseActivity.get.toast(BaseActivity.get
-                        .getString(R.string.err_not_login), TastyToast.ERROR));
+                iv.setOnClickListener(v -> BaseActivity.get.handleError(R.string.err_not_login));
             } else {
-                iv.setOnClickListener(v -> uv.showUserWindow(user.getUsername()));
+                iv.setOnClickListener(v -> Detail.showUser(user.getUsername()));
             }
         }
     }
@@ -60,7 +57,7 @@ public class ImageUtil {
                     new TextIconConfig(fromUser(user.getIconBgColor()), Color.WHITE)));
             return;
         }
-        fill(iv, String.format(BaseActivity.get.getString(R.string.url_home), user.getPicture()), null);
+        fill(iv, BaseActivity.get.getString(R.string.url_home, user.getPicture()), null);
     }
 
     /**

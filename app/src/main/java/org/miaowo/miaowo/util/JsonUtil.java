@@ -2,10 +2,10 @@ package org.miaowo.miaowo.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sdsmdg.tastytoast.TastyToast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.miaowo.miaowo.R;
 import org.miaowo.miaowo.bean.config.VersionMessage;
 import org.miaowo.miaowo.root.BaseActivity;
 
@@ -67,13 +67,12 @@ public class JsonUtil {
         try {
             return buildFromAPI(response, VersionMessage.class);
         } catch (IOException e) {
-            BaseActivity.get.toast("无法获取新版本信息", TastyToast.ERROR);
+            BaseActivity.get.handleError(R.string.err_no_version);
             return null;
         }
     }
     public<T> T buildFromAPI(Response response, Class<T> typeClass) throws IOException {
-        String json = response.body().string();
-        return gson.fromJson(json, typeClass);
+        return gson.fromJson(response.body().string(), typeClass);
     }
     public String getCsrf(Response response) throws IOException, JSONException {
         String token = "";

@@ -1,7 +1,9 @@
 package org.miaowo.miaowo.fragment;
 
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,12 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
 import org.miaowo.miaowo.R;
+import org.miaowo.miaowo.activity.Detail;
 import org.miaowo.miaowo.bean.data.Title;
 import org.miaowo.miaowo.bean.data.TitleList;
 import org.miaowo.miaowo.bean.data.Topic;
@@ -22,15 +22,13 @@ import org.miaowo.miaowo.bean.data.TopicList;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
-import org.miaowo.miaowo.root.BaseListAdapter;
+import org.miaowo.miaowo.root.BaseRecyclerAdapter;
 import org.miaowo.miaowo.root.BaseViewHolder;
-import org.miaowo.miaowo.set.MessageWindows;
 import org.miaowo.miaowo.util.FormatUtil;
 import org.miaowo.miaowo.util.HttpUtil;
 import org.miaowo.miaowo.util.ImageUtil;
 import org.miaowo.miaowo.util.JsonUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,7 +36,7 @@ import okhttp3.Request;
 
 public class TopicFragment extends BaseFragment {
 
-    @BindView(R.id.list) ListView lv_list;
+    @BindView(R.id.list) RecyclerView list;
     @BindView(R.id.et_topic) TextView tv_topic;
     @BindView(R.id.ib_search) ImageButton ib_load;
     private PopupMenu mMenu;
@@ -60,33 +58,27 @@ public class TopicFragment extends BaseFragment {
 
     /* ================================================================ */
     private List<Topic> mTopics;
-    private BaseListAdapter<Title> mAdapter;
+    private BaseRecyclerAdapter<Title> mAdapter;
 
     @Override
     public void initView(View view) {
         mMenu = new PopupMenu(getContext(), ib_load);
         ib_load.setOnClickListener(v -> mMenu.show());
-        mAdapter = new BaseListAdapter<Title>(new ArrayList<>()) {
+        mAdapter = new BaseRecyclerAdapter<Title>(R.layout.list_question_title) {
+
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    convertView = View.inflate(getContext(), R.layout.list_question_title, null);
-                    BaseViewHolder holder = new BaseViewHolder(convertView);
-                    convertView.setTag(holder);
-                }
-                BaseViewHolder holder = (BaseViewHolder) convertView.getTag();
-                MessageWindows messageWindows = MessageWindows.windows();
-                Title item = (Title) getItem(position);
+            public void onBindViewHolder(BaseViewHolder holder, int position) {
+                Title item = getItem(position);
                 User u =item.getUser();
-                holder.setClickListener(R.id.rl_item, (v) -> messageWindows.showQuestion(item.getSlug()));
                 ImageUtil.utils().setUser((ImageView) holder.getView(R.id.iv_user), u, true);
                 holder.setText(R.id.tv_user, u.getUsername());
                 holder.setText(R.id.tv_time, format.time(item.getLastposttime()));
-                holder.setText(R.id.tv_page, format.parseHtml(item.getTitle()));
-                return convertView;
+                format.parseHtml(item.getTitle(), spanned -> holder.setText(R.id.tv_page, spanned));
+                holder.setClickListener(v -> Detail.showTitle(item));
             }
         };
-        lv_list.setAdapter(mAdapter);
+        list.setAdapter(mAdapter);
+        list.setLayoutManager(new LinearLayoutManager(getContext()));
         loadTags();
     }
 
@@ -100,7 +92,7 @@ public class TopicFragment extends BaseFragment {
 
     private boolean loadTags() {
         initMenu();
-        Request request = new Request.Builder().url(String.format(getContext().getString(R.string.url_tags), "")).build();
+        Request request = new Request.Builder().url(getContext().getString(R.string.url_tags, "")).build();
         HttpUtil.utils().post(request, (call, response) -> {
                     TopicList topicList = JsonUtil.utils().buildFromAPI(response, TopicList.class);
                     mTopics = topicList.getTags();
@@ -127,8 +119,8 @@ public class TopicFragment extends BaseFragment {
     private boolean openTag(MenuItem item) {
         if (item.getSubMenu() != null) return loadTags();
         String title = item.getTitle().toString();
-        tv_topic.setText(String.format(getString(R.string.data_loading_detail), title));
-        Request request = new Request.Builder().url(String.format(getString(R.string.url_tags), title)).build();
+        tv_topic.setText(getString(R.string.data_loading_detail, title));
+        Request request = new Request.Builder().url(getString(R.string.url_tags, title)).build();
         HttpUtil.utils().post(request, (call, response) -> {
                     TitleList topicPage = JsonUtil.utils().buildFromAPI(response, TitleList.class);
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> tv_topic.setText(title));
@@ -136,7 +128,7 @@ public class TopicFragment extends BaseFragment {
                 },
                 (call, e) -> {
                     BaseActivity.get.runOnUiThreadIgnoreError(() -> tv_topic.setText("加载失败"));
-                    BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
+                    BaseActivity.get.handleError(e);
                 });
         return true;
     }

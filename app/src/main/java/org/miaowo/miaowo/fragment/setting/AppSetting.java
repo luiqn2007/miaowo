@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.sdsmdg.tastytoast.TastyToast;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.miaowo.miaowo.R;
@@ -19,7 +17,6 @@ import org.miaowo.miaowo.api.API;
 import org.miaowo.miaowo.bean.data.User;
 import org.miaowo.miaowo.root.BaseActivity;
 import org.miaowo.miaowo.root.BaseFragment;
-import org.miaowo.miaowo.util.LogUtil;
 import org.miaowo.miaowo.util.SpUtil;
 
 import java.util.ArrayList;
@@ -92,7 +89,7 @@ public class AppSetting extends BaseFragment {
                     adapter.update(tokens);
                 }
             } catch (Exception e) {
-                BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
+                BaseActivity.get.handleError(e);
             }
         });
     }

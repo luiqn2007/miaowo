@@ -72,10 +72,10 @@ public class UserSetting extends BaseFragment {
         FormatUtil format = FormatUtil.format();
         etEmail.setText(mUser.getEmail());
         etUser.setText(mUser.getUsername());
-        etLocation.setText(format.parseHtml(mUser.getLocation()));
-        etWebsite.setText(format.parseHtml(mUser.getWebsite()));
-        etBirthday.setText(format.parseHtml(mUser.getBirthday()));
-        etSignature.setText(format.parseHtml(mUser.getSignature()));
+        format.parseHtml(mUser.getLocation(), spanned -> etLocation.setText(spanned));
+        format.parseHtml(mUser.getWebsite(), spanned -> etWebsite.setText(spanned));
+        format.parseHtml(mUser.getBirthday(), spanned -> etBirthday.setText(spanned));
+        format.parseHtml(mUser.getSignature(), spanned -> etSignature.setText(spanned));
 
         showOri.setOnTouchListener(new PwdShowListener(etPwdOri));
         showNew.setOnTouchListener(new PwdShowListener(etPwdNew));
@@ -104,11 +104,10 @@ public class UserSetting extends BaseFragment {
                     try {
                         JSONObject object = new JSONObject(response.body().string());
                         if ("ok".equals(object.getString("code")))
-                            BaseActivity.get.toast("修改完成, 注销后将更新信息", TastyToast.SUCCESS);
+                            BaseActivity.get.toast("修改完成, 重新登录后将更新信息", TastyToast.SUCCESS);
                         else throw new Exception(object.getString("message"));
                     } catch (Exception e) {
-                        BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
-                        e.printStackTrace();
+                        BaseActivity.get.handleError(e);
                     }
                     LogUtil.i(response);
                 });
@@ -142,8 +141,7 @@ public class UserSetting extends BaseFragment {
                                 getActivity().finish();
                             } else throw new Exception(object.getString("message"));
                         } catch (Exception e) {
-                            BaseActivity.get.toast(e.getMessage(), TastyToast.ERROR);
-                            e.printStackTrace();
+                            BaseActivity.get.handleError(e);
                         }
                     });
                     dialog.dismiss();
