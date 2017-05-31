@@ -2,14 +2,11 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
-        classpath 'com.jakewharton:butterknife-gradle-plugin:8.5.1'
-    }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 25
@@ -19,13 +16,9 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 4
-        versionName "test1"
+        versionName "test1.01"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
-        // Jack
-        jackOptions {
-            enabled true
-        }
     }
     buildTypes {
         debug {
@@ -38,12 +31,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
     }
 }
 
@@ -59,8 +52,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.squareup.okio:okio:1.11.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.0'
+    compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
@@ -68,11 +61,10 @@ dependencies {
     compile 'com.mikepenz:fontawesome-typeface:4.7.0.0@aar'
     compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     compile 'com.cleveroad:fan-layout-manager:1.0.4'
-    compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.github.yalantis:ucrop:2.2.1'
-    compile 'org.jsoup:jsoup:1.10.2'
     testCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile 'javax.annotation:javax.annotation-api:1.2'
 }
 
 allprojects {
@@ -80,4 +72,7 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
     }
+}
+repositories {
+    mavenCentral()
 }

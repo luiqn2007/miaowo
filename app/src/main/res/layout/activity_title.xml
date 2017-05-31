@@ -7,7 +7,7 @@
     tools:context="org.miaowo.miaowo.activity.Detail">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/title"
+        android:id="@+id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="8dp"

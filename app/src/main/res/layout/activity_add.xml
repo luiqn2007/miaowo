@@ -24,7 +24,7 @@
         android:id="@+id/tv_announcement"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:text="@string/announcement"
+        android:text="@string/office"
         android:textSize="24sp"
         android:textColor="@color/md_blue_grey_700"
         android:gravity="center"

@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "versionName": "test1",
-  "message": "打算转换为 Kotlin 编写，所以先做一个备份。版本号没变。",
+  "version": 4,
+  "versionName": "test1.01",
+  "message": "把源代码转换为 kotlin 了，没啥大改动。安装包大小大概为 2.8MB",
   "url": "http://git.oschina.net/lq2007/miaowo/raw/master/app/app-release.apk"
 }

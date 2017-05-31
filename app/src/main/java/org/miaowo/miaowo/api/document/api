@@ -66,7 +66,7 @@ api/v1
             Updates a category's data
             Accepts: name, description, bgColor, color, parentCid
         DELETE /:cid
-            Purges a category, including all topics and posts inside of it (Careful: There is no confirmation!)
+            Purges a category, including all topic and posts inside of it (Careful: There is no confirmation!)
             Accepts: No parameters
         PUT /:cid/state
             Enables a category
@@ -88,7 +88,7 @@ api/v1
         DELETE /:slug/membership
             Leaves a group
             Accepts: No parameters
-    /topics
+    /topic
         POST /
             Creates a new topic
             Requires: cid, title, content
