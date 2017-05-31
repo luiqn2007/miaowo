@@ -85,17 +85,17 @@ object FormatUtil {
                         ResourcesCompat.getDrawable(App.i.resources, R.drawable.ic_error, null))
                 e.printStackTrace()
             } finally {
-                BaseActivity.get!!.runOnUiThreadIgnoreError {
-                    apply(Html.fromHtml(
-                            html,
-                            { imgRets[it.toLowerCase()] },
-                            { _, _, output, _ ->
-                                output.setSpan(
-                                        { Layout.Alignment.ALIGN_NORMAL } as AlignmentSpan,
-                                        0,
-                                        output.length,
-                                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE) }))
-                }
+//                BaseActivity.get!!.runOnUiThreadIgnoreError {
+//                    apply(Html.fromHtml(
+//                            html,
+//                            { imgRets[it.toLowerCase()] },
+//                            { _, _, output, _ ->
+//                                output.setSpan(
+//                                        { Layout.Alignment.ALIGN_NORMAL } as AlignmentSpan,
+//                                        0,
+//                                        output.length,
+//                                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE) }))
+//                }
             }
         }
     }
