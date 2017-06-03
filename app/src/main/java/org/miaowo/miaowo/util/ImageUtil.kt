@@ -8,6 +8,7 @@ import com.amulyakhare.textdrawable.TextDrawable
 import com.squareup.picasso.Picasso
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Detail
+import org.miaowo.miaowo.activity.MiaoUser
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseActivity
 import org.miaowo.miaowo.bean.data.User
@@ -32,7 +33,7 @@ object ImageUtil {
             fillUserImage(iv, user)
             if (clickable) {
                 if (user.uid <= 0) iv.setOnClickListener { BaseActivity.get?.handleError(R.string.err_not_login) }
-                else iv.setOnClickListener { Detail.showUser(user.username) }
+                else iv.setOnClickListener { MiaoUser.showUser(user.username) }
             }
         }
     }

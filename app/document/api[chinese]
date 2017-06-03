@@ -6,8 +6,6 @@ JSON Web令牌是一种开放的行业标准RFC 7519方法，用于在双方之�
 行请求，请以与插件中定义的相同的密码对整个请求的有效负载进行签名，并将其发送到POST正文中或作为查询字符串参数。在这两
 种情况下，都使用关键字“token”。
 
-curl -H "Authorization: Bearer c5ba023b-e0ee-4668-96d8-1deb886d9b33" https://www.miaowo.org/api/v1/users/125/tokens
-
 /api/v1
     /users
         POST /

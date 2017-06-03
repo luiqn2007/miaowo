@@ -1,6 +1,6 @@
 {
-  "version": 5,
-  "versionName": "test1.01",
-  "message": "把源代码转换为 kotlin 了，没啥大改动。安装包大小大概为 2.8MB",
+  "version": 6,
+  "versionName": "test1.1",
+  "message": "更换图标了，感谢 Simo 提供的图标；\n用户详细页面重新写了写，完全去除了浮动窗口。\n大小大概3.5MB。自从使用的kotlin后apk包大小就变大了。",
   "url": "http://git.oschina.net/lq2007/miaowo/raw/master/app/release/app-release.apk"
 }

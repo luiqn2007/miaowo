@@ -27,6 +27,24 @@ object Const {
     val TO = 2
     val NO_ID = -1
     val ID = "id"
+
+    val ID_STATUS_ONLINE = 90
+    val ID_STATUS_AWAY = 91
+    val ID_STATUS_DND = 92
+    val ID_STATUS_OFFLINE = 93
+    val ID_EDIT = 94
+    val ID_INFO = 95
+    val ID_CHAT = 96
+    val ID_FOCUS = 97
+    val ID_FOCUSED = 98
+    val ID_LIKE = 99
+    val ID_TOPIC = 910
+    val ID_POST = 911
+//    val ID_MANAGER_EDIT = 912
+    val ID_MANAGER_INFO = 913
+    val ID_MANAGER_BAN = 914
+    val ID_MANAGER_DELETE = 915
+
     // json
     val JSON_PAIR = arrayOf(Pair("JSON.parse('", "\')"),
             Pair("<script id=\"ajaxify-data\" type=\"application/json\">", "</script>"))

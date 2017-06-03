@@ -220,7 +220,7 @@ abstract class BaseActivity private constructor() : AppCompatActivity() {
      * *
      * @param show 要显示的 Fragment
      */
-    fun loadFragment(@IdRes container: Int = R.id.container, show: BaseFragment) {
+    fun loadFragment(@IdRes container: Int = R.id.container, show: BaseFragment?) {
         val manager = supportFragmentManager
         if (manager.fragments == null || manager.fragments.isEmpty()) {
             manager.beginTransaction().add(container, show).show(show).commit()

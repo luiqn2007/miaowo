@@ -1,8 +1,11 @@
 package org.miaowo.miaowo.util
 
 import android.util.Log
+import android.widget.Toast
+import com.sdsmdg.tastytoast.TastyToast
 
 import okhttp3.Response
+import org.miaowo.miaowo.base.BaseActivity
 
 /**
  * 封装的 Log 输出类
@@ -12,6 +15,7 @@ import okhttp3.Response
 object LogUtil {
 
     fun TODO(msg: String) {
+        BaseActivity.get?.toast("尚未实现", TastyToast.WARNING)
         Log.e("TODO: ", msg)
     }
 

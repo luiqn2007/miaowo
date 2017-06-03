@@ -1,7 +1,5 @@
 package org.miaowo.miaowo.ui.load_more_list
 
-import android.support.v7.widget.RecyclerView
-import android.view.ViewGroup
 import org.miaowo.miaowo.other.Const
 import java.util.*
 
@@ -10,24 +8,16 @@ import java.util.*
  * Created by luqin on 16-12-28.
  */
 
-open class LMLPageAdapter<E>(page: LMLPage<E>, private val mLoader: LMLPageAdapter.ViewLoaderCreator<E>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), LMLAdapter<E> {
-
+open class LMLPageAdapter<E>(page: LMLPage<E>, private val mLoader: LMLViewCreator<E>) : LMLAdapter<E>(mLoader) {
     private val mPages = ArrayList<LMLPage<E>>()
+    var page = 1
 
     init {
         mPages.add(page)
     }
 
-    constructor(items: List<E>, loader: ViewLoaderCreator<E>) : this(LMLPage(items), loader)
-    constructor(loader: ViewLoaderCreator<E>) : this(LMLPage<E>(), loader)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return mLoader.createHolder(parent, viewType)
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        mLoader.bindView(getItem(position), holder, getItemViewType(position))
-    }
+    constructor(items: List<E>, loader: LMLViewCreator<E>) : this(LMLPage(items), loader)
+    constructor(loader: LMLViewCreator<E>) : this(LMLPage<E>(), loader)
 
     override fun getItemCount() = mPages.sumBy { it.items.size }
 
@@ -124,9 +114,21 @@ open class LMLPageAdapter<E>(page: LMLPage<E>, private val mLoader: LMLPageAdapt
         }
     }
 
-    interface ViewLoaderCreator<in E> {
-        fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-        fun bindView(item: E?, holder: RecyclerView.ViewHolder, type: Int)
-        fun setType(item: E?, position: Int): Int
+    override fun load(back: Boolean, list: List<E>) {
+        if (back) {
+            if (page > 1) page--
+        }
+        else page++
+
+        if (list.isEmpty()) {
+            if (!back) page--
+        } else if (back) {
+            if (page == 1) clear()
+            addPage(list, page, true)
+            removePage(page + 2)
+        } else {
+            addPage(list, page)
+            removePage(page - 2)
+        }
     }
 }

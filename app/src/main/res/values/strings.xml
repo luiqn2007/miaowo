@@ -2,21 +2,6 @@
     <string name="app_name">喵窝</string>
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
-    <string name="url_home">https://www.miaowo.org%1$s</string>
-    <string name="url_category">https://www.miaowo.org/api/category/%1$s?page=%2$d</string>
-    <string name="url_api">https://www.miaowo.org/api/v1/%1$s/%2$s</string>
-    <string name="url_update">http://git.oschina.net/lq2007/miaowo/raw/master/app/version</string>
-    <string name="url_tags">https://www.miaowo.org/api/tags/%1$s</string>
-    <string name="url_search">https://www.miaowo.org/api/search?term=%1$s%2$s</string>
-    <string name="url_topic">https://www.miaowo.org/api/topic/%1$s</string>
-    <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
-    <string name="url_login">https://www.miaowo.org/login</string>
-    <string name="url_register">https://www.miaowo.org/register</string>
-    <string name="url_unread">https://www.miaowo.org/api/unread</string>
-    <string name="url_users">https://www.miaowo.org/api/users</string>
-    <string name="url_chat_message">https://www.miaowo.org/api/user/%1$s/chats/%2$d</string>
-    <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>
-
     <string name="square">广场</string>
     <string name="unread">未读</string>
     <string name="topic">话题</string>
@@ -44,11 +29,24 @@
     <string name="hint_reply">回复正文</string>
     <string name="reply">回复</string>
     <string name="more99">99+</string>
+    <string name="chat">聊天</string>
     <string name="chat_all">所有聊天</string>
     <string name="update_start">升级! (•‾̑⌣‾̑•)✧˖°</string>
     <string name="update_later">以后再说吧</string>
     <string name="reload">重新加载</string>
+    <string name="focused">Ta 关注的</string>
+    <string name="liked">关注 Ta的</string>
+    <string name="edit">编辑</string>
+    <string name="info">信息</string>
+    <string name="manager">管理</string>
+    <string name="ban">封禁</string>
 
+    <string name="status">状态</string>
+    <string name="statusOnline">状态</string>
+    <string name="statusHide">隐身</string>
+    <string name="statusOffline">离线</string>
+    <string name="statusDnd">勿扰</string>
+    <string name="statusAway">离开</string>
 
     <string name="user_pwd">密码: </string>
     <string name="user_email">邮箱: </string>
@@ -66,32 +64,6 @@
     <string name="from_album">从相册</string>
     <string name="from_camera">从相机</string>
     <string name="from_text">文字头像</string>
-
-    <string name="err_page_end">到底啦</string>
-    <string name="err_permissions">权限不足</string>
-    <string name="err_no_pic">无图片</string>
-    <string name="err_camera_app">无法打开摄像头应用</string>
-    <string name="err_username">用户名不合法</string>
-    <string name="err_password">密码不合法</string>
-    <string name="err_email">电子邮件不合法</string>
-    <string name="err_not_login">请先登录</string>
-    <string name="err_token">无法获取 Token</string>
-    <string name="err_load">加载失败</string>
-    <string name="err_msg_empty">消息不能为空</string>
-    <string name="err_title_empty">标题不能为空</string>
-    <string name="err_sdcard">找不到储存空间</string>
-    <string name="err_dir">无法创建安装文件文件夹</string>
-    <string name="err_apk">无法创建安装文件</string>
-    <string name="err_del">无法删除已存在安装包</string>
-    <string name="err_no_message">无可发送消息</string>
-    <string name="err_no_err">未知错误</string>
-    <string name="err_focus_self">无法关注自身</string>
-    <string name="err_no_version">无法获取新版本信息</string>
-    <string name="err_empty">空错误信息</string>
-    <string name="err_chat_user">你是谁? 从哪来?</string>
-    <string name="err_get">获取失败</string>
-    <string name="err_ill">无效错误信息</string>
-    <string name="process_err">登录失败, 请重新登录再试一次</string>
 
     <string name="data_loading">加载中…</string>
     <string name="data_loading_detail">正在加载: %1$s</string>

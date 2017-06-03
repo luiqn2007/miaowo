@@ -7,27 +7,26 @@ import android.widget.ImageView
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Detail
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
 import org.miaowo.miaowo.base.BaseViewHolder
 import org.miaowo.miaowo.bean.data.Title
 import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
+import org.miaowo.miaowo.ui.load_more_list.LMLViewCreator
 import org.miaowo.miaowo.util.FormatUtil
 import org.miaowo.miaowo.util.ImageUtil
-import java.util.*
 
 /**
  * 问题列表的适配器,
  * Created by luqin on 17-3-15.
  */
 
-class TitleListAdapter : LMLPageAdapter<Title>(ArrayList<Title>(), object : LMLPageAdapter.ViewLoaderCreator<Title> {
-    override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+class TitleListAdapter : LMLPageAdapter<Title>(object : LMLViewCreator<Title> {
+    override fun createHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         return BaseViewHolder(
                 LayoutInflater.from(App.i).inflate(R.layout.list_question_title, parent, false)
         )
     }
 
-    override fun bindView(item: Title?, holder: RecyclerView.ViewHolder, type: Int) {
+    override fun bindView(item: Title?, holder: RecyclerView.ViewHolder?, type: Int) {
         val vh = holder as BaseViewHolder
         if (item != null) {
             val u = item.user

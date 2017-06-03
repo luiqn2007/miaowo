@@ -53,8 +53,8 @@ object API {
                         .url(App.i.getString(R.string.url_api, Type.users.name, "${loginUser?.uid}/tokens/$token"))
                         .delete()
                         .addHeader("Authorization", "Bearer $token")
-                val execute = OkHttpClient().newCall(request.build()).execute()
-                LogUtil.TODO(execute.body()?.string() ?: "clearToken")
+                        .build()
+                HttpUtil.post(request) { _, _ -> }
             } catch (e: IOException) {
                 e.printStackTrace()
             } finally {
@@ -177,7 +177,7 @@ object API {
             }
         }
 
-        private fun checkUser(username: String, password: String, email: String = "login@miaowo.org"): Boolean {
+        private fun checkUser(username: String = loginUser!!.username, password: String, email: String = "login@miaowo.org"): Boolean {
             if (email.isEmpty() || !email.contains("@")) {
                 BaseActivity.get?.handleError(R.string.err_email)
                 Miao.fg_miao.prepareLogin()
@@ -331,11 +331,11 @@ object API {
         /**
          * 更改用户资料
          */
-        fun updateUser(name: String, email: String, fullName: String, website: String, location: String, birthday: String, signature: String, callback: (message: String) -> Unit) {
+        fun updateUser(name: String = loginUser!!.username, email: String, fullName: String, website: String, location: String, birthday: String, signature: String, callback: (message: String) -> Unit) {
             val bodyUser = FormBody.Builder()
                     .add("username", name)
                     .add("email", email)
-                    .add("fullname", fullName)
+                    .add("username", fullName)
                     .add("website", website)
                     .add("location", location)
                     .add("birthday", birthday)
@@ -349,8 +349,8 @@ object API {
         /**
          * 注销用户
          */
-        fun removeUser(callback: (message: String) -> Unit) {
-            API.useAPI(API.Type.users, loginUser!!.uid.toString(), API.Method.DELETE, true, null) { _, response ->
+        fun removeUser(uid: Int = loginUser!!.uid, callback: (message: String) -> Unit) {
+            API.useAPI(API.Type.users, uid.toString(), API.Method.DELETE, true, null) { _, response ->
                 callback(getResultMessage(response))
             }
         }
@@ -367,7 +367,7 @@ object API {
          */
         fun version(callback: (ver: VersionMessage?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_update)).build()
-            HttpUtil.post(request, { _, _ ->  }) { _, response ->
+            HttpUtil.post(request, { _, _ -> }) { _, response ->
                 callback(build(response, VersionMessage::class.java))
             }
         }
@@ -383,6 +383,7 @@ object API {
                 }
             }
         }
+
         fun user(callback: (users: UserList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_users)).build()
             HttpUtil.post(request) { _, rspUser ->
@@ -429,7 +430,7 @@ object API {
         }
 
         /**
-         * 话题(1 列表 2 具体)
+         * 话题(1 列表 2 具体 3 用户)
          */
         fun topic(onErr: (call: Call, e: IOException) -> Unit, callback: (topic: TopicList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_tags, "")).build()
@@ -439,11 +440,21 @@ object API {
                 }
             }
         }
-        fun topic(name: String, onErr: (call: Call, e: IOException) -> Unit, callback: (topic: TitleList?) -> Unit) {
+
+        fun topic(name: String = loginUser!!.username, onErr: (call: Call, e: IOException) -> Unit, callback: (topic: TitleList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_tags, name)).build()
             HttpUtil.post(request, onErr) { _, response ->
                 BaseActivity.get?.runOnUiThreadIgnoreError {
                     callback(build(response, TitleList::class.java))
+                }
+            }
+        }
+
+        fun topic(name: String = loginUser!!.username, callback: (topic: UserTopicList?) -> Unit) {
+            val request = Request.Builder().url(App.i.getString(R.string.url_user_topic, name)).build()
+            HttpUtil.post(request) { _, response ->
+                BaseActivity.get?.runOnUiThreadIgnoreError {
+                    callback(build(response, UserTopicList::class.java))
                 }
             }
         }
@@ -500,6 +511,7 @@ object API {
                 }
             }
         }
+
         fun chatMessage(roomId: Int, callback: (room: ChatMessageList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_chat_message,
                     API.loginUser!!.username.toLowerCase(), roomId)).build()
@@ -507,6 +519,43 @@ object API {
                 BaseActivity.get?.runOnUiThreadIgnoreError {
                     callback(build(response, ChatMessageList::class.java))
                 }
+            }
+        }
+
+        /**
+         * 用户登录信息
+         */
+        fun info(name: String = loginUser!!.username, callback: (info: UserInfoList?) -> Unit) {
+            val request = Request.Builder().url(App.i.getString(R.string.url_user_info, name)).build()
+            HttpUtil.post(request) { _, response ->
+                callback(build(response, UserInfoList::class.java))
+            }
+        }
+
+        /**
+         * 用户帖子
+         */
+        fun post(name: String = loginUser!!.username, callback: (info: UserPostList?) -> Unit) {
+            val request = Request.Builder().url(App.i.getString(R.string.url_user_post, name)).build()
+            HttpUtil.post(request) { _, response ->
+                callback(build(response, UserPostList::class.java))
+            }
+        }
+
+        /**
+         * 用户关注
+         */
+        fun following(name: String = loginUser!!.username, callback: (following: UserFollowList?) -> Unit) {
+            val request = Request.Builder().url(App.i.getString(R.string.url_user_follow, name)).build()
+            HttpUtil.post(request) { _, response ->
+                callback(build(response, UserFollowList::class.java))
+            }
+        }
+
+        fun follower(name: String = loginUser!!.username, callback: (following: UserFollowList?) -> Unit) {
+            val request = Request.Builder().url(App.i.getString(R.string.url_user_follower, name)).build()
+            HttpUtil.post(request) { _, response ->
+                callback(build(response, UserFollowList::class.java))
             }
         }
 

@@ -1,45 +1,96 @@
 package org.miaowo.miaowo.bean.data
 
-import android.os.Parcel
-import android.os.Parcelable
+import javax.annotation.Generated
+import com.google.gson.annotations.SerializedName
 
 /**
  * 话题
  */
-open class Topic private constructor(
-        var value: String? = null,  // value : 猜猜我是谁
-        var score: Int = 0,  // score : 2
-        var color: String? = null,  // color :
-        var bgColor: String? = null  // bgColor :
-): Parcelable {
-    protected constructor(`in`: Parcel): this(
-        value = `in`.readString(),
-        score = `in`.readInt(),
-        color = `in`.readString(),
-        bgColor = `in`.readString()
-    )
+@Generated("com.robohorse.robopojogenerator")
+data class Topic(
+        @field:SerializedName("pinned")
+        val pinned: Boolean? = null,
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(value)
-        dest.writeInt(score)
-        dest.writeString(color)
-        dest.writeString(bgColor)
-    }
+        @field:SerializedName("lastposttime")
+        val lastposttime: Long? = null,
 
-    override fun describeContents(): Int {
-        return 0
-    }
+        @field:SerializedName("unreplied")
+        val unreplied: Boolean? = null,
 
-    companion object {
+        @field:SerializedName("unread")
+        val unread: Boolean? = null,
 
-        val CREATOR: Parcelable.Creator<Topic> = object : Parcelable.Creator<Topic> {
-            override fun createFromParcel(`in`: Parcel): Topic {
-                return Topic(`in`)
-            }
+        @field:SerializedName("timestampISO")
+        val timestampISO: String? = null,
 
-            override fun newArray(size: Int): Array<Topic?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-}
+        @field:SerializedName("title")
+        val title: String? = null,
+
+        @field:SerializedName("teaserPid")
+        val teaserPid: String? = null,
+
+        @field:SerializedName("tid")
+        val tid: Int? = null,
+
+        @field:SerializedName("uid")
+        val uid: Int? = null,
+
+        @field:SerializedName("lastposttimeISO")
+        val lastposttimeISO: String? = null,
+
+        @field:SerializedName("isOwner")
+        val isOwner: Boolean? = null,
+
+        @field:SerializedName("mainPid")
+        val mainPid: Int? = null,
+
+        @field:SerializedName("locked")
+        val locked: Boolean? = null,
+
+        @field:SerializedName("slug")
+        val slug: String? = null,
+
+        @field:SerializedName("timestamp")
+        val timestamp: Long? = null,
+
+        @field:SerializedName("ignored")
+        val ignored: Boolean? = null,
+
+        @field:SerializedName("icons")
+        val icons: List<Any?>? = null,
+
+        @field:SerializedName("tags")
+        val tags: List<Any?>? = null,
+
+        @field:SerializedName("bookmark")
+        val bookmark: Any? = null,
+
+        @field:SerializedName("deleted")
+        val deleted: Boolean? = null,
+
+        @field:SerializedName("postcount")
+        val postcount: Int? = null,
+
+        @field:SerializedName("viewcount")
+        val viewcount: Int? = null,
+
+        @field:SerializedName("titleRaw")
+        val titleRaw: String? = null,
+
+        @field:SerializedName("category")
+        val category: Category? = null,
+
+        @field:SerializedName("user")
+        val user: User? = null,
+
+        @field:SerializedName("cid")
+        val cid: String? = null,
+
+        @field:SerializedName("teaser")
+        val teaser: Teaser? = null,
+
+        val value: String? = null,  // value : 猜猜我是谁
+        val score: Int = 0,  // score : 2
+        val color: String? = null,  // color :
+        val bgColor: String? = null  // bgColor :
+)

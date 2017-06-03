@@ -23,6 +23,8 @@ import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.Title
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.template.MyOnTabSelectedListener
+import org.miaowo.miaowo.ui.load_more_list.LMLAdapter
+import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.SpUtil
 
@@ -99,8 +101,8 @@ class SquareFragment : BaseFragment(R.layout.fragment_square), BottomNavigationV
 
         override fun setAdapter() = TitleListAdapter()
 
-        override fun setItems(page: Int, set: (list: List<Title>) -> Unit) {
-            API.Doc.category(arguments[Const.SLUG].toString(), page) {
+        override fun setItems(adapter: LMLAdapter<Title>, set: (list: List<Title>) -> Unit) {
+            API.Doc.category(arguments[Const.SLUG].toString(), (adapter as? LMLPageAdapter)?.page ?: 0) {
                 set(it?.topics ?: listOf())
             }
         }

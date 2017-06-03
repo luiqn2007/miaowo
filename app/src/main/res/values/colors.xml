@@ -4,5 +4,11 @@
     <color name="colorPrimaryDark">@color/md_white_1000</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- 状态: 在线, 离开, 勿扰, 隐身(离线) -->
+    <color name="colorOnline">@color/md_green_600</color>
+    <color name="colorAway">@color/md_orange_600</color>
+    <color name="colorDnd">@color/md_red_600</color>
+    <color name="colorHide">@color/md_grey_600</color>
+
     <color name="translate">#00FFFFFF</color>
 </resources>

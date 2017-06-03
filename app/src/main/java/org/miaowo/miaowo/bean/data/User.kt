@@ -25,7 +25,7 @@ open class User private constructor(
         var joindate: Long,  // joindate : 1479650239103
         var lastonline: Long,  // lastonline : 1489775541488
         var picture: String,  // picture : /uploads/files/14828604360404e0e28381f30e92480e63b4a45086e061d95f715.jpg
-        var fullname: String,  // fullname : 么么么喵
+        var fullname: String,  // fullname : 么么么喵a
         var location: String,  // location :
         var birthday: String,  // birthday :
         var website: String,  // website :
@@ -105,9 +105,6 @@ open class User private constructor(
         val banned_until_readable: String,  //
         var token: String  //
 ): Parcelable {
-
-
-
     protected constructor(`in`: Parcel) : this(
         username = `in`.readString(),
         userslug = `in`.readString(),

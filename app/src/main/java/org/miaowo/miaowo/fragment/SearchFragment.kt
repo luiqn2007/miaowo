@@ -10,7 +10,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Detail
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.activity.MiaoUser
 import org.miaowo.miaowo.base.BaseFragment
 import org.miaowo.miaowo.base.BaseRecyclerAdapter
 import org.miaowo.miaowo.base.BaseViewHolder
@@ -42,7 +42,7 @@ class SearchFragment : BaseFragment(R.layout.fragment_search) {
             val u = getItem(position)
             holder.setText(R.id.tv_user, u.username)
             ImageUtil.setUser(holder.getView(R.id.iv_user) as ImageView, u, false)
-            holder.setClickListener { Detail.showUser(u.username) }
+            holder.setClickListener { MiaoUser.showUser(u.username) }
         }
     }
 

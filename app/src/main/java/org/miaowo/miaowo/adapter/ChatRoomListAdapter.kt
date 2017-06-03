@@ -5,26 +5,24 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.bean.data.ChatRoom
-import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
-import org.miaowo.miaowo.fragment.chat.ChatListFragment
 import org.miaowo.miaowo.base.BaseViewHolder
+import org.miaowo.miaowo.bean.data.ChatRoom
+import org.miaowo.miaowo.fragment.chat.ChatListFragment
+import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
+import org.miaowo.miaowo.ui.load_more_list.LMLViewCreator
 import org.miaowo.miaowo.util.ImageUtil
-
-import java.util.ArrayList
 
 /**
  * 聊天信息
  * Created by luqin on 17-4-7.
  */
 
-class ChatRoomListAdapter(context: Context, listener: ChatListFragment.OnChatListener?) : LMLPageAdapter<ChatRoom>(ArrayList<ChatRoom>(), object : LMLPageAdapter.ViewLoaderCreator<ChatRoom> {
-    override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+class ChatRoomListAdapter(context: Context, listener: ChatListFragment.OnChatListener?) : LMLPageAdapter<ChatRoom>(object : LMLViewCreator<ChatRoom> {
+    override fun createHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder =
             BaseViewHolder(LayoutInflater.from(context).inflate(R.layout.list_chat, parent, false))
 
-    override fun bindView(item: ChatRoom?, holder: RecyclerView.ViewHolder, type: Int) {
+    override fun bindView(item: ChatRoom?, holder: RecyclerView.ViewHolder?, type: Int) {
         val h = holder as BaseViewHolder
         if (item != null) {
             h.view.setOnClickListener { listener?.toRoom(item) }

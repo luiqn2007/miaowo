@@ -12,6 +12,7 @@ import org.miaowo.miaowo.base.BaseViewHolder
 import org.miaowo.miaowo.bean.data.ChatMessage
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
+import org.miaowo.miaowo.ui.load_more_list.LMLViewCreator
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.FormatUtil
 
@@ -20,14 +21,14 @@ import org.miaowo.miaowo.util.FormatUtil
  * Created by luqin on 17-4-7.
  */
 
-class ChatMsgAdapter : LMLPageAdapter<ChatMessage>(object : LMLPageAdapter.ViewLoaderCreator<ChatMessage> {
+class ChatMsgAdapter : LMLPageAdapter<ChatMessage>(object : LMLViewCreator<ChatMessage> {
 
-    override fun createHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun createHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         return BaseViewHolder(LayoutInflater
                 .from(App.i).inflate(R.layout.list_chat_message, parent, false))
     }
 
-    override fun bindView(item: ChatMessage?, holder: RecyclerView.ViewHolder, type: Int) {
+    override fun bindView(item: ChatMessage?, holder: RecyclerView.ViewHolder?, type: Int) {
         val h = holder as BaseViewHolder
         val my = type == Const.MY
         ViewCompat.setBackground(h.getView(R.id.tv_msg), ResourcesCompat.getDrawable(App.i.resources, if (my) R.drawable.bg_rect_red_a100 else R.drawable.bg_rect_deep_purple_300, null))

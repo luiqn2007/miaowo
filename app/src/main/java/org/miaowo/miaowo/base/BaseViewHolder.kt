@@ -20,7 +20,7 @@ class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val mChildViews = SparseArray<View>()
 
     @JvmOverloads
-    constructor(viewId: Int, parent: ViewGroup, attach: Boolean = false) : this(LayoutInflater.from(App.i).inflate(viewId, parent, attach))
+    constructor(viewId: Int, parent: ViewGroup?, attach: Boolean = false) : this(LayoutInflater.from(App.i).inflate(viewId, parent, attach))
 
     /**
      * 获得子 View
