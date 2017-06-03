@@ -2,12 +2,16 @@ package org.miaowo.miaowo.activity
 
 import android.content.Intent
 import android.support.v7.app.AlertDialog
+import okhttp3.Request
 import org.miaowo.miaowo.R
+import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseActivity
 import org.miaowo.miaowo.fragment.*
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.ui.ChatButton
 import org.miaowo.miaowo.util.API
+import org.miaowo.miaowo.util.HttpUtil
+import org.miaowo.miaowo.util.LogUtil
 import org.miaowo.miaowo.util.SpUtil
 import kotlin.properties.Delegates
 
@@ -36,6 +40,31 @@ class Miao : BaseActivity(R.layout.activity_miao), MiaoFragment.OnFragmentIntera
                     .setNegativeButton("我最萌(•‾̑⌣‾̑•)✧˖°") { dialog, _ -> dialog.dismiss() }
                     .show()
             SpUtil.putBoolean(Const.SP_FIRST_BOOT, false)
+        }
+        // 更新
+        checkUpdate()
+    }
+
+    private fun checkUpdate() {
+        API.Doc.version {
+            if (it != null) {
+                val versionCode = App.i.packageManager.getPackageInfo(App.i.packageName, 0).versionCode
+                LogUtil.i("Version: $versionCode to ${it.version}")
+                if (it.version > versionCode) {
+                    val builder = AlertDialog.Builder(BaseActivity.get!!)
+                    builder.setTitle(it.versionName)
+                    builder.setMessage(getString(R.string.update_msg, it.message))
+                    builder.setPositiveButton(R.string.update_start) { dialog, _ ->
+                        val request = Request.Builder().url(it.url).build()
+                        HttpUtil.post(request, onUI = false) { _, repVersion -> BaseActivity.get?.update(repVersion) }
+                        dialog.dismiss()
+                    }
+                    builder.setNegativeButton(R.string.update_later, null)
+                    builder.show()
+                }
+            } else {
+                LogUtil.i("Version: Null")
+            }
         }
     }
 

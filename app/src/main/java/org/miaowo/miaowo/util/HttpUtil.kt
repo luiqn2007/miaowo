@@ -23,15 +23,23 @@ object HttpUtil {
         return this
     }
 
-    @JvmOverloads fun post(request: Request, error: (call: Call, e: IOException) -> Unit = { _, e -> BaseActivity.get?.handleError(e) }, callback: (call: Call, response: Response) -> Unit): Call {
+    @JvmOverloads fun post(request: Request, error: (call: Call, e: IOException) -> Unit = { _, e -> BaseActivity.get?.handleError(e) }, onUI: Boolean = true, callback: (call: Call, response: Response) -> Unit): Call {
         val call = client.newCall(request)
         LogUtil.i("url: ${request.url()}")
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                BaseActivity.get?.runOnUiThreadIgnoreError { error(call, e) }
+                if (onUI) {
+                    BaseActivity.get?.runOnUiThreadIgnoreError { error(call, e) }
+                } else {
+                    error(call, e)
+                }
             }
             override fun onResponse(call: Call, response: Response) {
-                BaseActivity.get?.runOnUiThreadIgnoreError { callback(call, response) }
+                if (onUI) {
+                    BaseActivity.get?.runOnUiThreadIgnoreError { callback(call, response) }
+                } else {
+                    callback(call, response)
+                }
             }
         })
         return call

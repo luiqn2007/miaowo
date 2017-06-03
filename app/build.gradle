@@ -15,7 +15,7 @@ android {
         applicationId "org.miaowo.miaowo"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 6
+        versionCode 4
         versionName "test1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
