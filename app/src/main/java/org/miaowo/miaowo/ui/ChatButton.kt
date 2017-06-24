@@ -10,9 +10,10 @@ import android.view.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Chat
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.util.LogUtil
-import org.miaowo.miaowo.util.SpUtil
+import org.miaowo.miaowo.base.extra.activity
+import org.miaowo.miaowo.base.extra.uiThread
+import org.miaowo.miaowo.base.extra.spGet
+import org.miaowo.miaowo.base.extra.spPut
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -36,10 +37,10 @@ class ChatButton : View {
     private var mMoveBack: Timer? = null
 
     private fun init() {
-        mManager = BaseActivity.get?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        mManager = activity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         mManager?.defaultDisplay?.getSize(mScreenSize)
         mSize = (Math.max(mScreenSize.x, mScreenSize.y) / 32 * 3).toFloat()
-        mPosition.set(SpUtil.getInt("btn_x", mScreenSize.x / 2), SpUtil.getInt("btn_y", mScreenSize.y / 2))
+        mPosition.set(spGet("btn_x", mScreenSize.x / 2), spGet("btn_y", mScreenSize.y / 2))
         mPaintFill.style = Paint.Style.FILL
         val color = ResourcesCompat.getColor(resources, R.color.md_deep_purple_400, null)
         mPaintFill.color = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color))
@@ -100,7 +101,7 @@ class ChatButton : View {
                     mMoveBack = Timer()
                     mMoveBack?.schedule(object : TimerTask() {
                         override fun run() {
-                            BaseActivity.get?.runOnUiThreadIgnoreError { clickAction(-1, finalY, true) }
+                            activity?.uiThread { clickAction(-1, finalY, true) }
                             mMoveBack = null
                         }
                     }, 600)
@@ -110,7 +111,7 @@ class ChatButton : View {
                     mMoveBack = Timer()
                     mMoveBack?.schedule(object : TimerTask() {
                         override fun run() {
-                            BaseActivity.get?.runOnUiThreadIgnoreError { clickAction((mScreenSize.x - mSize + 1).toInt(), finalY, true) }
+                            activity?.uiThread { clickAction((mScreenSize.x - mSize + 1).toInt(), finalY, true) }
                             mMoveBack = null
                         }
                     }, 600)
@@ -136,8 +137,8 @@ class ChatButton : View {
         }
         mPosition.x = xTo
         mPosition.y = yTo
-        SpUtil.putInt("btn_x", mPosition.x)
-        SpUtil.putInt("btn_y", mPosition.y)
+        spPut("btn_x", mPosition.x)
+        spPut("btn_y", mPosition.y)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -184,12 +185,12 @@ class ChatButton : View {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        BaseActivity.get?.onKeyDown(keyCode, event)
+        activity?.onKeyDown(keyCode, event)
         return true
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        BaseActivity.get?.onKeyUp(keyCode, event)
+        activity?.onKeyUp(keyCode, event)
         return true
     }
 

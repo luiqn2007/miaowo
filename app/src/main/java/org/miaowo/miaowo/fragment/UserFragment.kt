@@ -11,17 +11,15 @@ import org.miaowo.miaowo.util.API
 
 class UserFragment : BaseListFragment<User>() {
 
-    override fun initView(view: View?) {
-        super.initView(view)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mList?.layoutManager = GridLayoutManager(context, 3)
     }
 
     override fun setAdapter() = UserAdapter()
 
     override fun setItems(adapter: LMLAdapter<User>, set: (list: List<User>) -> Unit) {
-        API.Doc.user {
-            set(it?.users ?: listOf())
-        }
+        API.Doc.user { set(it?.users ?: listOf()) }
     }
 
     companion object {

@@ -1,7 +1,11 @@
 package org.miaowo.miaowo.base
 
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import org.miaowo.miaowo.ui.load_more_list.LMLAdapter
 import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
 import org.miaowo.miaowo.ui.load_more_list.LoadMoreList
@@ -11,12 +15,17 @@ import org.miaowo.miaowo.ui.load_more_list.LoadMoreList
  * Created by luqin on 17-5-4.
  */
 
-abstract class BaseListFragment<ITEM> : BaseFragment(LoadMoreList(App.i)) {
+abstract class BaseListFragment<ITEM> : Fragment() {
 
     protected var mAdapter: LMLAdapter<ITEM>? = null
     protected var mList: LoadMoreList? = null
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return LoadMoreList(App.i)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mList = view as LoadMoreList
         mAdapter = setAdapter()
 

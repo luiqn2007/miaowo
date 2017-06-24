@@ -1,18 +1,22 @@
 package org.miaowo.miaowo.activity
 
+import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_setting.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.loadFragment
 import org.miaowo.miaowo.fragment.setting.AppSetting
 import org.miaowo.miaowo.fragment.setting.UserSetting
 
-class Setting : BaseActivity(R.layout.activity_setting) {
+class Setting : AppCompatActivity() {
 
     private var mUserSetting = UserSetting.newInstance()
     private var mAppSetting = AppSetting.newInstance()
 
-    override fun initActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_setting)
         loadFragment(R.id.container, mUserSetting)
         tab.run {
             addTab(tab.newTab().setText(R.string.setting_user), 0)
@@ -23,11 +27,9 @@ class Setting : BaseActivity(R.layout.activity_setting) {
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     when (tab.position) {
                         0 -> supportFragmentManager.beginTransaction()
-                                .replace(R.id.container, mUserSetting)
-                                .commit()
+                                .replace(R.id.container, mUserSetting).commit()
                         1 -> supportFragmentManager.beginTransaction()
-                                .replace(R.id.container, mAppSetting)
-                                .commit()
+                                .replace(R.id.container, mAppSetting).commit()
                     }
                 }
             })

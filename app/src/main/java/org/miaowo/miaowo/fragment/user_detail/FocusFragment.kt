@@ -12,8 +12,7 @@ import org.miaowo.miaowo.util.API
 
 class FocusFragment : BaseListFragment<User>() {
 
-    override fun initView(view: View?) {
-        super.initView(view)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         mList?.layoutManager = object : GridLayoutManager(context, 3) {
             override fun canScrollVertically() = false
         }

@@ -1,6 +1,7 @@
 package org.miaowo.miaowo.fragment.setting
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,11 +11,12 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_setting_app.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.base.BaseFragment
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.util.API
-import org.miaowo.miaowo.util.SpUtil
+import org.miaowo.miaowo.base.extra.spGet
+import org.miaowo.miaowo.base.extra.spPut
 import java.util.*
 
 /**
@@ -22,15 +24,19 @@ import java.util.*
  * Created by luqin on 17-5-11.
  */
 
-class AppSetting : BaseFragment(R.layout.fragment_setting_app) {
+class AppSetting : Fragment() {
 
     private var mToken = API.token
 
-    override fun initView(view: View?) {
-        sw_tab.isChecked = SpUtil.getBoolean(Const.SP_USE_TAB, false)
-        sw_clean.isChecked = SpUtil.getBoolean(Const.SP_CLEAN_TOKENS, true)
-        sw_tab.setOnClickListener { SpUtil.putBoolean(Const.SP_USE_TAB, sw_tab.isChecked) }
-        sw_clean.setOnClickListener { SpUtil.putBoolean(Const.SP_CLEAN_TOKENS, sw_clean.isChecked) }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflateId(R.layout.fragment_setting_app, inflater, container)
+    }
+    
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        sw_tab.isChecked = spGet(Const.SP_USE_TAB, false)
+        sw_clean.isChecked = spGet(Const.SP_CLEAN_TOKENS, true)
+        sw_tab.setOnClickListener { spPut(Const.SP_USE_TAB, sw_tab.isChecked) }
+        sw_clean.setOnClickListener { spPut(Const.SP_CLEAN_TOKENS, sw_clean.isChecked) }
 
         rv_tokens.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically() = false
@@ -39,7 +45,7 @@ class AppSetting : BaseFragment(R.layout.fragment_setting_app) {
         rv_tokens.adapter = adapter
 
         API.Use.getTokens {
-            if (it.isEmpty()) BaseActivity.get?.handleError(R.string.err_get)
+            if (it.isEmpty()) activity?.handleError(R.string.err_get)
             else adapter.update(it)
         }
     }
@@ -65,7 +71,7 @@ class AppSetting : BaseFragment(R.layout.fragment_setting_app) {
                         if ("ok" == it) {
                             mTokens.removeAt(position)
                             notifyDataSetChanged()
-                        } else BaseActivity.get?.handleError(Exception(it))
+                        } else activity?.handleError(Exception(it))
                     }
                 }
             }

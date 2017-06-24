@@ -1,28 +1,36 @@
 package org.miaowo.miaowo.fragment.setting
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.sdsmdg.tastytoast.TastyToast
 import kotlinx.android.synthetic.main.fragment_setting_user.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.base.BaseFragment
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.other.PwdShowListener
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.FormatUtil
-import org.miaowo.miaowo.util.LogUtil
+import org.miaowo.miaowo.base.extra.lTODO
 
 /**
  * 设置-用户设置
  * Created by luqin on 17-5-11.
  */
 
-class UserSetting : BaseFragment(R.layout.fragment_setting_user) {
+class UserSetting : Fragment() {
 
     private var mUser = API.loginUser!!
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflateId(R.layout.fragment_setting_user, inflater, container)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         et_email.setText(mUser.email)
         et_user.setText(mUser.username)
         FormatUtil.parseHtml(mUser.location) { et_location.setText(it) }
@@ -37,7 +45,7 @@ class UserSetting : BaseFragment(R.layout.fragment_setting_user) {
             val pwdNew = et_pwd_new.text.toString()
             val pwdOld = et_pwd_ori.text.toString()
             API.Use.changePwd(pwdOld, pwdNew) {
-                LogUtil.TODO(it)
+                lTODO(it)
             }
         }
 
@@ -49,8 +57,8 @@ class UserSetting : BaseFragment(R.layout.fragment_setting_user) {
             val birthday = et_birthday.text.toString()
             val signature = et_signature.text.toString()
             API.Use.updateUser(user, email, user, website, location, birthday, signature) {
-                if ("ok" == it) BaseActivity.get?.toast(getString(R.string.user_edit_ok), TastyToast.SUCCESS)
-                else BaseActivity.get?.handleError(Exception(it))
+                if ("ok" == it) activity?.toast(getString(R.string.user_edit_ok), TastyToast.SUCCESS)
+                else activity?.handleError(Exception(it))
             }
         }
 
@@ -66,7 +74,7 @@ class UserSetting : BaseFragment(R.layout.fragment_setting_user) {
                     if ("ok" ==it) {
                         API.Login.logout()
                         activity.finish()
-                    } else BaseActivity.get?.handleError(Exception(it))
+                    } else activity?.handleError(Exception(it))
                 }
                 dialog.dismiss()
             }

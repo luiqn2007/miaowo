@@ -13,7 +13,9 @@ import android.widget.TextView
 import com.squareup.picasso.Picasso
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.activity
+import org.miaowo.miaowo.base.extra.lInfo
+import org.miaowo.miaowo.base.extra.uiThread
 import java.io.IOException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -72,7 +74,7 @@ object FormatUtil {
         }
     }
 
-    fun parseHtml(html: String?) = Html.fromHtml(html ?: "")
+    fun parseHtml(html: String?) = Html.fromHtml(html ?: "")!!
 
     fun parseHtml(html: String?, apply: (spanned: Spanned) -> Unit) {
         val imgs = mutableListOf<String>()
@@ -84,7 +86,7 @@ object FormatUtil {
             val w = if (drawable?.intrinsicWidth ?: 0 <= 0) min else drawable!!.intrinsicWidth
             val h = if (drawable?.intrinsicHeight ?: 0 <= 0) min else drawable!!.intrinsicHeight
             drawable?.setBounds(0, 0, w, h)
-            LogUtil.i("drawable: ${drawable?.bounds}")
+            lInfo("drawable: ${drawable?.bounds}")
             drawable
         }) { _, _, _, _ -> }
         if (!imgs.isEmpty()) Thread { loadImgs(html ?: "", imgs, apply) }.start()
@@ -96,16 +98,16 @@ object FormatUtil {
             try {
                 val picImg = if (img.toLowerCase().startsWith("http")) img
                 else App.i.getString(R.string.url_home, img)
-                LogUtil.i("loadImgs: $picImg")
+                lInfo("loadImgs: $picImg")
                 imgRets.put(img.toLowerCase(),
-                        BitmapDrawable(App.i.resources, Picasso.with(BaseActivity.get).load(picImg).error(R.drawable.ic_error).get()))
+                        BitmapDrawable(App.i.resources, Picasso.with(activity).load(picImg).error(R.drawable.ic_error).get()))
 
             } catch (e: IOException) {
                 imgRets.put(img.toLowerCase(),
                         ResourcesCompat.getDrawable(App.i.resources, R.drawable.ic_error, null))
                 e.printStackTrace()
             } finally {
-                BaseActivity.get!!.runOnUiThreadIgnoreError {
+                activity!!.uiThread {
                     apply(Html.fromHtml(html, {
                         val drawable = imgRets[it.toLowerCase()]
                         val size = screenSize()
@@ -114,7 +116,7 @@ object FormatUtil {
                         val w = if (drawable?.intrinsicWidth ?: 0 <= 0) min else drawable!!.intrinsicWidth
                         val h = if (drawable?.intrinsicHeight ?: 0 <= 0) min else drawable!!.intrinsicHeight
                         drawable?.setBounds(0, 0, w, h)
-                        LogUtil.i("drawable-set: ${drawable?.bounds}")
+                        lInfo("drawable-set: ${drawable?.bounds}")
                         drawable
                     }) { _, _, _, _ -> })
                 }

@@ -1,8 +1,11 @@
 package org.miaowo.miaowo.fragment
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
@@ -11,19 +14,18 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Detail
 import org.miaowo.miaowo.activity.MiaoUser
-import org.miaowo.miaowo.base.BaseFragment
 import org.miaowo.miaowo.base.BaseRecyclerAdapter
 import org.miaowo.miaowo.base.BaseViewHolder
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.data.Post
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.FormatUtil
 import org.miaowo.miaowo.util.ImageUtil
 
-class SearchFragment : BaseFragment(R.layout.fragment_search) {
-
+class SearchFragment : Fragment() {
     private var isUser = false
-    /* ================================================================ */
+
     private var mQuestions = listOf<Post>()
     private var mUsers = listOf<User>()
     private val mTitleAdapter = object : BaseRecyclerAdapter<Post>(R.layout.list_answer) {
@@ -46,7 +48,11 @@ class SearchFragment : BaseFragment(R.layout.fragment_search) {
         }
     }
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflateId(R.layout.fragment_search, inflater, container)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         ib_search.setOnClickListener { search(et_topic.text.toString()) }
         loadSearch()
     }

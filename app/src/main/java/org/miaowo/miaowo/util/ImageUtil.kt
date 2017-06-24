@@ -7,10 +7,11 @@ import android.widget.ImageView
 import com.amulyakhare.textdrawable.TextDrawable
 import com.squareup.picasso.Picasso
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.activity.Detail
 import org.miaowo.miaowo.activity.MiaoUser
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.activity
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.uiThread
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.other.CircleTransformation
 
@@ -32,7 +33,7 @@ object ImageUtil {
         if (user != null) {
             fillUserImage(iv, user)
             if (clickable) {
-                if (user.uid <= 0) iv.setOnClickListener { BaseActivity.get?.handleError(R.string.err_not_login) }
+                if (user.uid <= 0) iv.setOnClickListener { activity?.handleError(R.string.err_not_login) }
                 else iv.setOnClickListener { MiaoUser.showUser(user.username) }
             }
         }
@@ -56,11 +57,11 @@ object ImageUtil {
                 "default" -> Picasso.with(App.i).load(R.drawable.def_user)
                 else -> Picasso.with(App.i).load(imgRes)
             }
-            BaseActivity.get?.runOnUiThreadIgnoreError {
+            activity?.uiThread {
                 creator.transform(CircleTransformation()).fit().into(iv)
             }
         } else {
-            BaseActivity.get?.runOnUiThreadIgnoreError {
+            activity?.uiThread {
                 iv.setImageDrawable(textIcon(imgRes, config))
             }
         }

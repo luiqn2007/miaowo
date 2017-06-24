@@ -1,21 +1,16 @@
 package org.miaowo.miaowo.fragment.chat
 
 import android.content.Context
-import android.view.View
-import okhttp3.Request
-import org.miaowo.miaowo.R
+import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import org.miaowo.miaowo.adapter.ChatRoomListAdapter
-import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.base.BaseFragment
 import org.miaowo.miaowo.bean.data.ChatRoom
-import org.miaowo.miaowo.bean.data.ChatRoomList
 import org.miaowo.miaowo.ui.load_more_list.LoadMoreList
 import org.miaowo.miaowo.util.API
-import org.miaowo.miaowo.util.HttpUtil
-import java.io.IOException
 
-class ChatListFragment : BaseFragment(LoadMoreList(App.i)) {
+class ChatListFragment : Fragment() {
     companion object {
         fun newInstance() : ChatListFragment = ChatListFragment()
     }
@@ -24,7 +19,10 @@ class ChatListFragment : BaseFragment(LoadMoreList(App.i)) {
     private var mList: LoadMoreList? = null
     private var mAdapter: ChatRoomListAdapter? = null
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?) = LoadMoreList(context)
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         mAdapter = ChatRoomListAdapter(context, mListener)
         mList = view as LoadMoreList
 

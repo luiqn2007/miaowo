@@ -1,24 +1,26 @@
 package org.miaowo.miaowo.fragment
 
-
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.fragment_square.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Add
 import org.miaowo.miaowo.adapter.TitleListAdapter
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.base.BaseFragment
 import org.miaowo.miaowo.base.BaseListFragment
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.Title
 import org.miaowo.miaowo.other.Const
@@ -26,9 +28,9 @@ import org.miaowo.miaowo.other.template.MyOnTabSelectedListener
 import org.miaowo.miaowo.ui.load_more_list.LMLAdapter
 import org.miaowo.miaowo.ui.load_more_list.LMLPageAdapter
 import org.miaowo.miaowo.util.API
-import org.miaowo.miaowo.util.SpUtil
+import org.miaowo.miaowo.base.extra.spGet
 
-class SquareFragment : BaseFragment(R.layout.fragment_square), BottomNavigationView.OnNavigationItemSelectedListener {
+class SquareFragment : Fragment(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var mFragments = mutableListOf<TitleListFragment>()
     private var mFragmentId = -1
 
@@ -47,7 +49,11 @@ class SquareFragment : BaseFragment(R.layout.fragment_square), BottomNavigationV
         return true
     }
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflateId(R.layout.fragment_square, inflater, container)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         API.Doc.home {
             bottomNavigation.setOnNavigationItemSelectedListener(this)
             bottomNavigation.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.md_amber_100, null))
@@ -79,7 +85,7 @@ class SquareFragment : BaseFragment(R.layout.fragment_square), BottomNavigationV
             }
             // other
             if (mFragmentId < 0) bottomNavigation.selectedItemId = 0
-            val modeTab = SpUtil.getBoolean(Const.SP_USE_TAB, false)
+            val modeTab = spGet(Const.SP_USE_TAB, false)
             tab.visibility = if (modeTab) View.VISIBLE else View.GONE
             bottomNavigation.visibility = if (modeTab) View.GONE else View.VISIBLE
         }
@@ -90,14 +96,14 @@ class SquareFragment : BaseFragment(R.layout.fragment_square), BottomNavigationV
         if (data != null && resultCode > 0) {
             val pageId = data.getIntExtra(Const.TAG, bottomNavigation.selectedItemId)
             API.Use.sendTitle(mFragments[pageId].cid, data.getStringExtra(Const.TITLE), data.getStringExtra(Const.CONTENT)) {
-                if ("ok" != it) BaseActivity.get?.handleError(Exception(it))
+                if ("ok" != it) activity?.handleError(Exception(it))
             }
         }
     }
 
     class TitleListFragment : BaseListFragment<Title>() {
         val cid: Int
-            get() = arguments.getInt("cid")
+            get() = arguments.getInt(Const.ID)
 
         override fun setAdapter() = TitleListAdapter()
 

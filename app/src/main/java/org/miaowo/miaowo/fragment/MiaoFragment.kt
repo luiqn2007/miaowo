@@ -7,6 +7,7 @@ import android.support.transition.ChangeBounds
 import android.support.transition.Fade
 import android.support.transition.TransitionManager
 import android.support.transition.TransitionSet
+import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
@@ -24,18 +25,17 @@ import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.fragment_welcome.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Miao
-import org.miaowo.miaowo.base.BaseFragment
 import org.miaowo.miaowo.base.BaseViewHolder
+import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.MoveTransition
 import org.miaowo.miaowo.other.PwdShowListener
 import org.miaowo.miaowo.ui.ChatButton
-import org.miaowo.miaowo.util.API
-import org.miaowo.miaowo.util.SpUtil
+import org.miaowo.miaowo.util.*
 import java.util.Random
 import kotlin.properties.Delegates
 
-class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
+class MiaoFragment : Fragment() {
     /* ================================================================================ */
     // 构造，创建，绑定及与 Activity 交互
     private var mListener: OnFragmentInteractionListener? = null
@@ -43,7 +43,7 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         mContainer = container!!
-        processController = object : BaseFragment.ProcessController {
+        processController = object : ProcessController {
             private var isShow = false
             override fun setProcess(process: Int, message: String) {
                 if (!isShow) {
@@ -53,7 +53,7 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
                     isShow = true
                 }
                 pb_process.progress = if (process > 100) 100 else process
-                tv_message.setTextColor(R.color.md_green_900)
+                tv_message.setTextColor(ResourcesCompat.getColor(resources, R.color.md_green_900, null))
                 tv_message.text = message
             }
             override fun processError(e: Exception) {
@@ -64,7 +64,7 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
                     pb_process.max = 100
                     isShow = true
                 }
-                tv_message.setTextColor(R.color.md_red_A700)
+                tv_message.setTextColor(ResourcesCompat.getColor(resources, R.color.md_red_A700, null))
                 tv_message.text = e.message
             }
             override fun stopProcess() {
@@ -75,7 +75,7 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
                 }
             }
         }
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return inflateId(R.layout.fragment_welcome, inflater, container)
     }
 
     override fun onAttach(context: Context?) {
@@ -95,15 +95,15 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
     /* ================================================================================ */
     private var mTransitionTogether = TransitionSet()
 
-    override fun initView(view: View?) {
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         mTransitionTogether.ordering = TransitionSet.ORDERING_TOGETHER
         mTransitionTogether.duration = 300
         mTransitionTogether.addTransition(Fade()).addTransition(ChangeBounds()).addTransition(MoveTransition())
         initPageChooser()
         show.setOnTouchListener(PwdShowListener(et_password))
-        cb_save.isChecked = SpUtil.getBoolean(Const.SP_SAVE, false)
-        et_password.setText(SpUtil.getString(Const.SP_PWD, ""))
-        et_user.setText(SpUtil.getString(Const.SP_USER, ""))
+        cb_save.isChecked = spGet(Const.SP_SAVE, false)
+        et_password.setText(spGet(Const.SP_PWD, ""))
+        et_user.setText(spGet(Const.SP_USER, ""))
         et_email.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable) {}
@@ -114,17 +114,17 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
                         API.Login.login(
                                 et_user.text.toString(),
                                 et_password.text.toString())
-                        SpUtil.putString(Const.SP_USER, et_user.text.toString())
-                        SpUtil.putString(Const.SP_PWD, et_password.text.toString())
-                        SpUtil.putBoolean(Const.SP_SAVE, cb_save.isChecked)
+                        spPut(Const.SP_USER, et_user.text.toString())
+                        spPut(Const.SP_PWD, et_password.text.toString())
+                        spPut(Const.SP_SAVE, cb_save.isChecked)
                     }
                 } else {
                     btn_login.setText(R.string.rregister)
                     btn_login.setOnClickListener {
                         API.Login.register(et_user.text.toString(), et_password.text.toString(), s.toString())
-                        SpUtil.putString(Const.SP_USER, et_user.text.toString())
-                        SpUtil.putString(Const.SP_PWD, et_password.text.toString())
-                        SpUtil.putBoolean(Const.SP_SAVE, cb_save.isChecked)
+                        spPut(Const.SP_USER, et_user.text.toString())
+                        spPut(Const.SP_PWD, et_password.text.toString())
+                        spPut(Const.SP_SAVE, cb_save.isChecked)
                     }
                 }
             }
@@ -235,7 +235,7 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
     }
 
     private fun cleanTokens() {
-        if (SpUtil.getBoolean(Const.SP_CLEAN_TOKENS, true) && !API.token.isEmpty()) {
+        if (spGet(Const.SP_CLEAN_TOKENS, true) && !API.token.isEmpty()) {
             API.Use.getTokens {
                 it.filter { it != API.token }.forEach { API.Use.removeToken(it) }
             }
@@ -268,12 +268,10 @@ class MiaoFragment : BaseFragment(R.layout.fragment_welcome) {
             btn_login.setOnClickListener {
                 btn_login.isEnabled = false
                 API.Login.login(et_user.text.toString(), et_password.text.toString())
-                SpUtil.putBoolean(Const.SP_SAVE, cb_save.isChecked)
+                spPut(Const.SP_SAVE, cb_save.isChecked)
                 if (cb_save.isChecked) {
-                    SpUtil.run {
-                        putString(Const.SP_USER, et_user.text.toString())
-                        putString(Const.SP_PWD, et_password.text.toString())
-                    }
+                    spPut(Const.SP_USER, et_user.text.toString())
+                    spPut(Const.SP_PWD, et_password.text.toString())
                 }
             }
         }

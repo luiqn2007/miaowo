@@ -3,9 +3,6 @@ package org.miaowo.miaowo.util
 import com.google.gson.GsonBuilder
 import okhttp3.Response
 import org.json.JSONObject
-import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.BaseActivity
-import org.miaowo.miaowo.bean.config.VersionMessage
 import org.miaowo.miaowo.other.Const
 
 /**
@@ -14,10 +11,6 @@ import org.miaowo.miaowo.other.Const
  */
 
 object JsonUtil {
-    private val gson = GsonBuilder()
-            .serializeNulls()
-            .create()
-
     private fun getJson(response: Response, onErr: (err: Exception) -> MutableList<String>? = { Const.defErr<MutableList<String>>(it) }) =
             Const.tryGet(onErr) {
                 val json = mutableListOf<String>()

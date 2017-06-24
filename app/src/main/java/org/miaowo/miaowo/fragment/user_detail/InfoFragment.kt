@@ -12,8 +12,7 @@ import org.miaowo.miaowo.util.API
 
 class InfoFragment : BaseListFragment<Session>() {
 
-    override fun initView(view: View?) {
-        super.initView(view)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         mList?.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically() = false
         }

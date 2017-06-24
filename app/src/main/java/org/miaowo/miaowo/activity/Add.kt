@@ -1,25 +1,29 @@
 package org.miaowo.miaowo.activity
 
 import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_add.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.lInfo
 import org.miaowo.miaowo.other.Const
 import kotlin.properties.Delegates
 
-class Add : BaseActivity(R.layout.activity_add) {
+class Add : AppCompatActivity() {
 
     private var mTypes by Delegates.notNull<List<TextView>>()
     private val result = Intent()
     private var canSend = false
-    private var mSelectedType = 0
+    private var mSelectedType = -1
 
-    override fun initActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_add)
         mTypes = listOf(tv_daily, tv_announcement, tv_ask, tv_water)
-
         mSelectedType = intent.getIntExtra(Const.TAG, -1)
         if (mSelectedType == -1) {
             // 回复

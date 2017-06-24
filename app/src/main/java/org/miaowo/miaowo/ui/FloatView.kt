@@ -6,20 +6,14 @@ import android.graphics.Point
 import android.graphics.PointF
 import android.support.annotation.LayoutRes
 import android.util.AttributeSet
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
 import org.miaowo.miaowo.base.BaseViewHolder
-
-import java.util.ArrayList
+import org.miaowo.miaowo.base.extra.activity
+import java.util.*
 import kotlin.properties.Delegates
 
 /**
@@ -34,7 +28,7 @@ class FloatView : LinearLayout {
     private val mChange = PointF()
     private var mPosition = Point(0, 0)
     private var mGravity = Gravity.CENTER
-    private var mManager = BaseActivity.get!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private var mManager = activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var isShowing = false
 
     var view by Delegates.notNull<View>()

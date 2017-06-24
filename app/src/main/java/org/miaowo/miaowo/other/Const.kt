@@ -1,6 +1,7 @@
 package org.miaowo.miaowo.other
 
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.activity
+import org.miaowo.miaowo.base.extra.handleError
 
 /**
  * 各种常量
@@ -53,7 +54,7 @@ object Const {
         onGet()
     } catch (err: Exception) { onErr(err) }
     fun <T> defErr(err: Exception): T? {
-        BaseActivity.get?.handleError(err)
+        activity?.handleError(err)
         return null
     }
 }

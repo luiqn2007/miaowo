@@ -1,22 +1,27 @@
 package org.miaowo.miaowo.fragment
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.fragment_topic.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Detail
 import org.miaowo.miaowo.base.*
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.data.Title
 import org.miaowo.miaowo.bean.data.Topic
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.FormatUtil
 import org.miaowo.miaowo.util.ImageUtil
 
-class TopicFragment : BaseFragment(R.layout.fragment_topic) {
+class TopicFragment : Fragment() {
     private var mMenu: PopupMenu? = null
     /* ================================================================ */
     private var mTopics: List<Topic>? = null
@@ -32,7 +37,11 @@ class TopicFragment : BaseFragment(R.layout.fragment_topic) {
         }
     }
 
-    override fun initView(view: View?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflateId(R.layout.fragment_topic, inflater, container)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         loadTags()
         mMenu = PopupMenu(context, ib_search)
         ib_search.setOnClickListener { mMenu?.show() }
@@ -70,7 +79,7 @@ class TopicFragment : BaseFragment(R.layout.fragment_topic) {
         tv_topic.text = getString(R.string.data_loading_detail, title)
         API.Doc.topic(title, onErr = { _, e ->
             tv_topic.setText(R.string.err_load)
-            BaseActivity.get?.handleError(e)
+            activity?.handleError(e)
         }) {
             tv_topic.text = title
             mAdapter.update(it?.topics ?: mutableListOf())

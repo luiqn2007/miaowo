@@ -2,22 +2,27 @@ package org.miaowo.miaowo.activity
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Bundle
 import android.support.v4.content.res.ResourcesCompat
+import android.support.v7.app.AppCompatActivity
 import android.widget.PopupMenu
 import com.sdsmdg.tastytoast.TastyToast
 import kotlinx.android.synthetic.main.activity_user.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.activity
+import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.loadFragment
+import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.fragment.user_detail.*
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.util.API
 import org.miaowo.miaowo.util.FormatUtil
 import org.miaowo.miaowo.util.ImageUtil
-import org.miaowo.miaowo.util.LogUtil
+import org.miaowo.miaowo.base.extra.lTODO
 
-class MiaoUser : BaseActivity(R.layout.activity_user) {
+class MiaoUser : AppCompatActivity() {
     companion object {
         fun showUser(name: String = API.loginUser!!.username) =
                 App.i.startActivity(Intent(App.i, MiaoUser::class.java).putExtra(Const.NAME, name))
@@ -30,9 +35,11 @@ class MiaoUser : BaseActivity(R.layout.activity_user) {
     var mInfoList: InfoFragment? = null
     var mTopicList: TopicFragment? = null
 
-    override fun initActivity() {
-        val name = intent.getStringExtra(Const.NAME)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_user)
 
+        val name = intent.getStringExtra(Const.NAME)
         ImageUtil.fill(iv_user, Const.DEF, null)
         tv_user.text = name
         tv_about.text = App.i.getString(R.string.data_loading)
@@ -137,10 +144,10 @@ class MiaoUser : BaseActivity(R.layout.activity_user) {
 
         userMenu!!.setOnMenuItemClickListener {
             when (it.itemId) {
-                Const.ID_STATUS_ONLINE -> LogUtil.TODO("状态-在线")
-                Const.ID_STATUS_AWAY -> LogUtil.TODO("状态-离开")
-                Const.ID_STATUS_DND -> LogUtil.TODO("状态-勿扰")
-                Const.ID_STATUS_OFFLINE -> LogUtil.TODO("状态-离线/隐身")
+                Const.ID_STATUS_ONLINE -> lTODO("状态-在线")
+                Const.ID_STATUS_AWAY -> lTODO("状态-离开")
+                Const.ID_STATUS_DND -> lTODO("状态-勿扰")
+                Const.ID_STATUS_OFFLINE -> lTODO("状态-离线/隐身")
                 Const.ID_MANAGER_DELETE, Const.ID_EDIT -> {
                     AlertDialog.Builder(this)
                             .setTitle("确认删除")
@@ -157,31 +164,31 @@ class MiaoUser : BaseActivity(R.layout.activity_user) {
                             }
                             .show()
                 }
-                Const.ID_MANAGER_BAN -> LogUtil.TODO("封禁/取消")
+                Const.ID_MANAGER_BAN -> lTODO("封禁/取消")
                 Const.ID_MANAGER_INFO, Const.ID_INFO -> loadFragment(show = mInfoList)
-                Const.ID_CHAT -> LogUtil.TODO("聊天")
+                Const.ID_CHAT -> lTODO("聊天")
                 Const.ID_FOCUS -> {
                     API.Use.focus(user.uid) {
                         when (it) {
                             "ok" -> {
-                                BaseActivity.get?.toast(R.string.focus_success, TastyToast.SUCCESS)
+                                activity?.toast(R.string.focus_success, TastyToast.SUCCESS)
                                 user.followerCount = user.followerCount + 1
                                 FormatUtil.fillCount(tv_like, user.followerCount)
                                 menu?.getItem(Const.ID_FOCUS)?.setTitle(R.string.focus_cancel)
                             }
                             "already-following" -> {
                                 API.Use.unfocus(user.uid) {
-                                    BaseActivity.get?.toast(R.string.focus_canceled, TastyToast.SUCCESS)
+                                    activity?.toast(R.string.focus_canceled, TastyToast.SUCCESS)
                                     user.followerCount = user.followerCount - 1
                                     FormatUtil.fillCount(tv_like, user.followerCount)
                                     menu?.getItem(Const.ID_FOCUS)?.setTitle(R.string.focus)
                                 }
                             }
                             "you-cant-follow-yourself" -> {
-                                BaseActivity.get?.handleError(R.string.err_focus_self)
+                                activity?.handleError(R.string.err_focus_self)
                             }
                             else -> {
-                                BaseActivity.get?.handleError(R.string.err_no_err)
+                                activity?.handleError(R.string.err_no_err)
                             }
                         }
                     }

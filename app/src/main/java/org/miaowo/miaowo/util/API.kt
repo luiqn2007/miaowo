@@ -7,7 +7,7 @@ import org.json.JSONObject
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.activity.Miao
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseActivity
+import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.config.VersionMessage
 import org.miaowo.miaowo.bean.data.*
 import org.miaowo.miaowo.other.Const
@@ -67,7 +67,7 @@ object API {
          */
         fun login(user: String, pwd: String) {
             if (checkUser(user, pwd)) {
-                BaseActivity.get?.setProcess(0, App.i.getString(R.string.process_info))
+                activity?.setProcess(0, App.i.getString(R.string.process_info))
                 val request = Request.Builder().url(App.i.getString(R.string.url_login)).build()
                 HttpUtil.post(request) { _, rspCsrf ->
                     try {
@@ -80,16 +80,16 @@ object API {
                                 .post(body)
                                 .addHeader("x-csrf-token", token)
                                 .build()
-                        BaseActivity.get?.setProcess(25, App.i.getString(R.string.process_login))
+                        activity?.setProcess(25, App.i.getString(R.string.process_login))
                         HttpUtil.post(login) { _, response1 ->
                             val msg = response1.body()?.string() ?: "[[error empty]]"
                             if (msg.startsWith("[[error")) {
-                                BaseActivity.get?.runOnUiThreadIgnoreError {
+                                activity?.uiThread {
                                     Miao.fg_miao.prepareLogin()
-                                    BaseActivity.get?.processError(Exception(msg.substring(2, msg.length - 2)))
+                                    activity?.processError(Exception(msg.substring(2, msg.length - 2)))
                                 }
                             } else {
-                                BaseActivity.get?.setProcess(50, App.i.getString(R.string.process_user))
+                                activity?.setProcess(50, App.i.getString(R.string.process_user))
                                 val userR = Request.Builder().url(App.i.getString(R.string.url_user, user)).build()
                                 HttpUtil.post(userR) { _, rspReg ->
                                     val l = Doc.build(rspReg, User::class.java)
@@ -110,8 +110,8 @@ object API {
          */
         fun logout() {
             HttpUtil.clearCookies()
-            BaseActivity.get?.runOnUiThreadIgnoreError { ChatButton.hide() }
-            BaseActivity.get?.runOnUiThreadIgnoreError { Miao.fg_miao.prepareLogin() }
+            activity?.uiThread { ChatButton.hide() }
+            activity?.uiThread { Miao.fg_miao.prepareLogin() }
             Thread(Runnable { clearToken() })
             loginUser = null
         }
@@ -121,7 +121,7 @@ object API {
          */
         fun register(user: String, pwd: String, email: String) {
             if (checkUser(user, pwd, email)) {
-                BaseActivity.get?.setProcess(0, App.i.getString(R.string.process_info))
+                activity?.setProcess(0, App.i.getString(R.string.process_info))
                 val request = Request.Builder().url(App.i.getString(R.string.url_login)).build()
                 HttpUtil.post(request) { _, response ->
                     try {
@@ -134,16 +134,16 @@ object API {
                         val reg = Request.Builder().url(App.i.getString(R.string.url_register))
                                 .post(body).addHeader("x-csrf-token", token)
                                 .build()
-                        BaseActivity.get?.setProcess(25, App.i.getString(R.string.process_reg))
+                        activity?.setProcess(25, App.i.getString(R.string.process_reg))
                         HttpUtil.post(reg) { _, response1 ->
                             val msg = response1.body()!!.string()
                             if (msg.startsWith("[[error")) {
-                                BaseActivity.get?.runOnUiThreadIgnoreError {
+                                activity?.uiThread {
                                     Miao.fg_miao.prepareLogin()
-                                    BaseActivity.get?.processError(Exception(msg.substring(2, msg.length - 2)))
+                                    activity?.processError(Exception(msg.substring(2, msg.length - 2)))
                                 }
                             } else {
-                                BaseActivity.get?.setProcess(50, App.i.getString(R.string.process_user))
+                                activity?.setProcess(50, App.i.getString(R.string.process_user))
                                 Doc.user(user) {
                                     it?.password = pwd
                                     loginResult(it)
@@ -159,19 +159,19 @@ object API {
 
         private fun loginResult(user: User?) {
             if (user == null || user.uid == 0) {
-                BaseActivity.get?.processError(Exception(App.i.getString(R.string.process_err)))
+                activity?.processError(Exception(App.i.getString(R.string.process_err)))
                 return
             }
             loginUser = user
-            BaseActivity.get?.setProcess(75, App.i.getString(R.string.process_upload) ?: "")
+            activity?.setProcess(75, App.i.getString(R.string.process_upload) ?: "")
             Use.newToken(user.password) { token, message ->
                 if (token.isEmpty()) {
-                    BaseActivity.get?.processError(message!!)
+                    activity?.processError(message!!)
                 } else {
                     API.token = token
-                    BaseActivity.get?.setProcess(100, "欢迎回来, ${user.username}")
-                    if (BaseActivity.get is Miao) {
-                        BaseActivity.get?.runOnUiThreadIgnoreError { Miao.fg_miao.loginSucceed() }
+                    activity?.setProcess(100, "欢迎回来, ${user.username}")
+                    if (activity is Miao) {
+                        activity?.uiThread { Miao.fg_miao.loginSucceed() }
                     }
                 }
             }
@@ -179,17 +179,17 @@ object API {
 
         private fun checkUser(username: String = loginUser!!.username, password: String, email: String = "login@miaowo.org"): Boolean {
             if (email.isEmpty() || !email.contains("@")) {
-                BaseActivity.get?.handleError(R.string.err_email)
+                activity?.handleError(R.string.err_email)
                 Miao.fg_miao.prepareLogin()
                 return false
             }
             if (username.isEmpty()) {
-                BaseActivity.get?.handleError(R.string.err_username)
+                activity?.handleError(R.string.err_username)
                 Miao.fg_miao.prepareLogin()
                 return false
             }
             if (password.isEmpty() || username == password || password.length < 6) {
-                BaseActivity.get?.handleError(R.string.err_password)
+                activity?.handleError(R.string.err_password)
                 Miao.fg_miao.prepareLogin()
                 return false
             }
@@ -378,7 +378,7 @@ object API {
         fun user(name: String, callback: (user: User?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_user, name)).build()
             HttpUtil.post(request) { _, rspUser ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(rspUser, User::class.java))
                 }
             }
@@ -387,7 +387,7 @@ object API {
         fun user(callback: (users: UserList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_users)).build()
             HttpUtil.post(request) { _, rspUser ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(rspUser, UserList::class.java))
                 }
             }
@@ -399,7 +399,7 @@ object API {
         fun home(callback: (home: Home?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_home, "/api/")).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, Home::class.java))
                 }
             }
@@ -411,7 +411,7 @@ object API {
         fun unread(callback: (category: TitleList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_unread)).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, TitleList::class.java))
                 }
             }
@@ -423,7 +423,7 @@ object API {
         fun category(slug: String, page: Int, callback: (category: TitleList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_category, slug, page)).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, TitleList::class.java))
                 }
             }
@@ -435,7 +435,7 @@ object API {
         fun topic(onErr: (call: Call, e: IOException) -> Unit, callback: (topic: TopicList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_tags, "")).build()
             HttpUtil.post(request, onErr) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, TopicList::class.java))
                 }
             }
@@ -444,7 +444,7 @@ object API {
         fun topic(name: String = loginUser!!.username, onErr: (call: Call, e: IOException) -> Unit, callback: (topic: TitleList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_tags, name)).build()
             HttpUtil.post(request, onErr) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, TitleList::class.java))
                 }
             }
@@ -453,7 +453,7 @@ object API {
         fun topic(name: String = loginUser!!.username, callback: (topic: UserTopicList?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_user_topic, name)).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, UserTopicList::class.java))
                 }
             }
@@ -466,7 +466,7 @@ object API {
             val url = App.i.getString(R.string.url_search, key, "&in=users")
             val request = Request.Builder().url(url).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, UserSearch::class.java))
                 }
             }
@@ -479,7 +479,7 @@ object API {
             val url = App.i.getString(R.string.url_search, key, "&in=titlesposts&showAs=posts")
             val request = Request.Builder().url(url).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, QuestionSearch::class.java))
                 }
             }
@@ -491,7 +491,7 @@ object API {
         fun question(slug: String, callback: (message: Question?) -> Unit) {
             val request = Request.Builder().url(App.i.getString(R.string.url_topic, slug)).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, Question::class.java))
                 }
             }
@@ -506,7 +506,7 @@ object API {
                 callback(build(response, ChatRoomList::class.java))
             }
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, ChatRoomList::class.java))
                 }
             }
@@ -516,7 +516,7 @@ object API {
             val request = Request.Builder().url(App.i.getString(R.string.url_chat_message,
                     API.loginUser!!.username.toLowerCase(), roomId)).build()
             HttpUtil.post(request) { _, response ->
-                BaseActivity.get?.runOnUiThreadIgnoreError {
+                activity?.uiThread {
                     callback(build(response, ChatMessageList::class.java))
                 }
             }
