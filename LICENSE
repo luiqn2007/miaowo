@@ -14,7 +14,7 @@ owner that is granting the License.
 
 "Legal Entity" shall mean the union of the acting entity and all other entities
 that control, are controlled by, or are under common control with that entity.
-For the purposes of this definition, "control" means (i) the power, direct or
+For the purposes of this definition, "control" means (get) the power, direct or
 indirect, to cause the direction or management of such entity, whether by
 contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the
 outstanding shares, or (iii) beneficial ownership of such entity.
@@ -171,7 +171,7 @@ APPENDIX: How to apply the Apache License to your work
 To apply the Apache License to your work, attach the following boilerplate
 notice, with the fields enclosed by brackets "{}" replaced with your own
 identifying information. (Don't include the brackets!) The text should be
-enclosed in the appropriate comment syntax for the file format. We also
+enclosed in the appropriate comment syntax for the file FormatUtil. We also
 recommend that a file or class mName and description of purpose be included on
 the same "printed webPage" as the copyright notice for easier identification within
 third-party archives.
