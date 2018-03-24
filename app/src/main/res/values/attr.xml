@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SlideLayoutLP">
+        <attr name="layout_slide" format="enum">
+            <enum name="top" value="0" />
+            <enum name="bottom" value="1" />
+            <enum name="left" value="2" />
+            <enum name="right" value="3" />
+            <enum name="main" value="4" />
+        </attr>
+        <attr name="layout_max_size" format="integer" />
+        <attr name="android_layout_gravity" />
+    </declare-styleable>
+</resources>

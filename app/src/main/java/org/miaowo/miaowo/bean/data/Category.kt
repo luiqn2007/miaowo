@@ -1,104 +1,137 @@
 package org.miaowo.miaowo.bean.data
 
-import android.os.Parcel
-import android.os.Parcelable
+import javax.annotation.Generated
+import com.google.gson.annotations.SerializedName
 
 /**
- * 类别
- *
- * 忽略的属性:
- * class : col-md-3 col-xs-6
- * unread-class :
- * children : []
- * tagWhitelist : []
+https://www.miaowo.org/api/category/6/%E7%81%8C%E6%B0%B4
  */
-open class Category(
-        var value: String? = null, // value : all
-        var text: String? = null, // text : [[unread:all_categories]]
-        var cid: Int = 0, // cid : 5
-        var name: String? = null, // name : 提问
-        var description: String? = null, // description :
-        var descriptionParsed: String? = null, // descriptionParsed :
-        var icon: String? = null, // icon : fa-question
-        var bgColor: String? = null, // bgColor : #e95c5a
-        var color: String? = null, // color : #fff
-        var slug: String? = null, // slug : 5/提问
-        var parentCid: Int = 0, // parentCid : 0
-        var topic_count: Int = 0, // topic_count : 67
-        var post_count: Int = 0, // post_count : 452
-        var posts: List<Post>? = null,
-        var isDisabled: Boolean = false, // disabled : false
-        var order: Int = 0, // order : 5
-        var link: String? = null, // link :
-        var numRecentReplies: Int = 0, // numRecentReplies : 1
-        var imageClass: String? = null, // imageClass : cover
-        var undefined: String? = null, // undefined : on
-        var totalPostCount: Int = 0, // totalPostCount : 452
-        var totalTopicCount: Int = 0  // totalTopicCount : 67,
-) : Parcelable {
-    companion object {
-        @JvmField val CREATOR: Parcelable.Creator<Category> = object : Parcelable.Creator<Category> {
-            override fun createFromParcel(`in`: Parcel): Category {
-                return Category(`in`)
-            }
+@Generated("com.robohorse.robopojogenerator")
+data class Category(
 
-            override fun newArray(size: Int): Array<Category?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
+        @field:SerializedName("unread-class")
+        val unreadClass: String = "",
 
-    protected constructor(`in`: Parcel) : this(
-            value = `in`.readString(),
-            text = `in`.readString(),
-            cid = `in`.readInt(),
-            name = `in`.readString(),
-            description = `in`.readString(),
-            descriptionParsed = `in`.readString(),
-            icon = `in`.readString(),
-            bgColor = `in`.readString(),
-            color = `in`.readString(),
-            slug = `in`.readString(),
-            parentCid = `in`.readInt(),
-            topic_count = `in`.readInt(),
-            post_count = `in`.readInt(),
-            posts = `in`.createTypedArrayList(Post.CREATOR),
-            isDisabled = `in`.readByte().toInt() != 0,
-            order = `in`.readInt(),
-            link = `in`.readString(),
-            numRecentReplies = `in`.readInt(),
-            imageClass = `in`.readString(),
-            undefined = `in`.readString(),
-            totalPostCount = `in`.readInt(),
-            totalTopicCount = `in`.readInt()
-    )
+        @field:SerializedName("template")
+        val template: Template? = null,
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(value)
-        dest.writeString(text)
-        dest.writeInt(cid)
-        dest.writeString(name)
-        dest.writeString(description)
-        dest.writeString(descriptionParsed)
-        dest.writeString(icon)
-        dest.writeString(bgColor)
-        dest.writeString(color)
-        dest.writeString(slug)
-        dest.writeInt(parentCid)
-        dest.writeInt(topic_count)
-        dest.writeInt(post_count)
-        dest.writeTypedList(posts)
-        dest.writeByte((if (isDisabled) 1 else 0).toByte())
-        dest.writeInt(order)
-        dest.writeString(link)
-        dest.writeInt(numRecentReplies)
-        dest.writeString(imageClass)
-        dest.writeString(undefined)
-        dest.writeInt(totalPostCount)
-        dest.writeInt(totalTopicCount)
-    }
+        @field:SerializedName("privileges")
+        val privileges: Privileges? = null,
 
-    override fun describeContents(): Int {
-        return 0
-    }
-}
+        @field:SerializedName("pagination")
+        val pagination: Pagination? = null,
+
+        @field:SerializedName("color")
+        val color: String = "",
+
+        @field:SerializedName("numRecentReplies")
+        val numRecentReplies: Int = -1,
+
+        @field:SerializedName("icon")
+        val icon: String = "",
+
+        @field:SerializedName("link")
+        val link: String = "",
+
+        @field:SerializedName("description")
+        val description: String = "",
+
+        @field:SerializedName("nextStart")
+        val nextStart: Int = -1,
+
+        @field:SerializedName("title")
+        val title: String = "",
+
+        @field:SerializedName("widgets")
+        val widgets: Widgets? = null,
+
+        @field:SerializedName("showSelect")
+        val showSelect: Boolean? = null,
+
+        @field:SerializedName("undefined")
+        val undefined: String = "",
+
+        @field:SerializedName("totalTopicCount")
+        val totalTopicCount: Int = -1,
+
+        @field:SerializedName("parentCid")
+        val parentCid: Int = -1,
+
+        @field:SerializedName("totalPostCount")
+        val totalPostCount: Int = -1,
+
+        @field:SerializedName("descriptionParsed")
+        val descriptionParsed: String = "",
+
+        @field:SerializedName("bgColor")
+        val bgColor: String = "",
+
+        @field:SerializedName("children")
+        val children: List<Any> = emptyList(),
+
+        @field:SerializedName("bodyClass")
+        val bodyClass: String = "",
+
+        @field:SerializedName("disabled")
+        val disabled: Boolean? = null,
+
+        @field:SerializedName("rssFeedUrl")
+        val rssFeedUrl: String = "",
+
+        @field:SerializedName("tagWhitelist")
+        val tagWhitelist: List<Any> = emptyList(),
+
+        @field:SerializedName("class")
+        val jsonMemberClass: String = "",
+
+        @field:SerializedName("slug")
+        val slug: String = "",
+
+        @field:SerializedName("order")
+        val order: Int = -1,
+
+        @field:SerializedName("topics")
+        val topics: List<Topic> = emptyList(),
+
+        @field:SerializedName("isIgnored")
+        val isIgnored: Boolean? = null,
+
+        @field:SerializedName("topic_count")
+        val topicCount: Int = -1,
+
+        @field:SerializedName("url")
+        val url: String = "",
+
+        @field:SerializedName("imageClass")
+        val imageClass: String = "",
+
+        @field:SerializedName("feeds:disableRSS")
+        val feedsDisableRSS: Boolean? = null,
+
+        @field:SerializedName("loggedIn")
+        val loggedIn: Boolean? = null,
+
+        @field:SerializedName("name")
+        val name: String = "",
+
+        @field:SerializedName("post_count")
+        val postCount: Int = -1,
+
+        @field:SerializedName("relative_path")
+        val relativePath: String = "",
+
+        @field:SerializedName("breadcrumbs")
+        val breadcrumbs: List<Breadcrumb> = emptyList(),
+
+        @field:SerializedName("cid")
+        val cid: Int = -1,
+
+        @field:SerializedName("posts")
+        val posts: List<Post> = emptyList(),
+
+        @field:SerializedName("teaser")
+        val teaser: Teaser? = null,
+
+        @field:SerializedName("image")
+        val image: Any? = null
+)

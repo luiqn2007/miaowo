@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_msg"
+    <data>
+
+        <variable
+            name="message"
+            type="org.miaowo.miaowo.bean.data.ChatMessage" />
+
+        <import type="org.miaowo.miaowo.other.DataBindingExtra" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="12dp"
-        android:maxEms="18"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
-</RelativeLayout>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:maxEms="16"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:html="@{message.content}"
+            tools:text="aaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaa\naaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaa" />
+    </RelativeLayout>
+</layout>

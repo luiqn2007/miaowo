@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewHandler"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="post"
+            type="org.miaowo.miaowo.bean.data.Post" />
+
+        <variable
+            name="likeVisible"
+            type="boolean" />
+
+        <variable
+            name="replyVisible"
+            type="boolean" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E8E8E8"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:orientation="vertical"
+            app:cardCornerRadius="8dp">
+
+
+            <ImageView
+                android:id="@+id/head"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:onClick="@{viewHandler::onClick}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:user_icon="@{post.user}"
+                tools:src="@drawable/def_user" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/textColor1"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toRightOf="@+id/head"
+                app:layout_constraintTop_toTopOf="@+id/head"
+                app:username="@{post.user}"
+                tools:text="用户" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor1"
+                android:textSize="14sp"
+                app:layout_constraintLeft_toLeftOf="@id/username"
+                app:layout_constraintTop_toBottomOf="@+id/username"
+                tools:text="时间" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/textColor2"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/head"
+                app:title="@{post.topic}"
+                tools:text="这里应该是主标题" />
+
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:textSize="15sp"
+                app:html="@{post.content}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                tools:text="正文\n正文\n正文\n正文" />
+
+            <TextView
+                android:id="@+id/like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor2"
+                app:bookmarks="@{post}"
+                app:layout_constraintBottom_toBottomOf="@id/like"
+                app:layout_constraintRight_toLeftOf="@id/like"
+                app:layout_constraintTop_toTopOf="@id/like"
+                app:visible="@{likeVisible}"
+                tools:text="13"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/like"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:onClick="@{viewHandler::onClick}"
+                android:padding="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/content"
+                app:srcCompat="@drawable/ic_reply"
+                app:visible="@{likeVisible}"
+                tools:visibility="visible" />
+
+
+            <ImageView
+                android:id="@+id/reply"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:onClick="@{viewHandler::onClick}"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/username"
+                app:visible="@{replyVisible}"
+                tools:srcCompat="@drawable/ic_reply"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/divider" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</layout>

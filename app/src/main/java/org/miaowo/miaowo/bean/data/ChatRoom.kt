@@ -1,76 +1,80 @@
 package org.miaowo.miaowo.bean.data
 
-import android.os.Parcel
-import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
+import javax.annotation.Generated
 
-/**
- * 聊天室
- * Created by luqin on 17-4-7.
- */
+@Generated("com.robohorse.robopojogenerator")
+data class ChatRoom(
 
-open class ChatRoom private constructor(
-        var owner: Int = 0,  // owner : 7
-        var roomId: Int = 0,  // roomId : 36
-        var roomName: String? = null,  // roomName :
-        var isGroupChat: Boolean = false,  // groupChat : false
-        var isUnread: Boolean = false,  // unread : false
-        var teaser: Teaser? = null,  // teaser : {"fromuid":7,"content":"还有，chrome调试js，我想知道点击一个按钮后都执行了哪些代码，怎么看","t...}
-        var lastUser: User? = null,  // lastUser : {"username":"Systemd","userslug":"systemd","lastonl...}
-        var usernames: String? = null,  // usernames : Systemd
-        var users: List<User>? = null  // users : [{"username":"Systemd","userslug":"systemd","...}]
-): Parcelable {
-    protected constructor(`in`: Parcel) : this(
-        owner = `in`.readInt(),
-        roomId = `in`.readInt(),
-        roomName = `in`.readString(),
-        isGroupChat = `in`.readByte().toInt() != 0,
-        isUnread = `in`.readByte().toInt() != 0,
-        teaser = `in`.readParcelable<Teaser>(Teaser::class.java.classLoader),
-        lastUser = `in`.readParcelable<User>(User::class.java.classLoader),
-        usernames = `in`.readString(),
-        users = `in`.createTypedArrayList(User.CREATOR)
-    )
+        @field:SerializedName("owner")
+        val owner: Int? = null,
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(owner)
-        dest.writeInt(roomId)
-        dest.writeString(roomName)
-        dest.writeByte((if (isGroupChat) 1 else 0).toByte())
-        dest.writeByte((if (isUnread) 1 else 0).toByte())
-        dest.writeParcelable(teaser, flags)
-        dest.writeParcelable(lastUser, flags)
-        dest.writeString(usernames)
-        dest.writeTypedList(users)
-    }
+        @field:SerializedName("template")
+        val template: Template? = null,
 
-    override fun describeContents(): Int {
-        return 0
-    }
+        @field:SerializedName("rooms")
+        val rooms: List<ChatRoom> = emptyList(),
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
+        @field:SerializedName("canReply")
+        val canReply: Boolean? = null,
 
-        val room = other as ChatRoom?
+        @field:SerializedName("groupChat")
+        val groupChat: Boolean? = null,
 
-        return roomId == room!!.roomId
+        @field:SerializedName("maximumUsersInChatRoom")
+        val maximumUsersInChatRoom: Int? = null,
 
-    }
+        @field:SerializedName("showUserInput")
+        val showUserInput: Boolean? = null,
 
-    override fun hashCode(): Int {
-        return roomId
-    }
+        @field:SerializedName("nextStart")
+        val nextStart: Int? = null,
 
-    companion object {
+        @field:SerializedName("title")
+        val title: String? = null,
 
-        val CREATOR: Parcelable.Creator<ChatRoom> = object : Parcelable.Creator<ChatRoom> {
-            override fun createFromParcel(`in`: Parcel): ChatRoom {
-                return ChatRoom(`in`)
-            }
+        @field:SerializedName("widgets")
+        val widgets: Widgets? = null,
 
-            override fun newArray(size: Int): Array<ChatRoom?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-}
+        @field:SerializedName("roomId")
+        val roomId: Int = -1,
+
+        @field:SerializedName("roomName")
+        val roomName: String? = null,
+
+        @field:SerializedName("users")
+        val users: List<User> = emptyList(),
+
+        @field:SerializedName("url")
+        val url: String? = null,
+
+        @field:SerializedName("uid")
+        val uid: Int? = null,
+
+        @field:SerializedName("isOwner")
+        val isOwner: Boolean? = null,
+
+        @field:SerializedName("loggedIn")
+        val loggedIn: Boolean? = null,
+
+        @field:SerializedName("bodyClass")
+        val bodyClass: String? = null,
+
+        @field:SerializedName("messages")
+        val messages: List<ChatMessage> = emptyList(),
+
+        @field:SerializedName("usernames")
+        val usernames: String? = null,
+
+        @field:SerializedName("relative_path")
+        val relativePath: String? = null,
+
+        @field:SerializedName("userslug")
+        val userslug: String? = null,
+
+        @field:SerializedName("maximumChatMessageLength")
+        val maximumChatMessageLength: Int? = null,
+
+        @field:SerializedName("lastUser")
+        val lastUser: User? = null
+)

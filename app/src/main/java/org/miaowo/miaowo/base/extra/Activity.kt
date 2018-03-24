@@ -1,7 +1,10 @@
 package org.miaowo.miaowo.base.extra
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.IdRes
@@ -10,23 +13,37 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import com.sdsmdg.tastytoast.TastyToast
 import org.miaowo.miaowo.R
-import java.util.ArrayList
+import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.ui.processView.IProcessable
+import java.util.*
+import android.app.Fragment as OldFragment
+
 
 /**
  * Activity 扩展方法
  * Created by luqin on 17-6-22.
  */
-var _ShownActivity: Activity? = null
-val activity
-    get() = _ShownActivity
+@SuppressLint("StaticFieldLeak")
+private val hActivityMaps = mutableMapOf<String, MutableMap<*, *>>(
+        Pair("ProcessBinding", mutableMapOf<Activity?, MutableMap<String, IProcessable>>())
+)
+@Suppress("UNCHECKED_CAST")
+private val hProcessBinding: MutableMap<Activity?, MutableMap<String, IProcessable>> =
+        hActivityMaps["ProcessBinding"] as MutableMap<Activity?, MutableMap<String, IProcessable>>
 
-fun Activity.toast(msg: String, type: Int) {
-    TastyToast.makeText(baseContext, msg, TastyToast.LENGTH_SHORT, type).show()
-}
-fun Activity.toast(@StringRes stringId: Int, type: Int) {
-    TastyToast.makeText(baseContext, getString(stringId), TastyToast.LENGTH_SHORT, type).show()
+fun Activity.toast(msg: String, type: Int) = TastyToast.makeText(baseContext, msg, TastyToast.LENGTH_SHORT, type).show()
+fun Activity.toast(@StringRes stringId: Int, type: Int) = TastyToast.makeText(baseContext, getString(stringId), TastyToast.LENGTH_SHORT, type).show()
+fun Activity.handleError(@StringRes err: Int) = handleError(getString(err))
+fun Activity.handleError(err: String, handler: (String) -> Unit = {
+    lError(it)
+    toast(it, TastyToast.ERROR)
+}) {
+    handler(err)
 }
 fun Activity.handleError(err: Throwable?, handler: (Throwable?) -> Unit = {
     if (err != null) {
@@ -36,12 +53,8 @@ fun Activity.handleError(err: Throwable?, handler: (Throwable?) -> Unit = {
 }) {
     handler(err)
 }
-fun Activity.handleError(@StringRes err: Int) {
-    handleError(Exception(getString(err)))
-}
 
-fun Activity.uiThread(run: () -> Unit) { this.runOnUiThread(run) }
-fun Activity.requestPermissions(vararg permissions: String) {
+fun AppCompatActivity.requestPermissions(requestCode: Int, vararg permissions: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         val disallowedPermissions = ArrayList<String>()
         for (permission in permissions) {
@@ -51,52 +64,134 @@ fun Activity.requestPermissions(vararg permissions: String) {
             }
         }
         if (disallowedPermissions.size != 0) {
-            requestPermissions(disallowedPermissions.toTypedArray(), 0)
+            requestPermissions(disallowedPermissions.toTypedArray(), requestCode)
         }
     }
 }
 
-fun Activity.setProcess(process: Int, message: String) {
-    _Fragments[this]?.get(0)?.processController?.setProcess(process, message)
-}
-fun Activity.stopProcess() {
-    _Fragments[this]?.get(0)?.processController?.stopProcess()
-}
-fun Activity.processError(e: Exception) {
-    _Fragments[this]?.get(0)?.processController?.processError(e)
-}
-
-fun AppCompatActivity.loadFragment(@IdRes container: Int = R.id.container, show: Fragment?) {
-    val manager = this.supportFragmentManager
-    if (_Fragments[this]?.isEmpty() ?: true) {
-        manager.beginTransaction().add(container, show).show(show).commit()
-    } else {
-        manager.beginTransaction()
-                .replace(container, show)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
-                .addToBackStack(null)
-                .commit()
+fun AppCompatActivity.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.container) {
+    if (fragment != null && !fragment.isVisible) {
+        if (fragment.arguments?.getBoolean(Const.FG_POP_ALL) == true) {
+            while (supportFragmentManager.backStackEntryCount != 0)
+                supportFragmentManager.popBackStackImmediate()
+        }
+        val transaction = supportFragmentManager.beginTransaction()
+        with(transaction) {
+            if (!fragment.isAdded) add(container, fragment)
+            if (fragment.arguments?.getBoolean(Const.FG_TO_BACKSTACK, true) == true) addToBackStack(null)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
+            replace(container, fragment)
+        }
+        transaction.commitAllowingStateLoss()
+        supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifeRecycleCallback, true)
+        supportFragmentManager.executePendingTransactions()
     }
 }
+
+fun Activity.process(msg: String, processKey: String?) {
+    if (processKey != null) {
+        getProcessable(processKey)?.run {
+            processText = msg
+            showProcess()
+        }
+    } else
+        toast(msg, TastyToast.INFO)
+}
+
+fun Activity.process(msg: Int, processKey: String?) = process(getString(msg), processKey)
+fun Activity.process(process: Float = 0f, msg: String? = null, processKey: String?) {
+    if (processKey == null) {
+        if (msg != null) {
+            when {
+                process < 0 -> toast("$msg", TastyToast.DEFAULT)
+                process >= 100 -> toast("$msg", TastyToast.SUCCESS)
+                else -> toast("$msg", TastyToast.INFO)
+            }
+        }
+    } else {
+        val fView = getProcessable(processKey)
+        val isError = process < 0
+        fView?.processText = msg ?: ""
+        if (!isError) fView?.process = process
+        else fView?.isError = isError
+        fView?.showProcess()
+    }
+}
+
+fun Activity.process(process: Float = 0f, msg: Int, processKey: String?) {
+    process(process, getString(msg), processKey)
+}
+
+fun Activity.process(err: Throwable?, processKey: String?) {
+    err?.printStackTrace()
+    val errMsg = err?.message ?: getString(R.string.err_no_err)
+    if (processKey == null)
+        toast(errMsg, TastyToast.ERROR)
+    else {
+        getProcessable(processKey)?.run {
+            isError = true
+            processText = errMsg
+            showProcess()
+        }
+    }
+}
+
+fun Activity.bindProcessable(processKey: String, processable: IProcessable) {
+    hProcessBinding[this]?.put(processKey, processable)
+}
+
+fun Activity.getProcessable(processKey: String) = hProcessBinding[this]?.get(processKey)
+fun Activity.unbindProcessable(processKey: String) {
+    hProcessBinding[this]?.remove(processKey)
+}
+
+val Activity.isKeyboardOpen: Boolean
+    get() {
+        val contentView = findViewById<ViewGroup>(android.R.id.content)
+        val r = Rect()
+        contentView.getWindowVisibleDisplayFrame(r)
+        return contentView.rootView.height - r.height() >= 200
+    }
+
+fun Activity.openKeyboard() {
+    if (!isKeyboardOpen) {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = currentFocus
+        if (view == null) view = View(this)
+        imm.showSoftInput(view, InputMethodManager.SHOW_FORCED)
+    }
+}
+
+fun Activity.hideKeyboard() {
+    if (isKeyboardOpen) {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = currentFocus
+        if (view == null) view = View(this)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+}
+
+inline fun <reified T : Activity> AppCompatActivity.startActivity() = startActivity(Intent(this, T::class.java))
 
 object MyActivityLifecycle : Application.ActivityLifecycleCallbacks {
-    override fun onActivityResumed(activity: Activity?) {
-        if (activity != _ShownActivity) _ShownActivity = activity
-    }
-
     override fun onActivityDestroyed(activity: Activity?) {
-        if (activity is AppCompatActivity) _Fragments.remove(activity)
-        if (activity == _ShownActivity) _ShownActivity = null
+        hActivityMaps.values.forEach { map ->
+            map.entries.forEach {
+                if (it.key == activity || it.value == activity) {
+                    map.remove(it.key)
+                }
+            }
+        }
     }
 
     override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-        if (activity is AppCompatActivity)
-            activity.supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifecycle(activity), true)
+        hProcessBinding[activity] = mutableMapOf()
     }
 
     override fun onActivityStarted(activity: Activity?) {}
     override fun onActivityPaused(activity: Activity?) {}
     override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {}
     override fun onActivityStopped(activity: Activity?) {}
+    override fun onActivityResumed(activity: Activity?) {}
 }

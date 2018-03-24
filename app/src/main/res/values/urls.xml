@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_home">https://www.miaowo.org%1$s</string>
-    <string name="url_category">https://www.miaowo.org/api/category/%1$s?page=%2$d</string>
-    <string name="url_api">https://www.miaowo.org/api/v1/%1$s/%2$s</string>
+    <string name="url_home_head">https://www.miaowo.org%1$s</string>
+    <string name="url_category">https://www.miaowo.org/api/category/%1$d?page=%2$d</string>
+    <string name="url_api">https://www.miaowo.org/api/v2/%1$s/%2$s</string>
     <string name="url_update">http://git.oschina.net/lq2007/miaowo/raw/master/app/version</string>
     <string name="url_tags">https://www.miaowo.org/api/tags/%1$s</string>
     <string name="url_search">https://www.miaowo.org/api/search?term=%1$s%2$s</string>
-    <string name="url_topic">https://www.miaowo.org/api/topic/%1$s</string>
+    <string name="url_topic">https://www.miaowo.org/api/topic/%1$d</string>
     <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
     <string name="url_login">https://www.miaowo.org/login</string>
     <string name="url_register">https://www.miaowo.org/register</string>
@@ -17,7 +17,5 @@
     <string name="url_user_topic">https://www.miaowo.org/api/user/%1$s/topics</string>
     <string name="url_user_post">https://www.miaowo.org/api/user/%1$s/posts</string>
     <string name="url_user_info">https://www.miaowo.org/api/user/%1$s/info</string>
-    <string name="url_user_follow">https://www.miaowo.org/api/user/%1$s/following</string>
-    <string name="url_user_follower">https://www.miaowo.org/api/user/%1$s/follower</string>
-    <string name="url_user_like">https://www.miaowo.org/api/user/%1$s/info</string>
+    <string name="url_reset">https://www.miaowo.org/reset</string>
 </resources>

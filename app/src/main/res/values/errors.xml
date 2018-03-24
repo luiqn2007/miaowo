@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="err_page_end">到底啦</string>
-    <string name="err_permissions">权限不足</string>
     <string name="err_no_pic">无图片</string>
-    <string name="err_camera_app">无法打开摄像头应用</string>
     <string name="err_username">用户名不合法</string>
     <string name="err_password">密码不合法</string>
+    <string name="err_check_password">两次密码不一致</string>
     <string name="err_email">电子邮件不合法</string>
     <string name="err_not_login">请先登录</string>
     <string name="err_token">无法获取 Token</string>
-    <string name="err_load">加载失败</string>
-    <string name="err_msg_empty">消息不能为空</string>
-    <string name="err_title_empty">标题不能为空</string>
-    <string name="err_sdcard">找不到储存空间</string>
-    <string name="err_dir">无法创建安装文件文件夹</string>
     <string name="err_apk">无法创建安装文件</string>
-    <string name="err_del">无法删除已存在安装包</string>
     <string name="err_no_message">无可发送消息</string>
     <string name="err_no_err">未知错误</string>
-    <string name="err_focus_self">无法关注自身</string>
-    <string name="err_no_version">无法获取新版本信息</string>
-    <string name="err_empty">空错误信息</string>
     <string name="err_chat_user">你是谁? 从哪来?</string>
     <string name="err_get">获取失败</string>
     <string name="err_ill">无效错误信息</string>
-    <string name="process_err">登录失败, 请重新登录再试一次</string>
+    <string name="err_send_count">标题或内容字数超限</string>
 </resources>

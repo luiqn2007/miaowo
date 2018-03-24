@@ -1,24 +1,25 @@
 package org.miaowo.miaowo.fragment.chat
 
+import android.content.Context
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.TextUtils
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sdsmdg.tastytoast.TastyToast
 import kotlinx.android.synthetic.main.fragment_chat.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.ChatMsgAdapter
-import org.miaowo.miaowo.base.extra.inflateId
-import org.miaowo.miaowo.base.extra.toast
-import org.miaowo.miaowo.bean.data.ChatMessage
+import org.miaowo.miaowo.base.extra.handleError
 import org.miaowo.miaowo.bean.data.ChatRoom
+import org.miaowo.miaowo.databinding.FragmentChatBinding
 import org.miaowo.miaowo.other.ChatListAnimator
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.util.API
-import org.miaowo.miaowo.base.extra.lTODO
-import java.io.IOException
+import org.miaowo.miaowo.API
+import org.miaowo.miaowo.Miao
+import org.miaowo.miaowo.interfaces.IMiaoListener
+import java.util.*
 
 /**
  * 聊天内容
@@ -26,46 +27,95 @@ import java.io.IOException
  */
 
 class ChatFragment : Fragment() {
-    private var mAdapter = ChatMsgAdapter()
-    var room: ChatRoom? = null
+    private val mAdapter = ChatMsgAdapter()
+    private var mRoomId = -1
+    private var mUser = -1
+    private var mName = ""
+    private var mTimer = Timer()
+    private lateinit var mBinding: FragmentChatBinding
+    private var mListener: IMiaoListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateId(R.layout.fragment_chat, inflater, container)
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is IMiaoListener)
+            mListener = context
     }
-    
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false)
+        return mBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mRoomId = arguments!!.getInt(Const.ID, -1)
+        mUser = arguments!!.getInt(Const.USER, -1)
+        mName = arguments!!.getString(Const.NAME, "")
+
+        mListener?.setToolbar("聊天: $mName")
+
+        mBinding.btnSend.setOnClickListener {
+            if (mBinding.etMsg.text.toString().isBlank())
+                Miao.i.handleError(R.string.err_no_message)
+            else {
+                API.Users.chat(mUser, mBinding.etMsg.text.toString(), mRoomId) {
+                    if (it != "OK") {
+                        Miao.i.runOnUiThread {
+                            Miao.i.handleError(it)
+                        }
+                    }
+                }
+            }
+        }
+
+        list.layoutManager = LinearLayoutManager(context)
         list.adapter = mAdapter
         list.itemAnimator = ChatListAnimator()
 
-        API.Doc.chatMessage(room?.roomId ?: Const.NO_ID) {
-            try {
-                mAdapter.update(it?.messages ?: listOf())
-                list.scrollToPosition(mAdapter.itemCount - 1)
-            } catch (e: IOException) {
-                e.printStackTrace()
+        if (mRoomId >= 0) {
+            API.Doc.chatMessage(mRoomId) {
+                if (it != null) {
+                    activity?.runOnUiThread {
+                        mAdapter.update(it.messages)
+                        list.scrollToPosition(mAdapter.itemCount)
+                    }
+                }
             }
         }
 
-        btn_send.setOnClickListener {
-            val message = et_msg.text.toString()
-            if (TextUtils.isEmpty(message)) {
-                activity?.toast(R.string.err_msg_empty, TastyToast.ERROR)
-            } else {
-                API.Use.sendChat(room!!.lastUser!!.uid, room!!.roomId, message) { lTODO(it) }
-                et_msg.setText("")
+        mTimer.schedule(object : TimerTask() {
+            override fun run() {
+                if (mRoomId >= 0) {
+                    API.Doc.chatMessage(mRoomId) {
+                        if (it != null) {
+                            val receiveList = it.messages
+                            val adapterList = mAdapter.items
+                            if (it.messages.isEmpty() || adapterList.last().timestamp >= receiveList.last().timestamp)
+                                return@chatMessage
+                            if (adapterList.isEmpty())
+                                mAdapter.update(receiveList)
+                            val existLastTime = adapterList.last().timestamp
+                            val appendList = receiveList.filter { it.timestamp > existLastTime }
+                            mAdapter.append(appendList)
+                        }
+                    }
+                }
             }
-        }
+        }, 1000)
     }
 
-    fun newMessage(message: ChatMessage) {
-        mAdapter.insert(message, false)
-        list.scrollToPosition(mAdapter.itemCount - 1)
+    override fun onDestroy() {
+        mTimer.cancel()
+        super.onDestroy()
     }
 
     companion object {
         fun newInstance(room: ChatRoom): ChatFragment {
             val fragment = ChatFragment()
-            fragment.room = room
+            val args = Bundle()
+            args.putInt(Const.ID, room.roomId)
+            args.putInt(Const.USER, room.lastUser?.uid ?: -1)
+            args.putString(Const.NAME, room.lastUser?.username)
+            fragment.arguments = args
             return fragment
         }
     }

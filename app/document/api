@@ -47,7 +47,7 @@ api/v1
         DELETE /:uid/ban
             Unbans a user
         GET /:uid/tokens
-            Retrieves a list of active tokens for that user
+            Retrieves a items of active tokens for that user
             Accepts: No parameters
         POST /:uid/tokens
             Creates a new user token for the passed in uid

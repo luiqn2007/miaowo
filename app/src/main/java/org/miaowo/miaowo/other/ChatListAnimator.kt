@@ -1,6 +1,6 @@
 package org.miaowo.miaowo.other
 
-import android.support.v4.animation.AnimatorCompatHelper
+import android.animation.ValueAnimator
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPropertyAnimatorListener
 import android.support.v7.widget.RecyclerView
@@ -118,8 +118,8 @@ class ChatListAnimator : SimpleItemAnimator() {
     }
 
     private fun animateRemoveImpl(holder: RecyclerView.ViewHolder) {
-        val view = holder.itemView
-        val animation = ViewCompat.animate(view)
+        val rView = holder.itemView
+        val animation = ViewCompat.animate(rView)
         mRemoveAnimations.add(holder)
         animation.setDuration(removeDuration)
                 .alpha(0f).setListener(object : VpaListenerAdapter() {
@@ -139,16 +139,16 @@ class ChatListAnimator : SimpleItemAnimator() {
 
     override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
         resetAnimation(holder)
-        ViewCompat.setAlpha(holder.itemView, 0f)
-        ViewCompat.setTranslationX(holder.itemView, (if (holder.itemViewType == Const.MY) 320 else -320).toFloat())
-        ViewCompat.setTranslationY(holder.itemView, 320f)
+        holder.itemView.alpha = 0f
+        holder.itemView.translationX = (if (holder.itemViewType == Const.MY) 320 else -320).toFloat()
+        holder.itemView.translationY = 320f
         mPendingAdditions.add(holder)
         return true
     }
 
     private fun animateAddImpl(holder: RecyclerView.ViewHolder) {
-        val view = holder.itemView
-        val animation = ViewCompat.animate(view)
+        val rView = holder.itemView
+        val animation = ViewCompat.animate(rView)
         mAddAnimations.add(holder)
         animation.alpha(1f).translationX(0f).translationY(0f).setDuration(addDuration).setListener(object : VpaListenerAdapter() {
             override fun onAnimationStart(view: View) = dispatchAddStarting(holder)
@@ -167,8 +167,8 @@ class ChatListAnimator : SimpleItemAnimator() {
         var aFromX = fromX
         var aFromY = fromY
         val view = holder.itemView
-        aFromX += ViewCompat.getTranslationX(holder.itemView).toInt()
-        aFromY += ViewCompat.getTranslationY(holder.itemView).toInt()
+        aFromX += holder.itemView.translationX.toInt()
+        aFromY += holder.itemView.translationY.toInt()
         resetAnimation(holder)
         val deltaX = toX - aFromX
         val deltaY = toY - aFromY
@@ -176,25 +176,25 @@ class ChatListAnimator : SimpleItemAnimator() {
             dispatchMoveFinished(holder)
             return false
         }
-        if (deltaX != 0) ViewCompat.setTranslationX(view, (-deltaX).toFloat())
-        if (deltaY != 0) ViewCompat.setTranslationY(view, (-deltaY).toFloat())
+        if (deltaX != 0) view.translationX = (-deltaX).toFloat()
+        if (deltaY != 0) view.translationY = (-deltaY).toFloat()
         mPendingMoves.add(MoveInfo(holder, aFromX, aFromY, toX, toY))
         return true
     }
 
     private fun animateMoveImpl(info: MoveInfo) {
-        val view = info.holder.itemView
+        val rView = info.holder.itemView
         val deltaX = info.deltaX
         val deltaY = info.deltaY
-        if (deltaX != 0) ViewCompat.animate(view).translationX(0f)
-        if (deltaY != 0) ViewCompat.animate(view).translationY(0f)
-        val animation = ViewCompat.animate(view)
+        if (deltaX != 0) ViewCompat.animate(rView).translationX(0f)
+        if (deltaY != 0) ViewCompat.animate(rView).translationY(0f)
+        val animation = ViewCompat.animate(rView)
         mMoveAnimations.add(info.holder)
         animation.setDuration(moveDuration).setListener(object : VpaListenerAdapter() {
             override fun onAnimationStart(view: View) = dispatchMoveStarting(info.holder)
             override fun onAnimationCancel(view: View) {
-                if (deltaX != 0) ViewCompat.setTranslationX(view, 0f)
-                if (deltaY != 0) ViewCompat.setTranslationY(view, 0f)
+                if (deltaX != 0) view.translationX = 0f
+                if (deltaY != 0) view.translationY = 0f
             }
             override fun onAnimationEnd(view: View) {
                 animation.setListener(null)
@@ -209,22 +209,22 @@ class ChatListAnimator : SimpleItemAnimator() {
                                fromX: Int, fromY: Int, toX: Int, toY: Int): Boolean {
         if (oldHolder === newHolder) return animateMove(oldHolder, fromX, fromY, toX, toY)
 
-        val prevTranslationX = ViewCompat.getTranslationX(oldHolder.itemView)
-        val prevTranslationY = ViewCompat.getTranslationY(oldHolder.itemView)
-        val prevAlpha = ViewCompat.getAlpha(oldHolder.itemView)
+        val prevTranslationX = oldHolder.itemView.translationX
+        val prevTranslationY = oldHolder.itemView.translationY
+        val prevAlpha = oldHolder.itemView.alpha
         resetAnimation(oldHolder)
         val deltaX = (toX.toFloat() - fromX.toFloat() - prevTranslationX).toInt()
         val deltaY = (toY.toFloat() - fromY.toFloat() - prevTranslationY).toInt()
         // recover prev translation state after ending animation
-        ViewCompat.setTranslationX(oldHolder.itemView, prevTranslationX)
-        ViewCompat.setTranslationY(oldHolder.itemView, prevTranslationY)
-        ViewCompat.setAlpha(oldHolder.itemView, prevAlpha)
+        oldHolder.itemView.translationX = prevTranslationX
+        oldHolder.itemView.translationY = prevTranslationY
+        oldHolder.itemView.alpha = prevAlpha
         if (newHolder != null) {
             // carry over translation values
             resetAnimation(newHolder)
-            ViewCompat.setTranslationX(newHolder.itemView, (-deltaX).toFloat())
-            ViewCompat.setTranslationY(newHolder.itemView, (-deltaY).toFloat())
-            ViewCompat.setAlpha(newHolder.itemView, 0f)
+            newHolder.itemView.translationX = (-deltaX).toFloat()
+            newHolder.itemView.translationY = (-deltaY).toFloat()
+            newHolder.itemView.alpha = 0f
         }
         mPendingChanges.add(ChangeInfo(oldHolder, newHolder, fromX, fromY, toX, toY))
         return true
@@ -232,8 +232,8 @@ class ChatListAnimator : SimpleItemAnimator() {
 
     private fun animateChangeImpl(changeInfo: ChangeInfo) {
         if (changeInfo.hasOldHolder()) {
-            val view = changeInfo.oldHolder!!.itemView
-            val oldViewAnim = ViewCompat.animate(view).setDuration(
+            val oldView = changeInfo.oldHolder!!.itemView
+            val oldViewAnim = ViewCompat.animate(oldView).setDuration(
                     changeDuration)
             mChangeAnimations.add(changeInfo.oldHolder!!)
             oldViewAnim.translationX(changeInfo.deltaX.toFloat())
@@ -280,11 +280,14 @@ class ChatListAnimator : SimpleItemAnimator() {
 
     private fun endChangeAnimationIfNecessary(changeInfo: ChangeInfo, item: RecyclerView.ViewHolder): Boolean {
         var oldItem = false
-        if (changeInfo.newHolder === item) changeInfo.newHolder = null
-        else if (changeInfo.oldHolder === item) {
-            changeInfo.oldHolder = null
-            oldItem = true
-        } else return false
+        when {
+            changeInfo.newHolder === item -> changeInfo.newHolder = null
+            changeInfo.oldHolder === item -> {
+                changeInfo.oldHolder = null
+                oldItem = true
+            }
+            else -> return false
+        }
         resetView(item.itemView)
         dispatchChangeFinished(item, oldItem)
         return true
@@ -322,8 +325,8 @@ class ChatListAnimator : SimpleItemAnimator() {
             for (j in moves.indices.reversed()) {
                 val moveInfo = moves[j]
                 if (moveInfo.holder === item) {
-                    ViewCompat.setTranslationY(view, 0f)
-                    ViewCompat.setTranslationX(view, 0f)
+                    view.translationY = 0f
+                    view.translationX = 0f
                     dispatchMoveFinished(item)
                     moves.removeAt(j)
                     if (moves.isEmpty()) mMovesList.removeAt(i)
@@ -343,14 +346,15 @@ class ChatListAnimator : SimpleItemAnimator() {
     }
 
     private fun resetAnimation(holder: RecyclerView.ViewHolder) {
-        AnimatorCompatHelper.clearInterpolator(holder.itemView)
+        holder.itemView.clearAnimation()
+        holder.itemView.animate().interpolator = ValueAnimator().interpolator
         endAnimation(holder)
     }
 
     private fun resetView(view: View) {
-        ViewCompat.setAlpha(view, 1f)
-        ViewCompat.setTranslationX(view, 0f)
-        ViewCompat.setTranslationY(view, 0f)
+        view.alpha = 1f
+        view.translationX = 0f
+        view.translationY = 0f
     }
 
     override fun isRunning(): Boolean {
@@ -375,8 +379,8 @@ class ChatListAnimator : SimpleItemAnimator() {
         for (i in mPendingMoves.indices.reversed()) {
             val item = mPendingMoves[i]
             val view = item.holder.itemView
-            ViewCompat.setTranslationY(view, 0f)
-            ViewCompat.setTranslationX(view, 0f)
+            view.translationY = 0f
+            view.translationX = 0f
             dispatchMoveFinished(item.holder)
             mPendingMoves.removeAt(i)
         }
@@ -403,8 +407,8 @@ class ChatListAnimator : SimpleItemAnimator() {
                 val moveInfo = moves[j]
                 val item = moveInfo.holder
                 val view = item.itemView
-                ViewCompat.setTranslationY(view, 0f)
-                ViewCompat.setTranslationX(view, 0f)
+                view.translationY = 0f
+                view.translationX = 0f
                 dispatchMoveFinished(moveInfo.holder)
                 moves.removeAt(j)
                 if (moves.isEmpty()) mMovesList.remove(moves)

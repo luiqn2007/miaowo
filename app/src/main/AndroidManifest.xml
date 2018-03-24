@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.miaowo.miaowo">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -12,11 +11,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/cat_ghost"
         android:label="@string/app_name"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:screenOrientation="portrait">
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.Splish"
+            android:name=".Miao"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,22 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.Setting" />
-        <activity android:name=".activity.Miao"/>
-        <activity android:name=".activity.Chat"/>
-        <activity android:name=".activity.Detail" />
-        <activity android:name=".activity.MiaoUser" />
-        <activity
-            android:name=".activity.Add"
-            android:theme="@style/TranslateTheme" />
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
-        <service
-            android:name=".service.WebService"
-            android:enabled="true"
-            android:exported="true" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

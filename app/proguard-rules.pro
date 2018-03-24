@@ -7,12 +7,12 @@
 #---------------------------------2.第三方包-------------------------------
 #-- okhttp
 -dontwarn okio.**
-#-- gson
+#-- mGson
 -keep class sun.misc.Unsafe { *; }
--keep class com.google.gson.examples.android.model.** { *; }
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
+-keep class com.google.mGson.examples.android.model.** { *; }
+-keep class * implements com.google.mGson.TypeAdapterFactory
+-keep class * implements com.google.mGson.JsonSerializer
+-keep class * implements com.google.mGson.JsonDeserializer
 #-- picasso
 -dontwarn com.squareup.okhttp.**
 #-- Android-Iconics

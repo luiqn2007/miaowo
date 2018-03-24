@@ -33,8 +33,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_more"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="@string/todo" />
+        android:layout_marginEnd="8dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"

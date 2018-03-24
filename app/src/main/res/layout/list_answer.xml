@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/def_user" />
 
     <TextView
-        android:id="@+id/tv_user"
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -36,8 +36,8 @@
         android:layout_marginStart="8dp"
         android:text=""
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_user"
-        app:layout_constraintLeft_toRightOf="@+id/tv_user" />
+        app:layout_constraintBottom_toBottomOf="@+id/username"
+        app:layout_constraintLeft_toRightOf="@+id/username" />
 
     <TextView
         android:id="@+id/tv_context"
@@ -48,9 +48,9 @@
         android:text=""
         android:textColor="@color/md_black_1000"
         android:textSize="16sp"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_user"
+        app:layout_constraintLeft_toLeftOf="@+id/username"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_user"
+        app:layout_constraintTop_toBottomOf="@+id/username"
         app:layout_constraintHorizontal_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

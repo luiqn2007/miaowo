@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/md_white_1000</color>
-    <color name="colorPrimaryDark">@color/md_white_1000</color>
+    <color name="colorPrimary">@color/md_light_green_800</color>
+    <color name="colorPrimaryDark">@color/md_light_green_800</color>
     <color name="colorAccent">#FF4081</color>
 
     <!-- 状态: 在线, 离开, 勿扰, 隐身(离线) -->
@@ -9,6 +9,27 @@
     <color name="colorAway">@color/md_orange_600</color>
     <color name="colorDnd">@color/md_red_600</color>
     <color name="colorHide">@color/md_grey_600</color>
+
+    <color name="toolbar">#9CCC65</color>
+    <color name="titleText">@color/md_white_1000</color>
+    <color name="titleTextExpanded">@color/md_white_1000</color>
+
+    <color name="fabBackground">@color/md_green_800</color>
+    <color name="fabRipple">@color/md_green_A700</color>
+
+    <color name="btnTextColor">@color/md_white_1000</color>
+    <color name="btnGreen">#13BF81</color>
+    <color name="btnBlue">#17A6E3</color>
+    <color name="btnRed">#DE6D5D</color>
+
+    <color name="divider">@color/md_grey_800</color>
+
+    <color name="etTextColor">@color/md_black_1000</color>
+    <color name="etBackground">@color/md_grey_400</color>
+    <color name="etHint">@color/md_grey_800</color>
+
+    <color name="textColor1">#525252</color>
+    <color name="textColor2">#000000</color>
 
     <color name="translate">#00FFFFFF</color>
 </resources>

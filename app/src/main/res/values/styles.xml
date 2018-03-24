@@ -7,7 +7,6 @@
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="TranslateTheme" parent="AppTheme">
@@ -19,5 +18,36 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/translate</item>
         <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="MiaoEditor" parent="Widget.AppCompat.EditText" />
+
+    <style name="MiaoEditor.OneLineInput">
+        <item name="android:background">@color/etBackground</item>
+        <item name="android:textColorHint">@color/etHint</item>
+        <item name="android:textColor">@color/etTextColor</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:minHeight">38dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:drawablePadding">8dp</item>
+    </style>
+
+    <style name="MiaoButton" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/btnTextColor</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="MiaoButton.Blue">
+        <item name="android:background">@drawable/btn_blue</item>
+    </style>
+
+    <style name="MiaoButton.Green">
+        <item name="android:background">@drawable/btn_green</item>
+    </style>
+
+    <style name="MiaoButton.Red">
+        <item name="android:background">@drawable/btn_red</item>
     </style>
 </resources>

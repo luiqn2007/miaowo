@@ -1,17 +1,14 @@
 package org.miaowo.miaowo.ui
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.activity.Chat
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.extra.activity
-import org.miaowo.miaowo.base.extra.uiThread
 import org.miaowo.miaowo.base.extra.spGet
 import org.miaowo.miaowo.base.extra.spPut
 import java.util.*
@@ -37,7 +34,7 @@ class ChatButton : View {
     private var mMoveBack: Timer? = null
 
     private fun init() {
-        mManager = activity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        mManager = App.i.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         mManager?.defaultDisplay?.getSize(mScreenSize)
         mSize = (Math.max(mScreenSize.x, mScreenSize.y) / 32 * 3).toFloat()
         mPosition.set(spGet("btn_x", mScreenSize.x / 2), spGet("btn_y", mScreenSize.y / 2))
@@ -101,7 +98,7 @@ class ChatButton : View {
                     mMoveBack = Timer()
                     mMoveBack?.schedule(object : TimerTask() {
                         override fun run() {
-                            activity?.uiThread { clickAction(-1, finalY, true) }
+                            Miao.i.runOnUiThread { clickAction(-1, finalY, true) }
                             mMoveBack = null
                         }
                     }, 600)
@@ -111,21 +108,27 @@ class ChatButton : View {
                     mMoveBack = Timer()
                     mMoveBack?.schedule(object : TimerTask() {
                         override fun run() {
-                            activity?.uiThread { clickAction((mScreenSize.x - mSize + 1).toInt(), finalY, true) }
+                            Miao.i.runOnUiThread { clickAction((mScreenSize.x - mSize + 1).toInt(), finalY, true) }
                             mMoveBack = null
                         }
                     }, 600)
                 }
             } else {
-                context.startActivity(Intent(context, Chat::class.java))
+                // TODO: 打开聊天界面
                 return
             }
         } else {
-            xTo = if (aX < 0) (-mSize * 2 / 3).toInt()
-            else if (aX > mScreenSize.x - mSize) (mScreenSize.x - mSize / 3).toInt() else aX
+            xTo = when {
+                aX < 0 -> (-mSize * 2 / 3).toInt()
+                aX > mScreenSize.x - mSize -> (mScreenSize.x - mSize / 3).toInt()
+                else -> aX
+            }
         }
-        yTo = if (aY < 0) 1
-        else if (aY > mScreenSize.y - mSize) (mScreenSize.y - mSize).toInt() else aY
+        yTo = when {
+            aY < 0 -> 1
+            aY > mScreenSize.y - mSize -> (mScreenSize.y - mSize).toInt()
+            else -> aY
+        }
         var dx = if (aX > xTo) -1 else if (aX < xTo) 1 else 0
         var dy = if (aY > yTo) -1 else if (aY < yTo) 1 else 0
         while (aX != xTo || aY != yTo) {
@@ -185,12 +188,12 @@ class ChatButton : View {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        activity?.onKeyDown(keyCode, event)
+        Miao.i.onKeyDown(keyCode, event)
         return true
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        activity?.onKeyUp(keyCode, event)
+        Miao.i.onKeyUp(keyCode, event)
         return true
     }
 

@@ -16,7 +16,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:hint="请输入要搜索的内容"
+        android:hint="@string/search_init"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/ib_search"
         app:layout_constraintLeft_toLeftOf="parent"

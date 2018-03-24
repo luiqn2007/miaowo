@@ -13,23 +13,30 @@ import android.view.View
  * Created by luqin on 17-4-20.
  */
 
+@Suppress("unused", "UNUSED_PARAMETER")
 class FabScrollBehavior(context: Context, attrs: AttributeSet) : FloatingActionButton.Behavior() {
 
-    override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout?, child: FloatingActionButton?,
-                                     directTargetChild: View?, target: View?, nestedScrollAxes: Int) = true
+    override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton,
+                                     directTargetChild: View, target: View, axes: Int, type: Int) = true
 
-    override fun onNestedScroll(coordinatorLayout: CoordinatorLayout?, child: FloatingActionButton?,
-                                target: View?, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
-        if (dyConsumed > 0 && child!!.isEnabled) {
-            ObjectAnimator.ofPropertyValuesHolder(child, PropertyValuesHolder.ofFloat("translationY", 0f, 500f), PropertyValuesHolder.ofFloat("alpha", 1f, 0f)).setDuration(300).start()
+    override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton,
+                                target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int,
+                                dyUnconsumed: Int, type: Int) {
+        if (dyConsumed > 0 && child.isEnabled) {
+            ObjectAnimator.ofPropertyValuesHolder(child,
+                    PropertyValuesHolder.ofFloat("translationY", 0f, 500f),
+                    PropertyValuesHolder.ofFloat("alpha", 1f, 0f)).setDuration(300).start()
             child.isEnabled = false
-        } else if (dyConsumed < 0 && !child!!.isEnabled) {
-            ObjectAnimator.ofPropertyValuesHolder(child, PropertyValuesHolder.ofFloat("translationY", 500f, 0f), PropertyValuesHolder.ofFloat("alpha", 0f, 1f)).setDuration(300).start()
+        } else if (dyConsumed < 0 && !child.isEnabled) {
+            ObjectAnimator.ofPropertyValuesHolder(child,
+                    PropertyValuesHolder.ofFloat("translationY", 500f, 0f),
+                    PropertyValuesHolder.ofFloat("alpha", 0f, 1f)).setDuration(300).start()
             child.isEnabled = true
         }
     }
 
-    override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout?, child: FloatingActionButton?, target: View?) {
-        super.onStopNestedScroll(coordinatorLayout, child, target)
+    override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton,
+                                    target: View, type: Int) {
+        super.onStopNestedScroll(coordinatorLayout, child, target, type)
     }
 }

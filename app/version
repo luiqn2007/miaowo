@@ -1,6 +1,6 @@
 {
-  "version": 6,
-  "versionName": "test1.1",
-  "message": "更换图标了，感谢 Simo 提供的图标；\n用户详细页面重新写了写，完全去除了浮动窗口。\n大小大概3.5MB。自从使用的kotlin后apk包大小就变大了。",
+  "version": 7,
+  "versionName": "test2.0",
+  "message": "好久没上传了，差点都忘了我OSC和签名密码了。。。\n这还是一个半成品。系统菌在墨刀做了新版本的界面，我这又有的忙了。。。\n这次上传权当备份代码了",
   "url": "http://git.oschina.net/lq2007/miaowo/raw/master/app/release/app-release.apk"
 }
