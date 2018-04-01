@@ -86,7 +86,7 @@ class RegisterFragment : Fragment() {
             if (sInstance == null) {
                 val fragment = RegisterFragment()
                 val args = Bundle()
-                args.putBoolean(Const.FG_TO_BACKSTACK, false)
+                args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
                 fragment.arguments = args
                 sInstance = fragment
             }

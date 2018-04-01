@@ -80,9 +80,11 @@ class LoginFragment : Fragment() {
             }
             mListenerI?.login(User(username = user.editText!!.text.toString(), password = pwd.editText!!.text.toString(), uid = Int.MAX_VALUE), login)
         }
-        register.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Register) }
+        register.setOnClickListener { mListenerI?.showBackIconOnToolbar() }
+//        register.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Register) }
         github.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.GitHub) }
-        forget.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Forget) }
+//        forget.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Forget) }
+        forget.setOnClickListener { mListenerI?.showOptionIconOnToolbar() }
     }
 
     companion object {
@@ -93,7 +95,7 @@ class LoginFragment : Fragment() {
             if (sInstance == null) {
                 val fragment = LoginFragment()
                 val args = Bundle()
-                args.putBoolean(Const.FG_TO_BACKSTACK, false)
+                args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
                 fragment.arguments = args
                 sInstance = fragment
             }

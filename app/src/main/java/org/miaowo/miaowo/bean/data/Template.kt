@@ -31,5 +31,12 @@ data class Template(
         val chats: Boolean? = null,
 
         @field:SerializedName("users")
-        val users: Boolean? = null
+        val users: Boolean? = null,
+
+        @field:SerializedName("notifications")
+        val notifications: Boolean? = null,
+
+        @field:SerializedName("unread")
+        val unread: Boolean? = null
+
 )

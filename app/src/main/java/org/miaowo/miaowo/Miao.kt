@@ -42,19 +42,21 @@ import org.miaowo.miaowo.bean.config.TextIconConfig
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.fragment.*
 import org.miaowo.miaowo.fragment.chat.ChatListFragment
+import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.fragment.website.BlogFragment
 import org.miaowo.miaowo.fragment.website.FeedbackFragment
 import org.miaowo.miaowo.fragment.website.StatusFragment
 import org.miaowo.miaowo.fragment.welcome.IndexFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoHandler
 import org.miaowo.miaowo.util.ImageUtil
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.properties.Delegates
 import com.mikepenz.materialdrawer.R as R2
 
-class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by handler {
+class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by handler {
     @Suppress("unused")
     constructor() : this(MiaoHandler())
 
@@ -75,6 +77,8 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
     private val mFgWebsiteStatus = StatusFragment.newInstance()
     private val mFgWebsiteBlog = BlogFragment.newInstance()
     private val mFgWebsiteFeedback = FeedbackFragment.newInstance()
+    private val mFgCategory = CategoryFragment.newInstance()
+    private val mFgUnread = UnreadFragment.newInstance()
 
     internal lateinit var mNavigation: Drawer
     internal val mLoginUser = mutableListOf<String>()
@@ -139,6 +143,7 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
         // FloatingActionButton
         initFab()
         // 加载欢迎界面
+        supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifeRecycleCallback, true)
         loadFragment(IndexFragment.INSTANCE)
     }
 
@@ -255,26 +260,26 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
             }
         }
         mNavigation.run {
-            addStickyFooterItem(
-                    SecondaryDrawerItem().apply {
+            addStickyFooterItem(SecondaryDrawerItem().apply {
                         withSelectedColor(Color.WHITE)
                         withSelectedIconColor(Color.RED)
                         withSelectedTextColor(Color.RED)
                         withName(R.string.setting)
                         withTag(R.string.setting)
                         withIcon(FontAwesome.Icon.faw_cogs)
-                    }
-            )
-            addStickyFooterItem(
-                    SecondaryDrawerItem().apply {
+            })
+            addStickyFooterItem(SecondaryDrawerItem().apply {
                         withSelectedColor(Color.WHITE)
                         withSelectedIconColor(Color.RED)
                         withSelectedTextColor(Color.RED)
                         withName("${getString(R.string.logout)} / ${getString(R.string.exit)}")
                         withTag(R.string.logout)
                         withIcon(FontAwesome.Icon.faw_share_square)
-                    }
-            )
+            })
+            setOnDrawerNavigationListener {
+                onBackPressed()
+                true
+            }
         }
 
         // 原本显示 email 的地方显示在线状态
@@ -290,7 +295,7 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
         val user = API.user
         // background
         if (user.coverUrl.isNotBlank())
-            mNavigationAccount.setHeaderBackground(ImageHolder(getString(R.string.url_home_head, user.uploadedpicture)))
+            mNavigationAccount.setHeaderBackground(ImageHolder(getString(R.string.url_home_head, user.coverUrl)))
         else mNavigationAccount.setHeaderBackground(ImageHolder(R.drawable.def_bg))
         // profile
         val c: Boolean = mNavigationAccount.profiles.any { it.identifier == user.uid.toLong() }
@@ -340,25 +345,30 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
                     }, insertIndex + index
             )
         }
+        if (categories.isNotEmpty()) {
+
+        }
         mNavigation.adapter.notifyAdapterDataSetChanged()
         // Fragment
-        for (i in 0..supportFragmentManager.backStackEntryCount)
-            supportFragmentManager.popBackStackImmediate()
-        if (categories.isNotEmpty())
+        if (categories.isNotEmpty()) {
+            mNavigation.addItemAtPosition(
+                    SecondaryDrawerItem().apply {
+                        withSelectedColor(Color.WHITE)
+                        withSelectedIconColor(Color.RED)
+                        withSelectedTextColor(Color.RED)
+                        withName(R.string.unread)
+                        withIcon(FontAwesome.Icon.faw_inbox)
+                        withTag(R.string.unread)
+                    }, insertIndex + categories.size
+            )
+//            for (i in 0..supportFragmentManager.backStackEntryCount)
+//                supportFragmentManager.popBackStackImmediate()
             mNavigation.setSelection(categories[0].cid.toLong())
-        lInfo("updateNavigationItems: $categories")
+        }
     }
 
     // 初始化 Toolbar
     private fun initToolbar() {
-        with(toolBar.menu.add(R.string.unread)) {
-            icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_notifications, null)
-            setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            setOnMenuItemClickListener {
-                toast("click", TastyToast.SUCCESS)
-                true
-            }
-        }
         toolBar.setTitleTextColor(ResourcesCompat.getColor(resources, R.color.md_white_1000, null))
         mToolbarDrawerToggle = ActionBarDrawerToggle(this, mNavigation.drawerLayout, toolbar, R.string.toggle_toolbar_open, R.string.toggle_toolbar_close)
         mToolbarDrawerToggle.syncState()
@@ -434,8 +444,15 @@ class Miao(val handler: MiaoHandler) : AppCompatActivity(), IMiaoListener by han
             } else finish()
         // 设置
             R.string.setting -> if (API.isLogin) loadFragment(mFgSetting)
+        // 未读
+            R.string.unread -> if (API.isLogin) loadFragment(mFgUnread)
         // 其他各 Category
-            is Category -> if (API.isLogin) loadFragment(CategoryFragment.newInstance(tag))
+            is Category -> {
+                if (API.isLogin) {
+                    mFgCategory.loadCategory(tag)
+                    loadFragment(mFgCategory)
+                }
+            }
         }
         mNavigation.closeDrawer()
     }

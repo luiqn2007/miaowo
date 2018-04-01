@@ -1,8 +1,7 @@
-package org.miaowo.miaowo.fragment
+package org.miaowo.miaowo.fragment.user
 
 import android.app.AlertDialog
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.internal.SnackbarContentLayout
 import android.support.design.widget.Snackbar
@@ -19,15 +18,16 @@ import kotlinx.android.synthetic.main.fragment_user_detail.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.PostAdapter
 import org.miaowo.miaowo.base.extra.toast
-import org.miaowo.miaowo.databinding.FragmentUserDetailBinding
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.data.ChatRooms
 import org.miaowo.miaowo.bean.data.User
+import org.miaowo.miaowo.other.ViewBindHelper
 
 /**
  * 个人资料
@@ -56,7 +56,6 @@ class UserFragment : Fragment() {
     val uid: Int get() = arguments!!.getInt(Const.ID, -1)
 
     var mListenerI: IMiaoListener? = null
-    lateinit var binding: FragmentUserDetailBinding
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -70,8 +69,7 @@ class UserFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_detail, container, false)
-        return binding.root
+        return inflateId(inflater, R.layout.fragment_user_detail, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,12 +77,16 @@ class UserFragment : Fragment() {
         val tUid = uid
         val callback: (user: User?) -> Unit = { gUser ->
             activity?.runOnUiThread {
-                binding.setUser(gUser)
-                mListenerI?.setToolbar(gUser?.username ?: getString(R.string.err_chat_user))
-                if (gUser?.uid == API.user.uid) {
+                if (gUser == null) return@runOnUiThread
+                ViewBindHelper.setUserBackground(background, gUser.coverUrl)
+                ViewBindHelper.setUserIcon(user, gUser)
+                username.text = gUser.username
+                focus.setText(if (gUser.isFollowing) R.string.focus else R.string.focus_cancel)
+                mListenerI?.setToolbar(gUser.username)
+                if (gUser.uid == API.user.uid) {
                     focus.isEnabled = false
                     chat.isEnabled = false
-                } else if (gUser != null) {
+                } else {
                     // 关注
                     focus.setOnClickListener {
                         if (!gUser.isFollowing) {

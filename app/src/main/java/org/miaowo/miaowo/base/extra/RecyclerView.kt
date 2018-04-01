@@ -20,6 +20,7 @@ inline fun <reified T : RecyclerView.LayoutManager> RecyclerView.registerPositio
 val RecyclerView.firstPosition: Int
     get() {
         return when {
+            layoutManager == null -> -1
             layoutManager::class.java in hRecyclerViewPositionGetter ->
                 hRecyclerViewPositionGetter[layoutManager.javaClass]!!.firstPosition(this, layoutManager)
             layoutManager is LinearLayoutManager ->

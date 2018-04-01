@@ -95,17 +95,9 @@ data class Post(
         val upvoted: Boolean? = null,
 
         @field:SerializedName("display_post_menu")
-        val displayPostMenu: Boolean? = null
+        val displayPostMenu: Boolean? = null,
 
-) : IPostItem {
-    constructor(topic: Topic?) : this(
-            timestamp = topic?.teaser?.timestamp ?: -1,
-            timestampISO = topic?.teaser?.timestampISO,
-            pid = topic?.teaser?.pid ?: -1,
-            tid = topic?.teaser?.tid ?: -1,
-            uid = topic?.teaser?.uid ?: -1,
-            user = topic?.teaser?.user,
-            content = topic?.teaser?.content,
-            topic = topic?.copy()
-    )
-}
+        val fromTeaser: Boolean = false,
+
+        val extraMessage: Any? = null
+) : IPostItem

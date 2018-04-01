@@ -29,12 +29,14 @@ import android.app.Fragment as OldFragment
  * Created by luqin on 17-6-22.
  */
 @SuppressLint("StaticFieldLeak")
-private val hActivityMaps = mutableMapOf<String, MutableMap<*, *>>(
-        Pair("ProcessBinding", mutableMapOf<Activity?, MutableMap<String, IProcessable>>())
+private val hActivityMaps = mutableMapOf<String, MutableMap<Activity?, *>>(
+        Pair("ProcessBinding", mutableMapOf<Activity?, MutableMap<String, IProcessable>>()),
+        Pair("Fragment", mutableMapOf<Activity?, Fragment>())
 )
 @Suppress("UNCHECKED_CAST")
-private val hProcessBinding: MutableMap<Activity?, MutableMap<String, IProcessable>> =
-        hActivityMaps["ProcessBinding"] as MutableMap<Activity?, MutableMap<String, IProcessable>>
+private val hProcessBinding = hActivityMaps["ProcessBinding"] as MutableMap<Activity?, MutableMap<String, IProcessable>>
+@Suppress("UNCHECKED_CAST")
+private val hLoadedFragment = hActivityMaps["Fragment"] as MutableMap<Activity?, Fragment>
 
 fun Activity.toast(msg: String, type: Int) = TastyToast.makeText(baseContext, msg, TastyToast.LENGTH_SHORT, type).show()
 fun Activity.toast(@StringRes stringId: Int, type: Int) = TastyToast.makeText(baseContext, getString(stringId), TastyToast.LENGTH_SHORT, type).show()
@@ -70,23 +72,10 @@ fun AppCompatActivity.requestPermissions(requestCode: Int, vararg permissions: S
 }
 
 fun AppCompatActivity.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.container) {
-    if (fragment != null && !fragment.isVisible) {
-        if (fragment.arguments?.getBoolean(Const.FG_POP_ALL) == true) {
-            while (supportFragmentManager.backStackEntryCount != 0)
-                supportFragmentManager.popBackStackImmediate()
-        }
-        val transaction = supportFragmentManager.beginTransaction()
-        with(transaction) {
-            if (!fragment.isAdded) add(container, fragment)
-            if (fragment.arguments?.getBoolean(Const.FG_TO_BACKSTACK, true) == true) addToBackStack(null)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
-            replace(container, fragment)
-        }
-        transaction.commitAllowingStateLoss()
-        supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifeRecycleCallback, true)
-        supportFragmentManager.executePendingTransactions()
-    }
+    val lf = hLoadedFragment[this]
+    if (lf == fragment) return
+    if (hLoadFragment(supportFragmentManager, fragment, lf, container))
+        hLoadedFragment[this] = fragment!!
 }
 
 fun Activity.process(msg: String, processKey: String?) {
@@ -176,12 +165,10 @@ inline fun <reified T : Activity> AppCompatActivity.startActivity() = startActiv
 
 object MyActivityLifecycle : Application.ActivityLifecycleCallbacks {
     override fun onActivityDestroyed(activity: Activity?) {
-        hActivityMaps.values.forEach { map ->
-            map.entries.forEach {
-                if (it.key == activity || it.value == activity) {
-                    map.remove(it.key)
-                }
-            }
+        hActivityMaps.values.forEach {
+            it.filter {
+                it.key == activity || it.value == activity
+            }.forEach { k, _ -> it.remove(k) }
         }
     }
 

@@ -6,13 +6,14 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 7
+      "versionCode": 8,
+      "versionName": "test2.0",
+      "enabled": true,
+      "outputFile": "app-release.apk",
+      "fullName": "release",
+      "baseName": "release"
     },
     "path": "app-release.apk",
-    "properties": {
-      "packageId": "org.miaowo.miaowo",
-      "split": "",
-      "minSdkVersion": "15"
-    }
+    "properties": {}
   }
 ]

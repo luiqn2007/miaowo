@@ -10,7 +10,8 @@
     <string name="url_user">https://www.miaowo.org/api/user/%1$s</string>
     <string name="url_login">https://www.miaowo.org/login</string>
     <string name="url_register">https://www.miaowo.org/register</string>
-    <string name="url_unread">https://www.miaowo.org/api/unread</string>
+    <string name="url_unread">https://www.miaowo.org/api/unread?page=%1d</string>
+    <string name="url_notification">https://www.miaowo.org/api/notifications</string>
     <string name="url_users">https://www.miaowo.org/api/users</string>
     <string name="url_chat_message">https://www.miaowo.org/api/user/%1$s/chats/%2$d</string>
     <string name="url_chat_room">https://www.miaowo.org/api/user/%1$s/chats</string>

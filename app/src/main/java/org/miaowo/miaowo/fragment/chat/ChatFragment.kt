@@ -1,7 +1,6 @@
 package org.miaowo.miaowo.fragment.chat
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -13,11 +12,11 @@ import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.ChatMsgAdapter
 import org.miaowo.miaowo.base.extra.handleError
 import org.miaowo.miaowo.bean.data.ChatRoom
-import org.miaowo.miaowo.databinding.FragmentChatBinding
 import org.miaowo.miaowo.other.ChatListAnimator
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import java.util.*
 
@@ -32,7 +31,6 @@ class ChatFragment : Fragment() {
     private var mUser = -1
     private var mName = ""
     private var mTimer = Timer()
-    private lateinit var mBinding: FragmentChatBinding
     private var mListener: IMiaoListener? = null
 
     override fun onAttach(context: Context?) {
@@ -41,10 +39,7 @@ class ChatFragment : Fragment() {
             mListener = context
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false)
-        return mBinding.root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = inflateId(inflater, R.layout.fragment_chat, container)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         mRoomId = arguments!!.getInt(Const.ID, -1)
@@ -53,14 +48,17 @@ class ChatFragment : Fragment() {
 
         mListener?.setToolbar("聊天: $mName")
 
-        mBinding.btnSend.setOnClickListener {
-            if (mBinding.etMsg.text.toString().isBlank())
+
+        btn_send.setOnClickListener {
+            if (et_msg.text.toString().isBlank())
                 Miao.i.handleError(R.string.err_no_message)
             else {
-                API.Users.chat(mUser, mBinding.etMsg.text.toString(), mRoomId) {
-                    if (it != "OK") {
-                        Miao.i.runOnUiThread {
+                API.Users.chat(mUser, et_msg.text.toString(), mRoomId) {
+                    Miao.i.runOnUiThread {
+                        if (it != "OK") {
                             Miao.i.handleError(it)
+                        } else {
+                            list.scrollToPosition(mAdapter.itemCount)
                         }
                     }
                 }

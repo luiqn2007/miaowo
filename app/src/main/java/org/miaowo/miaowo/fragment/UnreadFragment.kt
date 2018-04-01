@@ -20,10 +20,10 @@ import org.miaowo.miaowo.bean.data.Topic
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
-class CategoryFragment : BaseListFragment() {
+class UnreadFragment : BaseListFragment() {
     companion object {
-        fun newInstance(): CategoryFragment {
-            val fragment = CategoryFragment()
+        fun newInstance(): UnreadFragment {
+            val fragment = UnreadFragment()
             val args = Bundle()
             args.putBoolean(Const.FG_POP_ALL, true)
             fragment.arguments = args
@@ -32,8 +32,6 @@ class CategoryFragment : BaseListFragment() {
     }
 
     private val mAdapter = PostAdapter(true, false)
-    private var mId = -1
-    private var mName = ""
     private var mPage = 0
     private var mViewCreated = false
 
@@ -42,7 +40,7 @@ class CategoryFragment : BaseListFragment() {
         mViewCreated = true
         (attach as? IMiaoListener)?.run {
             decorationVisible = false
-            setToolbar(mName)
+            setToolbar(App.i.getString(R.string.unread))
         }
         onRefresh()
     }
@@ -52,7 +50,7 @@ class CategoryFragment : BaseListFragment() {
     }
 
     override fun onLoadmore() {
-        API.Doc.category(mId, mPage + 1) {
+        API.Doc.unread(mPage) {
             activity?.runOnUiThread {
                 if (it != null) mAdapter.append(it.topics, false)
                 mPage++
@@ -62,7 +60,7 @@ class CategoryFragment : BaseListFragment() {
     }
 
     override fun onRefresh() {
-        API.Doc.category(mId, 1) {
+        API.Doc.unread {
             val topics = it?.topics ?: emptyList()
             mPage = 1
             activity?.runOnUiThread {
@@ -87,14 +85,5 @@ class CategoryFragment : BaseListFragment() {
         }
         listener?.jump(IMiaoListener.JumpFragment.Topic, item.tid)
         return true
-    }
-
-    fun loadCategory(category: Category) {
-        if (category.cid != mId) {
-            mId = category.cid
-            mName = category.name
-            mPage = 0
-            if (mViewCreated) onViewCreated(springView, null)
-        }
     }
 }

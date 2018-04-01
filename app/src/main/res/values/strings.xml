@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">喵窝</string>
+    <string name="app_name">喵窝(阅读器)</string>
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
     <string name="square">广场</string>

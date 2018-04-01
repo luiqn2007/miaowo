@@ -9,7 +9,7 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
     private var mRAddedPosition = 0
     private var mLastAddedSize = 0
     private var mLastAddedPosition = 0
-    private val mItems = mutableListOf<E>()
+    private var mItems = mutableListOf<E>()
 
     /**
      * 列表中的条目数最大值，当条目数多于该值时自动从 0 开始移除条目
@@ -35,7 +35,7 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
 
     fun update(newItems: List<E>) {
         mItems.clear()
-        mItems.addAll(newItems)
+        mItems = newItems as? MutableList ?: newItems.toMutableList()
         notifyDataSetChanged()
     }
 

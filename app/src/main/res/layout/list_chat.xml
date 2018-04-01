@@ -1,53 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:padding="8dp">
 
-    <data>
+    <ImageView
+        android:id="@+id/iv_user"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/def_user" />
 
-        <variable
-            name="user"
-            type="org.miaowo.miaowo.bean.data.User" />
-    </data>
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignBottom="@id/iv_user"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/iv_user"
+        android:layout_toRightOf="@id/iv_user"
+        android:background="#FFBA68C8" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="8dp">
-
-        <ImageView
-            android:id="@+id/iv_user"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/def_user"
-            app:user_icon="@{user}" />
-
-        <View
-            android:id="@+id/line"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:layout_alignBottom="@id/iv_user"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp"
-            android:layout_toEndOf="@id/iv_user"
-            android:layout_toRightOf="@id/iv_user"
-            android:background="#FFBA68C8" />
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/line"
-            android:layout_alignLeft="@id/line"
-            android:layout_alignStart="@id/line"
-            android:layout_marginBottom="5dp"
-            android:maxLines="1"
-            android:text="@{user.username}"
-            android:textColor="#4A148C"
-            android:textSize="23sp"
-            android:textStyle="bold|italic" />
-    </RelativeLayout>
-</layout>
+        android:layout_above="@id/line"
+        android:layout_alignLeft="@id/line"
+        android:layout_alignStart="@id/line"
+        android:layout_marginBottom="5dp"
+        android:maxLines="1"
+        android:textColor="#4A148C"
+        android:textSize="23sp"
+        android:textStyle="bold|italic" />
+</RelativeLayout>

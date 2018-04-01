@@ -7,18 +7,15 @@ package org.miaowo.miaowo.other
 object Const {
     const val TAG = "tags"
     const val NAME = "name"
-    const val PAGE = "page"
     const val USER = "user"
     const val ID = "id"
     const val PWD = "pwd"
     const val CHECK = "checkPwd"
     const val EMAIL = "email"
     const val SAVE = "isSave"
-    const val POSITION = "position"
     const val REPLY = "reply"
     // IProcessable
     const val LOGIN = "login"
-    const val REGISTER = "register"
     // sp
     const val SP_DEFAULT = "miaowo"
     const val SP_FIRST_BOOT = "first_boot"
@@ -28,11 +25,12 @@ object Const {
     const val SP_USE_TAB = "square_tab_mode"
     const val SP_CLEAN_TOKENS = "auto_clean_token"
     // fragment
-    const val FG_TO_BACKSTACK = "add_to_back_stack"
+    const val FG_ADD_TO_BACK_STACK = "add_to_back_stack"
     const val FG_POP_ALL = "pop_other_fragment_from_back_stack"
     // result
     const val RET_FILE = 20
     const val RET_OK = "OK"
+    const val RET_ERR = "ERROR"
     // id
     const val MY = 1
     const val TO = 2

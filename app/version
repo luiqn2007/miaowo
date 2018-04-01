@@ -1,6 +1,6 @@
 {
-  "version": 7,
+  "version": 8,
   "versionName": "test2.0",
-  "message": "好久没上传了，差点都忘了我OSC和签名密码了。。。\n这还是一个半成品。系统菌在墨刀做了新版本的界面，我这又有的忙了。。。\n这次上传权当备份代码了",
+  "message": "喵窝阅读器版本\n的确，只是半成品\n已知bug，无法注册，不能重复登录，不能回复，不能显示图片\n哈哈，完整功能先用着毛不二的版本吧\n还有，UI设计 系统菌，我错了",
   "url": "http://git.oschina.net/lq2007/miaowo/raw/master/app/release/app-release.apk"
 }

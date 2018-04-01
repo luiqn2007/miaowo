@@ -17,7 +17,7 @@ import org.miaowo.miaowo.fragment.welcome.GithubFragment
 class InboxFragment : Fragment() {
     private var mListenerI: IMiaoListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = inflateId(R.layout.fragment_github, inflater, container)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = inflateId(inflater, R.layout.fragment_github, container)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)

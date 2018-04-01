@@ -241,9 +241,7 @@ data class User(
         @field:SerializedName("custom_profile_info")
         val customProfileInfo: List<Any> = emptyList(),
 
-        var password: String = "",
-
-        var token: String = ""
+        var password: String = ""
 ) {
     companion object {
         val logout = User()

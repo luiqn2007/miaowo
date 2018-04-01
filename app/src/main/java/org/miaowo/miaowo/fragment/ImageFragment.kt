@@ -39,7 +39,7 @@ class ImageFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateId(R.layout.fragment_image, inflater, container)
+        return inflateId(inflater, R.layout.fragment_image, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -1,325 +1,309 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <data>
-
-        <variable
-            name="user"
-            type="org.miaowo.miaowo.bean.data.User" />
-    </data>
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/md_lime_A200"
+            app:cardCornerRadius="8dp">
 
-            <android.support.v7.widget.CardView
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardBackgroundColor="@color/md_lime_A200"
-                app:cardCornerRadius="8dp">
+                android:layout_height="match_parent"
+                android:padding="8dp">
 
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp">
+                <TextView
+                    android:id="@+id/lbl_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_info"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/lbl_user"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/user_info"
-                        android:textSize="24sp"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/user_name"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_user"
+                    app:layout_constraintLeft_toLeftOf="@+id/lbl_user"
+                    app:layout_constraintTop_toTopOf="@+id/et_user" />
 
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/user_name"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_user"
-                        app:layout_constraintLeft_toLeftOf="@+id/lbl_user"
-                        app:layout_constraintTop_toTopOf="@+id/et_user" />
+                <EditText
+                    android:id="@+id/et_user"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:ems="10"
+                    android:maxLines="1"
+                    app:layout_constraintLeft_toRightOf="@+id/textView6"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_user" />
 
-                    <EditText
-                        android:id="@+id/et_user"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginLeft="32dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="8dp"
-                        android:ellipsize="end"
-                        android:ems="10"
-                        android:maxLines="1"
-                        android:text="@{user.username}"
-                        app:layout_constraintLeft_toRightOf="@+id/textView6"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lbl_user" />
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/email"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_email"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView6"
+                    app:layout_constraintTop_toTopOf="@+id/et_email"
+                    app:layout_constraintVertical_bias="0.538" />
 
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/email"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_email"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView6"
-                        app:layout_constraintTop_toTopOf="@+id/et_email"
-                        app:layout_constraintVertical_bias="0.538" />
+                <EditText
+                    android:id="@+id/et_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:ellipsize="end"
+                    android:ems="10"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_user"
+                    app:layout_constraintRight_toRightOf="@+id/et_user"
+                    app:layout_constraintTop_toBottomOf="@+id/et_user" />
 
-                    <EditText
-                        android:id="@+id/et_email"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:ellipsize="end"
-                        android:ems="10"
-                        android:inputType="textEmailAddress"
-                        android:maxLines="1"
-                        android:text="@{user.email}"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_user"
-                        app:layout_constraintRight_toRightOf="@+id/et_user"
-                        app:layout_constraintTop_toBottomOf="@+id/et_user" />
+                <EditText
+                    android:id="@+id/et_website"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:ems="10"
+                    android:maxLines="1"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_user"
+                    app:layout_constraintRight_toRightOf="@+id/et_user"
+                    app:layout_constraintTop_toBottomOf="@+id/et_email" />
 
-                    <EditText
-                        android:id="@+id/et_website"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:ellipsize="end"
-                        android:ems="10"
-                        android:maxLines="1"
-                        android:text="@{user.websiteLink}"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_user"
-                        app:layout_constraintRight_toRightOf="@+id/et_user"
-                        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+                <EditText
+                    android:id="@+id/et_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:ems="10"
+                    android:maxLines="1"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_user"
+                    app:layout_constraintRight_toRightOf="@+id/et_user"
+                    app:layout_constraintTop_toBottomOf="@+id/et_website" />
 
-                    <EditText
-                        android:id="@+id/et_location"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:ellipsize="end"
-                        android:ems="10"
-                        android:maxLines="1"
-                        android:text="@{user.location}"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_user"
-                        app:layout_constraintRight_toRightOf="@+id/et_user"
-                        app:layout_constraintTop_toBottomOf="@+id/et_website" />
+                <EditText
+                    android:id="@+id/et_birthday"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:ems="10"
+                    android:maxLines="1"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_user"
+                    app:layout_constraintRight_toRightOf="@+id/et_user"
+                    app:layout_constraintTop_toBottomOf="@+id/et_location" />
 
-                    <EditText
-                        android:id="@+id/et_birthday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:ellipsize="end"
-                        android:ems="10"
-                        android:maxLines="1"
-                        android:text="@{user.birthday}"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_user"
-                        app:layout_constraintRight_toRightOf="@+id/et_user"
-                        app:layout_constraintTop_toBottomOf="@+id/et_location" />
+                <EditText
+                    android:id="@+id/et_signature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:ems="10"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_user"
+                    app:layout_constraintRight_toRightOf="@+id/et_user"
+                    app:layout_constraintTop_toBottomOf="@+id/et_birthday" />
 
-                    <EditText
-                        android:id="@+id/et_signature"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:ems="10"
-                        android:text="@{user.signature}"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_user"
-                        app:layout_constraintRight_toRightOf="@+id/et_user"
-                        app:layout_constraintTop_toBottomOf="@+id/et_birthday" />
+                <Button
+                    android:id="@+id/update_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/send"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/et_signature" />
 
-                    <Button
-                        android:id="@+id/update_user"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/send"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/et_signature" />
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/website"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_website"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView6"
+                    app:layout_constraintTop_toTopOf="@+id/et_website"
+                    app:layout_constraintVertical_bias="0.476" />
 
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/website"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_website"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView6"
-                        app:layout_constraintTop_toTopOf="@+id/et_website"
-                        app:layout_constraintVertical_bias="0.476" />
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="位置: "
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_location"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView9"
+                    app:layout_constraintTop_toTopOf="@+id/et_location" />
 
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="位置: "
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_location"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView9"
-                        app:layout_constraintTop_toTopOf="@+id/et_location" />
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="生日: "
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_birthday"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView6"
+                    app:layout_constraintTop_toTopOf="@+id/et_birthday" />
 
-                    <TextView
-                        android:id="@+id/textView12"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="生日: "
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_birthday"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView6"
-                        app:layout_constraintTop_toTopOf="@+id/et_birthday" />
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="签名档: "
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_signature"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView6"
+                    app:layout_constraintTop_toTopOf="@+id/et_signature" />
 
-                    <TextView
-                        android:id="@+id/textView13"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="签名档: "
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_signature"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView6"
-                        app:layout_constraintTop_toTopOf="@+id/et_signature" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="@color/md_lime_A200"
+            app:cardCornerRadius="8dp">
 
-            <android.support.v7.widget.CardView
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardBackgroundColor="@color/md_lime_A200"
-                app:cardCornerRadius="8dp">
+                android:layout_height="match_parent"
+                android:padding="8dp">
 
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp">
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="24sp"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/pwd_ori"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_pwd_ori"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView7"
+                    app:layout_constraintTop_toTopOf="@+id/et_pwd_ori" />
 
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/pwd_ori"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_pwd_ori"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView7"
-                        app:layout_constraintTop_toTopOf="@+id/et_pwd_ori" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/pwd_new"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_pwd_new"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView8"
+                    app:layout_constraintTop_toTopOf="@+id/et_pwd_new" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/pwd_new"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_pwd_new"
-                        app:layout_constraintLeft_toLeftOf="@+id/textView8"
-                        app:layout_constraintTop_toTopOf="@+id/et_pwd_new" />
+                <Button
+                    android:id="@+id/update_pwd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/send"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/et_pwd_new" />
 
-                    <Button
-                        android:id="@+id/update_pwd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/send"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/et_pwd_new" />
+                <EditText
+                    android:id="@+id/et_pwd_ori"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="-1dp"
+                    android:ems="10"
+                    android:inputType="textPassword"
+                    app:layout_constraintLeft_toRightOf="@+id/textView8"
+                    app:layout_constraintRight_toLeftOf="@+id/show_ori"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
-                    <EditText
-                        android:id="@+id/et_pwd_ori"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="-1dp"
-                        android:ems="10"
-                        android:inputType="textPassword"
-                        app:layout_constraintLeft_toRightOf="@+id/textView8"
-                        app:layout_constraintRight_toLeftOf="@+id/show_ori"
-                        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+                <EditText
+                    android:id="@+id/et_pwd_new"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:ems="10"
+                    android:inputType="textPassword"
+                    app:layout_constraintLeft_toLeftOf="@+id/et_pwd_ori"
+                    app:layout_constraintRight_toRightOf="@+id/et_pwd_ori"
+                    app:layout_constraintTop_toBottomOf="@+id/et_pwd_ori" />
 
-                    <EditText
-                        android:id="@+id/et_pwd_new"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:ems="10"
-                        android:inputType="textPassword"
-                        app:layout_constraintLeft_toLeftOf="@+id/et_pwd_ori"
-                        app:layout_constraintRight_toRightOf="@+id/et_pwd_ori"
-                        app:layout_constraintTop_toBottomOf="@+id/et_pwd_ori" />
+                <ImageButton
+                    android:id="@+id/show_ori"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/ic_brightness"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_pwd_ori"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/et_pwd_ori" />
 
-                    <ImageButton
-                        android:id="@+id/show_ori"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:background="@drawable/ic_brightness"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_pwd_ori"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/et_pwd_ori" />
+                <ImageButton
+                    android:id="@+id/show_new"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/ic_brightness"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_pwd_new"
+                    app:layout_constraintLeft_toLeftOf="@+id/show_ori"
+                    app:layout_constraintRight_toRightOf="@+id/show_ori"
+                    app:layout_constraintTop_toTopOf="@+id/et_pwd_new" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
-                    <ImageButton
-                        android:id="@+id/show_new"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/ic_brightness"
-                        app:layout_constraintBottom_toBottomOf="@+id/et_pwd_new"
-                        app:layout_constraintLeft_toLeftOf="@+id/show_ori"
-                        app:layout_constraintRight_toRightOf="@+id/show_ori"
-                        app:layout_constraintTop_toTopOf="@+id/et_pwd_new" />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-
-            <Button
-                android:id="@+id/btn_remove"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/user_remove" />
-        </LinearLayout>
-    </ScrollView>
-</layout>
+        <Button
+            android:id="@+id/btn_remove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/user_remove" />
+    </LinearLayout>
+</ScrollView>

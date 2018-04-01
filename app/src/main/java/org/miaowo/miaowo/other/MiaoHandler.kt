@@ -1,24 +1,26 @@
-package org.miaowo.miaowo
+package org.miaowo.miaowo.other
 
 import android.graphics.drawable.Drawable
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v4.view.GravityCompat
+import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_miao.*
+import org.miaowo.miaowo.API
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.fragment.ImageFragment
 import org.miaowo.miaowo.fragment.PostFragment
 import org.miaowo.miaowo.fragment.SendFragment
-import org.miaowo.miaowo.fragment.UserFragment
+import org.miaowo.miaowo.fragment.user.UserFragment
+import org.miaowo.miaowo.fragment.user.UserListFragment
 import org.miaowo.miaowo.fragment.welcome.*
 import org.miaowo.miaowo.interfaces.IMiaoListener
-import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.ui.processView.IProcessable
 
 /**
@@ -28,12 +30,9 @@ import org.miaowo.miaowo.ui.processView.IProcessable
 class MiaoHandler : IMiaoListener {
     private val mCleaningList = mutableListOf<User>()
 
-    override val toolbar: Toolbar
-        get() = Miao.i.toolBar
-    override val toolbarImg: ImageView
-        get() = Miao.i.toolBarImg
-    override val button: FloatingActionButton
-        get() = Miao.i.fab
+    override val toolbar: Toolbar get() = Miao.i.toolBar
+    override val toolbarImg: ImageView get() = Miao.i.toolBarImg
+    override val button: FloatingActionButton get() = Miao.i.fab
 
     override var decorationVisible: Boolean
         get() = buttonVisible && toolbarVisible
@@ -98,7 +97,7 @@ class MiaoHandler : IMiaoListener {
                 if (!mCleaningList.contains(API.user)) {
                     mCleaningList.add(API.user)
                     API.Users.getTokens {
-                        it.filter { it != API.user.token }.forEach { API.Users.removeToken(it, {}) }
+                        it.filter { it != API.token.token }.forEach { API.Users.removeToken(it, true, {}) }
                         mCleaningList.remove(API.user)
                     }
                 }
@@ -108,58 +107,52 @@ class MiaoHandler : IMiaoListener {
 
     override fun jump(fg: IMiaoListener.JumpFragment, vararg params: Any?) {
         lInfo("jump To $fg: ${params.joinToString { it.toString() }}")
-        when (fg) {
-            IMiaoListener.JumpFragment.Login -> Miao.i.loadFragment(LoginFragment.INSTANCE)
-            IMiaoListener.JumpFragment.Register -> Miao.i.loadFragment(RegisterFragment.INSTANCE)
-            IMiaoListener.JumpFragment.GitHub -> Miao.i.loadFragment(GithubFragment.INSTANCE)
-            IMiaoListener.JumpFragment.Forget -> Miao.i.loadFragment(ForgetFragment.INSTANCE)
+        val paramsSiz =
+                if (params.lastOrNull() !is FragmentCall) params.size
+                else params.size - 1
+        val fragment: Fragment? = when (fg) {
+            IMiaoListener.JumpFragment.Login -> LoginFragment.INSTANCE
+            IMiaoListener.JumpFragment.Register -> RegisterFragment.INSTANCE
+            IMiaoListener.JumpFragment.GitHub -> GithubFragment.INSTANCE
+            IMiaoListener.JumpFragment.Forget -> ForgetFragment.INSTANCE
             IMiaoListener.JumpFragment.User -> {
-                if (params.isNotEmpty()) {
-                    val p = params[0].toString()
-                    if (p.startsWith("[int]"))
-                        Miao.i.loadFragment(UserFragment.newInstance(objToInt(p)))
-                    else
-                        Miao.i.loadFragment(UserFragment.newInstance(params[0].toString()))
+                val p = params[0]
+                when (p) {
+                    is Int -> UserFragment.newInstance(p)
+                    is String -> UserFragment.newInstance(p)
+                    else -> UserFragment.newInstance()
                 }
             }
             IMiaoListener.JumpFragment.Reply -> if (params.isNotEmpty()) {
-                when (params.size) {
-                    0 -> return
-                    1 ->
-                        Miao.i.loadFragment(SendFragment.newInstance(objToInt(params[0])))
-                    2 ->
-                        Miao.i.loadFragment(SendFragment.newInstance(objToInt(params[0]), params[1].toString()))
-                    else ->
-                        Miao.i.loadFragment(SendFragment.newInstance(objToInt(params[0]), params[1].toString(), params[2].toString()))
+                when (paramsSiz) {
+                    1 -> SendFragment.newInstance((params[0] as Int))
+                    2 -> SendFragment.newInstance(params[0] as Int, params[1] as String)
+                    3 -> SendFragment.newInstance(params[0] as Int, params[1] as String, params[2] as String)
+                    else -> null
                 }
-            }
-            IMiaoListener.JumpFragment.Topic -> {
-                if (params.isNotEmpty())
-                    Miao.i.loadFragment(PostFragment.newInstance(objToInt(params[0])))
-            }
-            IMiaoListener.JumpFragment.Image -> {
-                if (params.isNotEmpty())
-                    Miao.i.loadFragment(ImageFragment.getInstance(params[0].toString()))
-            }
+            } else null
+            IMiaoListener.JumpFragment.Topic -> PostFragment.newInstance(params[0] as Int)
+            IMiaoListener.JumpFragment.Image -> ImageFragment.getInstance(params[0] as String)
+            IMiaoListener.JumpFragment.UserList -> UserListFragment.newInstance()
         }
+
+        val call = params.lastOrNull()
+        if (call is FragmentCall) {
+            call.target = fragment
+            fragment?.registerCall(call)
+        }
+        fragment?.loadSelf(Miao.i)
     }
 
     override fun showBackIconOnToolbar() {
         toolbarVisible = true
-        val navigation = Miao.i.mNavigation
-        if (navigation.drawerLayout?.isDrawerOpen(GravityCompat.START) == false) {
-            navigation.closeDrawer()
-            navigation.actionBarDrawerToggle.onDrawerOpened(navigation.drawerLayout)
-            toolbar.setNavigationOnClickListener { Miao.i.onBackPressed() }
-        }
+        Miao.i.mNavigation.actionBarDrawerToggle.isDrawerIndicatorEnabled = false
+        Miao.i.supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun showOptionIconOnToolbar() {
-        toolbarVisible = true
-        val navigation = Miao.i.mNavigation
-        val toggle = navigation.actionBarDrawerToggle
-        toggle.onDrawerClosed(navigation.drawerLayout)
-        toolbar.setNavigationOnClickListener(toggle.toolbarNavigationClickListener)
+        Miao.i.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        Miao.i.mNavigation.actionBarDrawerToggle.isDrawerIndicatorEnabled = true
     }
 
     override fun setToolbar(title: CharSequence) {
@@ -171,29 +164,12 @@ class MiaoHandler : IMiaoListener {
         toolbarVisible = true
         toolbarImgVisible = imgVisible
         toolbar.title = title
+        showOptionIconOnToolbar()
         if (imgVisible) toolbarImg.setImageDrawable(img)
     }
 
     override fun snackBar(msg: String, duration: Int): Snackbar {
         val coordinatorLayout = Miao.i.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         return Snackbar.make(coordinatorLayout, msg, duration)
-    }
-
-    private fun objToInt(obj: Any?): Int {
-        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN", "USELESS_ELVIS")
-        val ret = when (obj) {
-            null -> -1
-            is Int -> obj
-            is Integer -> obj.toInt()
-            is String -> {
-                val rStr = if (obj.startsWith("[int]") && obj.length >= 6)
-                    obj.substring(5 until obj.length)
-                else obj
-                rStr.toInt() ?: -1
-            }
-            else -> obj.toString().toInt() ?: -1
-        }
-        lInfo("convert ${obj.toString()} to $ret")
-        return ret
     }
 }

@@ -2,7 +2,6 @@ package org.miaowo.miaowo.fragment.welcome
 
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -12,12 +11,10 @@ import android.view.ViewGroup
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import kotlinx.android.synthetic.main.fragment_index.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.extra.spGet
+import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.config.TextIconConfig
-import org.miaowo.miaowo.databinding.FragmentIndexBinding
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.API
 import org.miaowo.miaowo.util.ImageUtil
 
 /**
@@ -33,7 +30,7 @@ class IndexFragment : Fragment() {
             if (sInstance == null) {
                 val fragment = IndexFragment()
                 val args = Bundle()
-                args.putBoolean(Const.FG_TO_BACKSTACK, false)
+                args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
                 fragment.arguments = args
                 sInstance = fragment
             }
@@ -41,13 +38,11 @@ class IndexFragment : Fragment() {
         }
     }
 
-    lateinit var binding: FragmentIndexBinding
     private var mMiaoListener: IMiaoListener? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is IMiaoListener) mMiaoListener = context
-        mMiaoListener?.decorationVisible = false
     }
 
     override fun onDetach() {
@@ -57,19 +52,30 @@ class IndexFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_index, container, false)
-        return binding.root
+        return inflateId(inflater, R.layout.fragment_index, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.drawables = arrayListOf(
-                ImageUtil.textIcon(TextIconConfig(Color.rgb(255, 61, 0), Color.WHITE, FontAwesome.Icon.faw_question)),
-                ImageUtil.textIcon(TextIconConfig(Color.rgb(255, 98, 0), Color.WHITE, FontAwesome.Icon.faw_commenting_o)),
-                ImageUtil.textIcon(TextIconConfig(Color.rgb(139, 195, 74), Color.WHITE, FontAwesome.Icon.faw_calendar_check_o))
-        )
-        val arr = resources.getStringArray(R.array.index)
-        binding.texts = arrayListOf<String>(arr[0], arr[1], arr[2])
+        mMiaoListener?.decorationVisible = false
+        setDisplay()
+        setAction()
+    }
+
+    private fun setDisplay() {
+        val texts = resources.getStringArray(R.array.index)
+        img1.setImageDrawable(ImageUtil.textIcon(TextIconConfig(Color.rgb(255, 61, 0), Color.WHITE, FontAwesome.Icon.faw_question)))
+        img1.contentDescription = texts[0]
+        img2.setImageDrawable(ImageUtil.textIcon(TextIconConfig(Color.rgb(255, 98, 0), Color.WHITE, FontAwesome.Icon.faw_commenting_o)))
+        img2.contentDescription = texts[1]
+        img3.setImageDrawable(ImageUtil.textIcon(TextIconConfig(Color.rgb(139, 195, 74), Color.WHITE, FontAwesome.Icon.faw_calendar_check_o)))
+        img3.contentDescription = texts[2]
+        txt1.text = texts[0]
+        txt2.text = texts[1]
+        txt3.text = texts[2]
+    }
+
+    private fun setAction() {
         login.setOnClickListener { mMiaoListener?.jump(IMiaoListener.JumpFragment.Login) }
         register.setOnClickListener { mMiaoListener?.jump(IMiaoListener.JumpFragment.Register) }
     }

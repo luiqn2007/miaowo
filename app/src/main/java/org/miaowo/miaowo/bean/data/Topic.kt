@@ -195,4 +195,21 @@ data class Topic(
 
         @field:SerializedName("user")
         val user: User? = null
-) : IPostItem
+) : IPostItem {
+    fun postFromTeaser(): Post? {
+        if (teaser == null) return null
+
+        return Post(
+                timestamp = teaser.timestamp,
+                timestampISO = teaser.timestampISO,
+                pid = teaser.pid,
+                tid = teaser.tid,
+                uid = teaser.uid,
+                user = user,
+                content = teaser.content,
+                topic = copy(),
+                fromTeaser = true,
+                extraMessage = postcount
+        )
+    }
+}

@@ -24,6 +24,7 @@ import java.util.Queue;
  *
  * @author clifford
  */
+@SuppressWarnings("unused")
 @SuppressLint("AppCompatCustomView")
 public class PinchImageView extends ImageView {
 

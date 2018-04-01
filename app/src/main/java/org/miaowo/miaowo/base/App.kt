@@ -3,13 +3,18 @@ package org.miaowo.miaowo.base
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.support.v4.content.FileProvider
+import android.support.v4.content.res.ResourcesCompat
+import android.widget.ImageView
+import com.mikepenz.materialdrawer.util.DrawerImageLoader
+import com.squareup.picasso.Picasso
 import com.zzhoujay.richtext.RichText
 import okhttp3.Request
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.MyActivityLifecycle
 import org.miaowo.miaowo.base.extra.lInfo
-import org.miaowo.miaowo.util.HttpUtil
 import org.miaowo.miaowo.util.call
 import java.io.BufferedInputStream
 import java.io.File
@@ -36,8 +41,33 @@ class App : Application() {
                 + "\n向凯神团队，好奇喵风纪组等每一位为维护好奇喵健康发展的喵们致敬\n"
                 + "\n全体起立，敬礼\n")
 
-        RichText.initCacheDir(this)
         registerActivityLifecycleCallbacks(MyActivityLifecycle)
+        // RichText
+        RichText.debugMode = true
+        RichText.initCacheDir(this)
+        DrawerImageLoader.init(object : DrawerImageLoader.IDrawerImageLoader {
+            override fun placeholder(ctx: Context?) = placeholder(ctx, null)
+            override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?) = set(imageView, uri, placeholder, null)
+
+            override fun placeholder(ctx: Context?, tag: String?): Drawable {
+                return ResourcesCompat
+                        .getDrawable(this@App.resources, R.drawable.ic_loading, null)!!
+            }
+
+
+            override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?, tag: String?) {
+                var creator = Picasso.with(imageView?.context)
+                        .load(uri)
+                        .placeholder(placeholder).error(R.drawable.ic_error).fit()
+                if (tag != null) creator = creator.tag(tag)
+                creator.into(imageView)
+            }
+
+            override fun cancel(imageView: ImageView?) {
+                Picasso.with(imageView?.context).cancelRequest(imageView)
+            }
+
+        })
     }
 
     /**

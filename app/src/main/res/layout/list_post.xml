@@ -1,164 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="4sp"
+    android:layout_marginRight="4sp"
+    android:layout_marginTop="16dp"
+    android:orientation="vertical"
+    app:cardCornerRadius="8dp">
 
-    <data>
-
-        <variable
-            name="post"
-            type="org.miaowo.miaowo.bean.data.Post" />
-
-        <variable
-            name="likeVisible"
-            type="boolean" />
-
-        <variable
-            name="replyVisible"
-            type="boolean" />
-
-        <variable
-            name="likeIcon"
-            type="com.mikepenz.iconics.typeface.IIcon" />
-
-        <variable
-            name="replyIcon"
-            type="com.mikepenz.iconics.typeface.IIcon" />
-    </data>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cv_item"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4sp"
-        android:layout_marginRight="4sp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="18dp"
         android:orientation="vertical"
         app:cardCornerRadius="8dp">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+
+        <ImageView
+            android:id="@+id/head"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/def_user" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            android:orientation="vertical"
-            app:cardCornerRadius="8dp">
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/textColor1"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toRightOf="@+id/head"
+            app:layout_constraintTop_toTopOf="@+id/head"
+            tools:text="用户" />
 
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/textColor1"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toLeftOf="@id/username"
+            app:layout_constraintTop_toBottomOf="@+id/username"
+            tools:text="时间" />
 
-            <ImageView
-                android:id="@+id/head"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:user_icon="@{post.user}"
-                tools:src="@drawable/def_user" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/textColor2"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/head"
+            tools:text="这里应该是主标题" />
 
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/textColor1"
-                android:textSize="18sp"
-                app:username="@{post.user}"
-                app:layout_constraintLeft_toRightOf="@+id/head"
-                app:layout_constraintTop_toTopOf="@+id/head"
-                tools:text="用户" />
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="0dp"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            tools:text="正文\n正文\n正文\n正文" />
 
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/textColor1"
-                android:textSize="14sp"
-                app:time="@{post}"
-                app:layout_constraintLeft_toLeftOf="@id/username"
-                app:layout_constraintTop_toBottomOf="@+id/username"
-                tools:text="时间" />
+        <TextView
+            android:id="@+id/like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColor2"
+            app:layout_constraintBottom_toBottomOf="@id/like"
+            app:layout_constraintRight_toLeftOf="@id/like"
+            app:layout_constraintTop_toTopOf="@id/like"
+            tools:text="13"
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/textColor2"
-                android:textSize="16sp"
-                app:title="@{post.topic}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/head"
-                tools:text="这里应该是主标题" />
+        <ImageView
+            android:id="@+id/like"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/content"
+            tools:srcCompat="@drawable/ic_reply"
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="0dp"
-                android:textSize="15sp"
-                app:html="@{post.content}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title"
-                tools:text="正文\n正文\n正文\n正文" />
+        <ImageView
+            android:id="@+id/reply"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/username"
+            tools:srcCompat="@drawable/ic_reply"
+            tools:visibility="visible" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
 
-            <TextView
-                android:id="@+id/like_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/textColor2"
-                app:bookmarks="@{post}"
-                app:layout_constraintBottom_toBottomOf="@id/like"
-                app:layout_constraintRight_toLeftOf="@id/like"
-                app:layout_constraintTop_toTopOf="@id/like"
-                app:visible="@{likeVisible}"
-                tools:text="13"
-                tools:visibility="visible" />
-
-            <ImageView
-                android:id="@+id/like"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:padding="8dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/content"
-                app:visible="@{likeVisible}"
-                app:fontIcon="@{likeIcon}"
-                tools:srcCompat="@drawable/ic_reply"
-                tools:visibility="visible" />
-
-
-            <ImageView
-                android:id="@+id/reply"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/username"
-                app:visible="@{replyVisible}"
-                app:fontIcon="@{replyIcon}"
-                tools:srcCompat="@drawable/ic_reply"
-                tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
-</layout>

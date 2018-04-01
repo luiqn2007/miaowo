@@ -28,19 +28,22 @@ import org.miaowo.miaowo.bean.data.Users as BUsers
  */
 @Suppress("unused")
 object API {
+    @Volatile
     var user = User.logout
+    var token = Token(user.uid, "")
     val isLogin
         get() = user.uid >= 0
     private val gson = GsonBuilder().serializeNulls().create()
 
     private val mUrl = App.i.getString(R.string.url_api)
 
-    private fun useAPI(API: Type, sub: String, method: Method, body: FormBody?, useToken: Boolean = true,
+    private fun useAPI(API: Type, sub: String, method: Method, body: FormBody?,
+                       useToken: Boolean = true, useSavedToken: Boolean = false,
                        callback: (call: Call?, response: Response?) -> Unit) {
         val request = Request.Builder()
                 .url(mUrl.format(API.name.toLowerCase(), sub))
                 .method(method.name, body)
-        if (useToken) request.addHeader("Authorization", "Bearer ${user.token}")
+        if (useToken) request.addHeader("Authorization", "Bearer ${(if (useSavedToken) token.savedToken() else token).token}")
         request.build().call { call, response -> callback(call, response) }
     }
 
@@ -82,7 +85,7 @@ object API {
                 // 未登录 直接返回
                 if (!API.isLogin) return
                 // token 信息存在 已经登录
-                if (API.user.token.isNotBlank()) callback(100f, "OK")
+                if (API.token.token.isNotBlank()) callback(100f, "OK")
                 else { // token 信息不存在 由注册
                     callback(60.0f, App.i.getString(R.string.process_get_token))
                     // Get Token
@@ -167,7 +170,7 @@ object API {
                         }
 
                         override fun onResult(call: Call?, response: Response?, lastResult: Any?): Any? {
-                            API.user.token = JsonUtil.getToken(response)!!
+                            API.token.set(JsonUtil.getToken(response)!!)
                             return null
                         }
                     }) {
@@ -202,12 +205,14 @@ object API {
          */
         fun logout() {
             HttpUtil.clearCookies()
+            token.save()
             if (API.isLogin) Users.getTokens {
                 it.forEach {
                     Users.removeToken(it) {}
                 }
             }
             user = User.logout
+            token.cleanTokenSafe()
         }
 
         /**
@@ -314,7 +319,9 @@ object API {
         /**
          * 检查用户名、密码、邮箱是否合法
          */
-        fun checkUser(username: String = user.username, password: String = "123456789", email: String = "login@miaowo.org"): String {
+        fun checkUser(username: String = user.username,
+                      password: String = "123456789",
+                      email: String = "login@miaowo.org"): String {
             return if (email.isBlank() || "@" !in email)
                 App.i.getString(R.string.err_email)
             else if (username.isBlank())
@@ -521,11 +528,11 @@ object API {
         fun newToken(pwd: String = user.password,
                      callback: (message: Exception?) -> Unit) {
             val body = FormBody.Builder()
-            if (!isLogin || user.token.isBlank())
+            if (!isLogin || token.token.isBlank())
                 body.add("password", pwd)
             useAPI(api, "${user.uid}/tokens", Method.POST, body.build(), false) { _, response ->
                 try {
-                    user.token = JsonUtil.getToken(response)!!
+                    token.set(JsonUtil.getToken(response)!!)
                     callback(null)
                 } catch (e: Exception) {
                     callback(e)
@@ -539,8 +546,11 @@ object API {
          * Accepts: No parameters
          */
         fun removeToken(token: String,
+                        save: Boolean = false,
                         callback: (message: String) -> Unit) {
-            useAPI(api, "${user.uid}/tokens/$token", Method.DELETE, null) { _, response ->
+            if (save) API.token.save()
+            val savedToken = API.token.savedToken()
+            useAPI(api, "${savedToken.uid}/tokens/$token", Method.DELETE, null, useSavedToken = true) { _, response ->
                 callback(getResultMessage(response))
             }
         }
@@ -1105,10 +1115,21 @@ object API {
         /**
          * 未读列表
          */
-        fun unread(callback: (category: Category?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_unread)).build().call { _, response ->
+        fun unread(page: Int = 1, callback: (category: Category?) -> Unit) {
+            Request.Builder().url(App.i.getString(R.string.url_unread, page)).build().call { _, response ->
                 Miao.i.runOnUiThread {
                     callback(build(response, Category::class.java))
+                }
+            }
+        }
+
+        /**
+         * 通知列表
+         */
+        fun notification(callback: (notifications: Notifications?) -> Unit) {
+            Request.Builder().url(App.i.getString(R.string.url_notification)).build().call { _, response ->
+                Miao.i.runOnUiThread {
+                    callback(build(response, Notifications::class.java))
                 }
             }
         }
@@ -1205,5 +1226,33 @@ object API {
                 } catch (e: Exception) {
                     onErr(e)
                 }
+    }
+
+    class Token(var uid: Int, var token: String) {
+        // 备份区
+        private var savedToken: String? = null
+        private var savedUid: Int? = null
+
+        fun save(): Token {
+            savedToken = token
+            savedUid = uid
+            return savedToken()
+        }
+
+        fun savedToken() = Token(savedUid ?: user.uid, savedToken ?: "")
+
+        fun set(token: String, uid: Int = API.user.uid) {
+            this.uid = uid
+            this.token = token
+        }
+
+        fun cleanToken() {
+            token = ""
+            uid = -1
+        }
+
+        fun cleanTokenSafe() {
+            if (!isLogin) cleanToken()
+        }
     }
 }
