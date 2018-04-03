@@ -67,6 +67,7 @@ class ForgetFragment : Fragment() {
             if (sInstance == null) {
                 val fragment = ForgetFragment()
                 val args = Bundle()
+                args.putString(Const.TAG, fragment.javaClass.name)
                 fragment.arguments = args
                 sInstance = fragment
             }

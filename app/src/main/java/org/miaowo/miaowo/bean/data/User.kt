@@ -241,10 +241,12 @@ data class User(
         @field:SerializedName("custom_profile_info")
         val customProfileInfo: List<Any> = emptyList(),
 
-        var password: String = ""
+        var password: String = "",
+
+        val isLogin: Boolean = true
 ) {
     companion object {
-        val logout = User()
+        val logout = User(isLogin = false)
     }
 
     override fun equals(other: Any?): Boolean {

@@ -9,14 +9,15 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.API
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.adapter.PostAdapter
+import org.miaowo.miaowo.adapter.TopicAdapter
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.handleError
-import org.miaowo.miaowo.base.extra.lInfo
-import org.miaowo.miaowo.bean.data.Category
-import org.miaowo.miaowo.bean.data.Topic
+import org.miaowo.miaowo.base.extra.loadSelf
+import org.miaowo.miaowo.bean.data.Pagination
+import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
@@ -26,18 +27,17 @@ class UnreadFragment : BaseListFragment() {
             val fragment = UnreadFragment()
             val args = Bundle()
             args.putBoolean(Const.FG_POP_ALL, true)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.user.${API.user.uid}")
             fragment.arguments = args
             return fragment
         }
     }
 
-    private val mAdapter = PostAdapter(true, false)
-    private var mPage = 0
-    private var mViewCreated = false
+    private val mAdapter = TopicAdapter(true, false)
+    private var mPagination: Pagination? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mViewCreated = true
         (attach as? IMiaoListener)?.run {
             decorationVisible = false
             setToolbar(App.i.getString(R.string.unread))
@@ -50,10 +50,12 @@ class UnreadFragment : BaseListFragment() {
     }
 
     override fun onLoadmore() {
-        API.Doc.unread(mPage) {
+        if (mPagination?.atLast == true) return
+        API.Doc.unread(mPagination?.next?.qs) {
+            if (it == null) return@unread
+            mPagination = it.pagination
             activity?.runOnUiThread {
-                if (it != null) mAdapter.append(it.topics, false)
-                mPage++
+                mAdapter.append(it.topics, false)
                 springView?.onFinishFreshAndLoad()
             }
         }
@@ -61,21 +63,19 @@ class UnreadFragment : BaseListFragment() {
 
     override fun onRefresh() {
         API.Doc.unread {
-            val topics = it?.topics ?: emptyList()
-            mPage = 1
+            if (it == null) return@unread
+            mPagination = it.pagination
             activity?.runOnUiThread {
-                mAdapter.update(topics)
+                mAdapter.update(it.topics)
                 springView?.onFinishFreshAndLoad()
             }
         }
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
-        val listener = attach as? IMiaoListener
-        val item = mAdapter.getItem(position) as Topic
+        val item = mAdapter.getItem(position)
         when (view.id) {
-            R.id.head ->
-                listener?.jump(IMiaoListener.JumpFragment.User, item.user?.username ?: "")
+            R.id.head -> UserFragment.newInstance(item.user?.username ?: "")
             R.id.like -> API.Topics.follow(item.tid) {
                 activity?.runOnUiThread {
                     if (it != Const.RET_OK) activity?.handleError(it)
@@ -83,7 +83,7 @@ class UnreadFragment : BaseListFragment() {
                 }
             }
         }
-        listener?.jump(IMiaoListener.JumpFragment.Topic, item.tid)
+        PostFragment.newInstance(item.tid).loadSelf(Miao.i)
         return true
     }
 }

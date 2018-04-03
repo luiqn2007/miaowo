@@ -14,10 +14,9 @@ import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.ChatRoomListAdapter
 import org.miaowo.miaowo.base.BaseListFragment
-import org.miaowo.miaowo.base.extra.FragmentCall
-import org.miaowo.miaowo.base.extra.lInfo
-import org.miaowo.miaowo.base.extra.loadFragment
+import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.User
+import org.miaowo.miaowo.fragment.user.UserListFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
@@ -27,6 +26,7 @@ class ChatListFragment : BaseListFragment() {
             val fragment = ChatListFragment()
             val args = Bundle()
             args.putBoolean(Const.FG_POP_ALL, true)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.user.${API.user.uid}")
             fragment.arguments = args
             return fragment
         }
@@ -69,7 +69,8 @@ class ChatListFragment : BaseListFragment() {
                         newRoom(params[0] as User)
                     }
                 }
-                listener?.jump(IMiaoListener.JumpFragment.UserList, call)
+                registerCall(call)
+                UserListFragment.newInstance().loadSelf(Miao.i)
                 true
             }
         }

@@ -26,7 +26,7 @@ data class Topic(
         val topicStaleDays: Int = -1,
 
         @field:SerializedName("teaserPid")
-        val teaserPid: String = "",
+        val teaserPid: Int = -1,
 
         @field:SerializedName("teaser")
         val teaser: Teaser? = null,

@@ -1,4 +1,4 @@
-package org.miaowo.miaowo.fragment
+package org.miaowo.miaowo.fragment.setting
 
 import android.content.Context
 import android.os.Bundle
@@ -12,8 +12,7 @@ import org.miaowo.miaowo.R
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.base.extra.loadFragment
-import org.miaowo.miaowo.fragment.setting.AppSetting
-import org.miaowo.miaowo.fragment.setting.UserSetting
+import org.miaowo.miaowo.other.Const
 
 /**
  * 设置
@@ -25,6 +24,7 @@ class SettingFragment : Fragment() {
             val fragment = SettingFragment()
             val args = Bundle()
             fragment.arguments = args
+            args.putString(Const.TAG, fragment.javaClass.name)
             return fragment
         }
     }

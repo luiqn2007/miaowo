@@ -10,6 +10,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.widget.ImageView
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
+//import com.tencent.bugly.crashreport.CrashReport
 import com.zzhoujay.richtext.RichText
 import okhttp3.Request
 import org.miaowo.miaowo.R
@@ -30,6 +31,7 @@ class App : Application() {
 
     companion object {
         var i by Delegates.notNull<App>()
+        const val APP_KEY = "83f06505-78a1-43ee-89c3-168c4464c2d8"
     }
 
     override fun onCreate() {
@@ -68,6 +70,7 @@ class App : Application() {
             }
 
         })
+//        CrashReport.initCrashReport(applicationContext, APP_KEY, false)
     }
 
     /**

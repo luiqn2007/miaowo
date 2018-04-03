@@ -23,4 +23,6 @@ data class Pagination(
 
         @field:SerializedName("currentPage")
         val currentPage: Int? = null
-)
+) {
+    val atLast get() = pageCount == currentPage
+}

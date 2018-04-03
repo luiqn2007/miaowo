@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import kotlinx.android.synthetic.main.fragment_index.*
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.base.extra.loadSelf
 import org.miaowo.miaowo.bean.config.TextIconConfig
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
@@ -30,7 +32,9 @@ class IndexFragment : Fragment() {
             if (sInstance == null) {
                 val fragment = IndexFragment()
                 val args = Bundle()
+                args.putString(Const.TAG, fragment.javaClass.name)
                 args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
+                args.putBoolean(Const.FG_POP_ALL, true)
                 fragment.arguments = args
                 sInstance = fragment
             }
@@ -76,7 +80,7 @@ class IndexFragment : Fragment() {
     }
 
     private fun setAction() {
-        login.setOnClickListener { mMiaoListener?.jump(IMiaoListener.JumpFragment.Login) }
-        register.setOnClickListener { mMiaoListener?.jump(IMiaoListener.JumpFragment.Register) }
+        login.setOnClickListener { LoginFragment.INSTANCE.loadSelf(Miao.i) }
+        register.setOnClickListener { RegisterFragment.INSTANCE.loadSelf(Miao.i) }
     }
 }

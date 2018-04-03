@@ -6,10 +6,12 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.fragment.welcome.GithubFragment
+import org.miaowo.miaowo.other.Const
 
 /**
  * 收件箱
@@ -38,6 +40,7 @@ class InboxFragment : Fragment() {
         fun newInstance(): GithubFragment {
             val fragment = GithubFragment()
             val args = Bundle()
+            args.putString(Const.TAG, "${fragment.javaClass.name}.user.${API.user.uid}")
             fragment.arguments = args
             return fragment
         }

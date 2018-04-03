@@ -13,7 +13,8 @@ import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.other.ViewBindHelper
+import org.miaowo.miaowo.other.setHTML
+import org.miaowo.miaowo.other.setUserIcon
 
 /**
  * 聊天信息
@@ -33,12 +34,8 @@ class ChatMsgAdapter : ListAdapter<ChatMessage>(
                     val layoutParams = holder[R.id.tv_msg]?.layoutParams as RelativeLayout.LayoutParams
                     layoutParams.addRule(if (my) RelativeLayout.ALIGN_PARENT_RIGHT else RelativeLayout.ALIGN_PARENT_LEFT)
                     holder.find(R.id.tv_msg)?.layoutParams = layoutParams
-
-                    // DataBinding
-                    val ivUser = holder.find<ImageView>(R.id.iv_user)
-                    ViewBindHelper.setUserIcon(ivUser, item?.fromUser)
-                    val tvMsg = holder.find<TextView>(R.id.tv_msg)
-                    ViewBindHelper.setHTML(tvMsg, item?.content)
+                    holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item?.fromUser)
+                    holder.find<TextView>(R.id.tv_msg)?.setHTML(item?.content)
                 }
             }
 

@@ -62,7 +62,8 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
     }
 
     fun clear() {
-        mItems.clear()
+        if (mItems.isNotEmpty())
+            mItems.clear()
         notifyDataSetChanged()
     }
 

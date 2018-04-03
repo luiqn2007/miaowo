@@ -2,10 +2,14 @@ package org.miaowo.miaowo
 
 import android.net.Uri
 import com.google.gson.GsonBuilder
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.FormBody
+import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONObject
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.extra.lInfo
+import org.miaowo.miaowo.base.extra.spGet
 import org.miaowo.miaowo.bean.SearchResult
 import org.miaowo.miaowo.bean.config.VersionMessage
 import org.miaowo.miaowo.bean.data.*
@@ -32,7 +36,7 @@ object API {
     var user = User.logout
     var token = Token(user.uid, "")
     val isLogin
-        get() = user.uid >= 0
+        get() = user.isLogin
     private val gson = GsonBuilder().serializeNulls().create()
 
     private val mUrl = App.i.getString(R.string.url_api)
@@ -49,6 +53,7 @@ object API {
 
     private fun getResultMessage(response: Response?): String {
         val msg = JSONObject(response?.body()?.string() ?: "")
+        lInfo("resultMessage: $msg")
         return if (Const.RET_OK == msg["code"].toString().toUpperCase()) {
             Const.RET_OK
         } else {
@@ -61,9 +66,7 @@ object API {
         }
     }
 
-    private fun listToArray(list: List<String>): String {
-        return list.joinToString(prefix = "[", postfix = "]")
-    }
+    private fun listToArray(list: List<String>) = list.joinToString(prefix = "[", postfix = "]")
 
     private enum class Method { POST, PUT, GET, DELETE }
 
@@ -206,11 +209,13 @@ object API {
         fun logout() {
             HttpUtil.clearCookies()
             token.save()
-            if (API.isLogin) Users.getTokens {
+
+            if (API.isLogin && spGet(Const.SP_CLEAN_TOKENS, true)) Users.getTokens {
                 it.forEach {
                     Users.removeToken(it) {}
                 }
             }
+
             user = User.logout
             token.cleanTokenSafe()
         }
@@ -1074,7 +1079,8 @@ object API {
          * 版本信息
          */
         fun version(callback: (ver: VersionMessage?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_update)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_update)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, VersionMessage::class.java))
             }
         }
@@ -1083,22 +1089,30 @@ object API {
          * 用户信息
          */
         fun user(name: String, callback: (user: User?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_user, name)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_user, name)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, User::class.java))
             }
         }
 
         fun user(uid: Int, callback: (user: User?) -> Unit) {
-            user {
-                val rUser = it?.users?.firstOrNull { it.uid == uid }?.username
-                lInfo("uid: $uid, name: $rUser")
-                if (rUser != null) user(rUser, callback)
-                else user(API.user.username, callback)
+            var rUser: User? = null
+            var findOver = false
+            var qs: String? = null
+            while (rUser == null || findOver) {
+                users(qs) {
+                    rUser = it?.users?.firstOrNull { it.uid == uid }
+                    findOver = it?.pagination?.atLast ?: true
+                    qs = it?.pagination?.next?.qs
+                }
             }
+            if (rUser != null) user(rUser!!.username, callback)
+            else user(API.user.username, callback)
         }
 
-        fun user(callback: (users: BUsers?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_users)).build().call { _, response ->
+        fun users(qs: String? = null, callback: (users: BUsers?) -> Unit) {
+            val url = App.i.getString(R.string.url_users)
+            Request.Builder().url(urlBuilder(url, qs)).build().call { _, response ->
                 callback(build(response, BUsers::class.java))
             }
         }
@@ -1107,7 +1121,8 @@ object API {
          * 主页
          */
         fun index(callback: (home: Index?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_home_head, "/api")).build().call { _, response ->
+            val url = App.i.getString(R.string.url_home_head, "/api")
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, Index::class.java))
             }
         }
@@ -1115,8 +1130,9 @@ object API {
         /**
          * 未读列表
          */
-        fun unread(page: Int = 1, callback: (category: Category?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_unread, page)).build().call { _, response ->
+        fun unread(qs: String? = null, callback: (category: Category?) -> Unit) {
+            val url = App.i.getString(R.string.url_unread)
+            Request.Builder().url(urlBuilder(url, qs)).build().call { _, response ->
                 Miao.i.runOnUiThread {
                     callback(build(response, Category::class.java))
                 }
@@ -1127,7 +1143,8 @@ object API {
          * 通知列表
          */
         fun notification(callback: (notifications: Notifications?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_notification)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_notification)
+            Request.Builder().url(url).build().call { _, response ->
                 Miao.i.runOnUiThread {
                     callback(build(response, Notifications::class.java))
                 }
@@ -1137,8 +1154,9 @@ object API {
         /**
          * 主题列表
          */
-        fun category(cid: Int, page: Int, callback: (category: Category?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_category, cid, page)).build().call { _, response ->
+        fun category(cid: Int, qs: String? = null, callback: (category: Category?) -> Unit) {
+            val url = App.i.getString(R.string.url_category, cid)
+            Request.Builder().url(urlBuilder(url, qs)).build().call { _, response ->
                 callback(build(response, Category::class.java))
             }
         }
@@ -1147,13 +1165,15 @@ object API {
          * 话题(1 具体 2 用户)
          */
         fun topic(tid: Int, callback: (topic: Topic?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_topic, tid)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_topic, tid)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, Topic::class.java))
             }
         }
 
         fun topic(name: String = user.username, callback: (topic: UserTopics?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_user_topic, name)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_user_topic, name)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, UserTopics::class.java))
             }
         }
@@ -1180,14 +1200,15 @@ object API {
          * 聊天列表
          */
         fun chatRoom(callback: (rooms: ChatRooms?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_chat_room, user.username.toLowerCase())).build().call { _, response ->
+            val url = App.i.getString(R.string.url_chat_room, user.username.toLowerCase())
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, ChatRooms::class.java))
             }
         }
 
         fun chatMessage(roomId: Int, callback: (room: ChatRoom?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_chat_message,
-                    user.username.toLowerCase(), roomId)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_chat_message, user.username.toLowerCase(), roomId)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, ChatRoom::class.java))
             }
         }
@@ -1196,7 +1217,8 @@ object API {
          * 用户帖子
          */
         fun post(name: String = user.username, callback: (info: UserPosts?) -> Unit) {
-            Request.Builder().url(App.i.getString(R.string.url_user_post, name)).build().call { _, response ->
+            val url = App.i.getString(R.string.url_user_post, name)
+            Request.Builder().url(url).build().call { _, response ->
                 callback(build(response, UserPosts::class.java))
             }
         }
@@ -1205,13 +1227,15 @@ object API {
          * 用户关注
          */
 //        fun following(name: String = user.username, callback: (following: UserFollowList?) -> Unit) {
-//            val request = Request.Builder().url(App.i.getString(R.string.url_user_follow, name)).build()
+//            val url = App.i.getString(R.string.url_user_follow, name)
+//            val request = Request.Builder().url(url).build()
 //            HttpUtil.post(request) { _, response ->
 //                callback(build(response, UserFollowList::class.java))
 //            }
 //        }
 //        fun follower(name: String = user.username, callback: (following: UserFollowList?) -> Unit) {
-//            val request = Request.Builder().url(App.i.getString(R.string.url_user_follower, name)).build()
+//            val url = App.i.getString(R.string.url_user_follower, name)
+//            val request = Request.Builder().url(url).build()
 //            HttpUtil.post(request) { _, response ->
 //                callback(build(response, UserFollowList::class.java))
 //            }
@@ -1226,6 +1250,11 @@ object API {
                 } catch (e: Exception) {
                     onErr(e)
                 }
+
+        private fun urlBuilder(url: String, qs: String?): String {
+            val rQs = if (qs.isNullOrBlank()) "?$qs" else ""
+            return "$url$rQs"
+        }
     }
 
     class Token(var uid: Int, var token: String) {

@@ -15,6 +15,7 @@ import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.PwdShowListener
+import org.miaowo.miaowo.other.setHTML
 
 /**
  * 设置-用户设置
@@ -29,10 +30,10 @@ class UserSetting : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         et_email.setText(API.user.email)
         et_user.setText(API.user.username)
-        et_location.setHtml(API.user.location)
-        et_website.setHtml(API.user.website)
-        et_birthday.setHtml(API.user.birthday)
-        et_signature.setHtmlWithImage(API.user.signature)
+        et_location.setHTML(API.user.location, false)
+        et_website.setHTML(API.user.website, false)
+        et_birthday.setHTML(API.user.birthday, false)
+        et_signature.setHTML(API.user.signature)
 
         show_ori.setOnTouchListener(PwdShowListener(et_pwd_ori))
         show_new.setOnTouchListener(PwdShowListener(et_pwd_new))
@@ -87,6 +88,7 @@ class UserSetting : Fragment() {
         fun newInstance(): UserSetting {
             val args = Bundle()
             val fragment = UserSetting()
+            args.putString(Const.TAG, "${fragment.javaClass.name}.user.${API.user.uid}")
             fragment.arguments = args
             return fragment
         }

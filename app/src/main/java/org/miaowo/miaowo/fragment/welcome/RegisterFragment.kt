@@ -40,7 +40,7 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         login.setOnClickListener {
             mListenerI?.showOptionIconOnToolbar()
-            mListenerI?.jump(IMiaoListener.JumpFragment.Login)
+            LoginFragment.INSTANCE.loadSelf(Miao.i)
         }
         submit.setOnClickListener {
             val iPwd = pwd.text.toString()
@@ -87,6 +87,7 @@ class RegisterFragment : Fragment() {
                 val fragment = RegisterFragment()
                 val args = Bundle()
                 args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
+                args.putString(Const.TAG, fragment.javaClass.name)
                 fragment.arguments = args
                 sInstance = fragment
             }

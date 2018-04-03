@@ -10,11 +10,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_login.*
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.extra.hideKeyboard
-import org.miaowo.miaowo.base.extra.inflateId
-import org.miaowo.miaowo.base.extra.spGet
-import org.miaowo.miaowo.base.extra.spPut
+import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
@@ -80,11 +78,9 @@ class LoginFragment : Fragment() {
             }
             mListenerI?.login(User(username = user.editText!!.text.toString(), password = pwd.editText!!.text.toString(), uid = Int.MAX_VALUE), login)
         }
-        register.setOnClickListener { mListenerI?.showBackIconOnToolbar() }
-//        register.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Register) }
-        github.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.GitHub) }
-//        forget.setOnClickListener { mListenerI?.jump(IMiaoListener.JumpFragment.Forget) }
-        forget.setOnClickListener { mListenerI?.showOptionIconOnToolbar() }
+        register.setOnClickListener { RegisterFragment.INSTANCE.loadSelf(Miao.i) }
+        github.setOnClickListener { GithubFragment.INSTANCE.loadSelf(Miao.i) }
+        forget.setOnClickListener { ForgetFragment.INSTANCE.loadSelf(Miao.i) }
     }
 
     companion object {
@@ -96,6 +92,7 @@ class LoginFragment : Fragment() {
                 val fragment = LoginFragment()
                 val args = Bundle()
                 args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
+                args.putString(Const.TAG, fragment.javaClass.name)
                 fragment.arguments = args
                 sInstance = fragment
             }

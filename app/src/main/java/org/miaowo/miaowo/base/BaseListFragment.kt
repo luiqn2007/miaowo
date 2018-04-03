@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.firstPosition
 import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.base.extra.lInfo
 
 /**
  * 列表
@@ -91,7 +92,13 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
         attach = null
     }
 
-    override fun onLoadmore() {}
+    override fun onLoadmore() {
+        springView.onFinishFreshAndLoad()
+    }
+
+    override fun onRefresh() {
+        springView.onFinishFreshAndLoad()
+    }
 
     private fun findView(viewGroup: ViewGroup, x: Int, y: Int, rect: Rect? = null): View {
         val count = viewGroup.childCount
@@ -126,11 +133,11 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
     var footer: SpringView.DragHander?
         get() = springView.footer
         set(value) {
-            if (footer == null)
-                springView.isEnableFooter = false
-            else {
+            if (footer != null) {
                 springView.isEnableFooter = true
-                springView.footer = value
+                springView.footer
+            } else {
+                springView.isEnableFooter = false
             }
         }
 

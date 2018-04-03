@@ -23,10 +23,12 @@ fun inflateId(inflater: LayoutInflater?, @LayoutRes layoutId: Int, container: Vi
 
 @SuppressLint("CommitTransaction")
 fun Fragment.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.container) {
-    hLoadFragment(childFragmentManager, fragment, null, container)
+    hLoadFragment(childFragmentManager, fragment, fragment?.arguments?.getString(Const.TAG)
+            ?: "NO_TAG", container)
 }
 
 fun Fragment.loadSelf(activity: AppCompatActivity, @IdRes container: Int = R.id.container) = activity.loadFragment(this, container)
+fun Fragment.showSelf(activity: AppCompatActivity, hideFragment: Fragment, @IdRes container: Int = R.id.container) = activity.showFragment(this, hideFragment, container)
 
 fun Fragment.registerCall(callback: FragmentCall) = hFragmentCallbackList.add(callback)
 
@@ -64,22 +66,50 @@ abstract class FragmentCall(val tag: String, val from: Fragment) {
     abstract fun call(vararg params: Any?)
 }
 
-fun hLoadFragment(fragmentManager: FragmentManager, fragment: Fragment?, lastFragment: Fragment?, container: Int): Boolean {
-    lError("isAdd: ${fragment?.isAdded ?: false}, isVisible: ${fragment?.isVisible ?: false}")
+fun hLoadFragment(fragmentManager: FragmentManager, fragment: Fragment?, tag: String, container: Int): Boolean {
     if (fragment?.arguments?.getBoolean(Const.FG_POP_ALL) == true) {
-        for (i in 0 until fragmentManager.backStackEntryCount) fragmentManager.popBackStack()
+        for (i in 0 until fragmentManager.backStackEntryCount) fragmentManager.popBackStackImmediate()
     }
     if (fragment != null && !fragment.isVisible) {
-        with(fragmentManager.beginTransaction()) {
-            if (fragment.isAdded) remove(fragment)
-            if (lastFragment?.isAdded == true) remove(lastFragment)
-            if (fragment.arguments?.getBoolean(Const.FG_ADD_TO_BACK_STACK, true) == true) addToBackStack(null)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
-            replace(container, fragment)
-            commitAllowingStateLoss()
-        }
-        fragmentManager.executePendingTransactions()
+        val isAdded = (fragment.isAdded) || (fragmentManager.findFragmentByTag(fragment.tag) != null)
+        fragmentManager.beginTransaction().apply {
+            // animator
+            if (!isAdded) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
+            }
+            // show
+            if (fragment.arguments?.getBoolean(Const.FG_ADD_TO_BACK_STACK, true) != false)
+                addToBackStack(null)
+            replace(container, fragment, tag)
+        }.commitAllowingStateLoss()
+
+        if (!isAdded)
+            fragmentManager.executePendingTransactions()
+        return true
+    }
+    return false
+}
+
+fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hideFragment: Fragment, tag: String, container: Int): Boolean {
+    if (showFragment != null && !showFragment.isVisible) {
+        val isAdded = (showFragment.isAdded) || (fragmentManager.findFragmentByTag(showFragment.tag) != null)
+        fragmentManager.beginTransaction().apply {
+            // animator
+            if (!isAdded) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                setCustomAnimations(R.anim.fg_in, R.anim.fg_out, R.anim.fg_pop_in, R.anim.fg_pop_out)
+            }
+            // show
+            if (showFragment.arguments?.getBoolean(Const.FG_ADD_TO_BACK_STACK, true) != false)
+                addToBackStack(null)
+            if (!isAdded) add(container, showFragment, tag)
+            if (hideFragment.isVisible) hide(hideFragment)
+            show(showFragment)
+        }.commitAllowingStateLoss()
+
+        if (!isAdded)
+            fragmentManager.executePendingTransactions()
         return true
     }
     return false

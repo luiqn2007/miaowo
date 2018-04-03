@@ -105,45 +105,6 @@ class MiaoHandler : IMiaoListener {
         }
     }
 
-    override fun jump(fg: IMiaoListener.JumpFragment, vararg params: Any?) {
-        lInfo("jump To $fg: ${params.joinToString { it.toString() }}")
-        val paramsSiz =
-                if (params.lastOrNull() !is FragmentCall) params.size
-                else params.size - 1
-        val fragment: Fragment? = when (fg) {
-            IMiaoListener.JumpFragment.Login -> LoginFragment.INSTANCE
-            IMiaoListener.JumpFragment.Register -> RegisterFragment.INSTANCE
-            IMiaoListener.JumpFragment.GitHub -> GithubFragment.INSTANCE
-            IMiaoListener.JumpFragment.Forget -> ForgetFragment.INSTANCE
-            IMiaoListener.JumpFragment.User -> {
-                val p = params[0]
-                when (p) {
-                    is Int -> UserFragment.newInstance(p)
-                    is String -> UserFragment.newInstance(p)
-                    else -> UserFragment.newInstance()
-                }
-            }
-            IMiaoListener.JumpFragment.Reply -> if (params.isNotEmpty()) {
-                when (paramsSiz) {
-                    1 -> SendFragment.newInstance((params[0] as Int))
-                    2 -> SendFragment.newInstance(params[0] as Int, params[1] as String)
-                    3 -> SendFragment.newInstance(params[0] as Int, params[1] as String, params[2] as String)
-                    else -> null
-                }
-            } else null
-            IMiaoListener.JumpFragment.Topic -> PostFragment.newInstance(params[0] as Int)
-            IMiaoListener.JumpFragment.Image -> ImageFragment.getInstance(params[0] as String)
-            IMiaoListener.JumpFragment.UserList -> UserListFragment.newInstance()
-        }
-
-        val call = params.lastOrNull()
-        if (call is FragmentCall) {
-            call.target = fragment
-            fragment?.registerCall(call)
-        }
-        fragment?.loadSelf(Miao.i)
-    }
-
     override fun showBackIconOnToolbar() {
         toolbarVisible = true
         Miao.i.mNavigation.actionBarDrawerToggle.isDrawerIndicatorEnabled = false

@@ -7,7 +7,7 @@ import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
 import org.miaowo.miaowo.bean.data.User
-import org.miaowo.miaowo.other.ViewBindHelper
+import org.miaowo.miaowo.other.setUserIcon
 
 /**
  * 所有用户列表
@@ -18,11 +18,8 @@ class UserListAdapter : ListAdapter<User>(object : ViewCreator<User> {
 
     override fun bindView(item: User?, holder: ListHolder?, type: Int) {
         if (holder != null) {
-            val head = holder.find<ImageView>(R.id.iv_user)
-            val name = holder.find<TextView>(R.id.username)
-
-            ViewBindHelper.setUserIcon(head, item)
-            ViewBindHelper.setUserName(name, item)
+            holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item)
+            holder.find<TextView>(R.id.username)?.text = item?.username
         }
     }
 

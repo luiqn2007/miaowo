@@ -8,7 +8,9 @@ import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.adapter.UserListAdapter
 import org.miaowo.miaowo.base.BaseListFragment
+import org.miaowo.miaowo.base.extra.loadSelf
 import org.miaowo.miaowo.base.extra.submitAndRemoveCall
+import org.miaowo.miaowo.bean.data.Pagination
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
@@ -22,6 +24,7 @@ class UserListFragment : BaseListFragment() {
             val args = Bundle()
             if (callTag != null)
                 args.putString(Const.TAG, callTag)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.tag.$callTag")
             fragment.arguments = args
             return fragment
         }
@@ -29,6 +32,7 @@ class UserListFragment : BaseListFragment() {
 
     private val mAdapter = UserListAdapter()
     private var mCallTag: String? = null
+    private var mPagination: Pagination? = null
 
     override fun setAdapter(list: RecyclerView) {
         list.adapter = mAdapter
@@ -40,9 +44,23 @@ class UserListFragment : BaseListFragment() {
     }
 
     override fun onRefresh() {
-        API.Doc.user {
+        API.Doc.users {
+            if (it == null) return@users
+            mPagination = it.pagination
             Miao.i.runOnUiThread {
-                mAdapter.update(it?.users ?: emptyList())
+                mAdapter.update(it.users)
+                springView.onFinishFreshAndLoad()
+            }
+        }
+    }
+
+    override fun onLoadmore() {
+        if (mPagination?.atLast == true) return
+        API.Doc.users(mPagination?.next?.qs) {
+            if (it == null) return@users
+            mPagination = it.pagination
+            Miao.i.runOnUiThread {
+                mAdapter.append(it.users)
                 springView.onFinishFreshAndLoad()
             }
         }
@@ -53,10 +71,8 @@ class UserListFragment : BaseListFragment() {
         var handlerOver = false
         if (mCallTag != null)
             handlerOver = submitAndRemoveCall(mCallTag!!, user)
-        if (!handlerOver) {
-            val listener = attach as? IMiaoListener
-            listener?.jump(IMiaoListener.JumpFragment.User, user.username)
-        }
+        if (!handlerOver)
+            UserFragment.newInstance(user.username).loadSelf(Miao.i)
         return true
     }
 }

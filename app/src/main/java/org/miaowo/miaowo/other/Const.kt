@@ -5,7 +5,8 @@ package org.miaowo.miaowo.other
  * Created by luqin on 17-5-27.
  */
 object Const {
-    const val TAG = "tags"
+    const val TAGS = "tags"
+    const val TAG = "tag"
     const val NAME = "name"
     const val USER = "user"
     const val ID = "id"
@@ -14,6 +15,8 @@ object Const {
     const val EMAIL = "email"
     const val SAVE = "isSave"
     const val REPLY = "reply"
+    const val TYPE = "type"
+    const val CALL = "call"
     // IProcessable
     const val LOGIN = "login"
     // sp
@@ -22,8 +25,13 @@ object Const {
     const val SP_SAVE = "save_password"
     const val SP_USER = "username"
     const val SP_PWD = "password"
-    const val SP_USE_TAB = "square_tab_mode"
+    const val SP_HIDE_BODY = "square_tab_mode"
     const val SP_CLEAN_TOKENS = "auto_clean_token"
+    const val SP_SHOW_TYPE = "auto_clean_token"
+    // category
+    const val CBODY_CONTENT = 0
+    const val CBODY_FIRST = 1
+    const val CBODY_LAST = 2
     // fragment
     const val FG_ADD_TO_BACK_STACK = "add_to_back_stack"
     const val FG_POP_ALL = "pop_other_fragment_from_back_stack"

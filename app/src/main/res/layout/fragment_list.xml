@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.liaoinstan.springview.widget.SpringView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/springView"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#E8E8E8">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+    <com.liaoinstan.springview.widget.SpringView
+        android:id="@+id/springView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#E8E8E8">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.liaoinstan.springview.widget.SpringView>
+
+    <org.miaowo.miaowo.ui.LoadingView
+        android:id="@+id/loading"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</com.liaoinstan.springview.widget.SpringView>
+</FrameLayout>

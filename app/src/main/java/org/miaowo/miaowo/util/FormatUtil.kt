@@ -2,15 +2,12 @@ package org.miaowo.miaowo.util
 
 import android.content.Context
 import android.graphics.Point
-import android.text.Html
 import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.TextView
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
 import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * 格式化工具类
@@ -27,10 +24,8 @@ object FormatUtil {
             return size
         }
 
-    private var mDateFormater: DateFormat? = null
-
-    fun time(time: Long): String {
-        if (time < 0) {
+    fun time(time: Long?): String {
+        if (time == null || time < 0) {
             return "无效时间"
         }
         val second = (System.currentTimeMillis() - time) / 1000
@@ -42,23 +37,6 @@ object FormatUtil {
             second >= 60 -> "${(second / 60)} 分钟"
             second >= 3 -> "$second 秒"
             else -> "片刻"
-        }
-    }
-
-    fun fillCount(tv: TextView, count: Int) {
-        val n = tv.text.length
-        if (n == 3) {
-            if (count <= 99) {
-                tv.text = count.toString()
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.textSize * 3 / 2)
-            }
-        } else {
-            if (count > 99) {
-                tv.setText(R.string.more99)
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.textSize / 3 * 2)
-            } else {
-                tv.text = count.toString()
-            }
         }
     }
 }

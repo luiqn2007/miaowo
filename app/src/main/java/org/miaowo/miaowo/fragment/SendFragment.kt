@@ -14,10 +14,12 @@ import android.widget.PopupWindow
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.materialdrawer.holder.ImageHolder
 import kotlinx.android.synthetic.main.fragment_add.*
+import kotlinx.android.synthetic.main.fragment_add.title as eTitle
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.handleError
 import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.base.extra.submitAndRemoveCall
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
@@ -26,36 +28,51 @@ import org.miaowo.miaowo.other.Const
  */
 class SendFragment : Fragment() {
     companion object {
-        fun newInstance(cid: Int, vararg tags: String): SendFragment {
+        const val TYPE_POST = 0
+        const val TYPE_REPLY = 1
+        const val TYPE_REPLY_POST = 2
+
+        fun newInstance(cid: Int): SendFragment {
             val fragment = SendFragment()
             val args = Bundle()
             args.putInt(Const.ID, cid)
-            args.putStringArray(Const.TAG, tags)
+            args.putInt(Const.TYPE, TYPE_POST)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.cid.$cid")
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(tid: Int, reply: String): SendFragment {
+        fun newInstance(tid: Int, reply: String, call: String): SendFragment {
             val fragment = SendFragment()
             val args = Bundle()
             args.putInt(Const.ID, tid)
-            args.putString(Const.REPLY, reply)
+            args.putString(Const.NAME, reply)
+            args.putString(Const.CALL, call)
+            args.putInt(Const.TYPE, TYPE_REPLY)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.tid.$tid")
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(tid: Int, toPid: Int, reply: String): SendFragment {
+        fun newInstance(tid: Int, toPid: Int, reply: String, call: String): SendFragment {
             val fragment = SendFragment()
             val args = Bundle()
             args.putInt(Const.ID, tid)
             args.putInt(Const.REPLY, toPid)
+            args.putString(Const.CALL, call)
             args.putString(Const.NAME, reply)
+            args.putInt(Const.TYPE, TYPE_REPLY_POST)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.tid-pid.$tid-$toPid")
             fragment.arguments = args
             return fragment
         }
     }
 
-    private var mSendUser: String? = null
+    private var mReplyUser: String? = null
+    private var mCall: String? = null
+    private var mId = -1
+    private var mReplyId = -1
+    private var mType = -1
     private var mListenerI: IMiaoListener? = null
     private var mPopupInput: PopupWindow? = null
     private var mAddButton: MenuItem? = null
@@ -71,44 +88,37 @@ class SendFragment : Fragment() {
         mListenerI = null
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mCall = arguments?.getString(Const.CALL)
+        mReplyUser = arguments?.getString(Const.NAME)
+        mId = arguments?.getInt(Const.ID) ?: -1
+        mReplyId = arguments?.getInt(Const.REPLY) ?: -1
+        mType = arguments?.getInt(Const.TYPE) ?: -1
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = inflateId(R.layout.fragment_add, inflater, container)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         applyIconsAndActions()
 
-        mSendUser = arguments?.getString(Const.NAME)
-        val isTitle = mSendUser.isNullOrBlank()
-        title.isCounterEnabled = isTitle
-        title.editText!!.isEnabled = isTitle
-        if (isTitle) title.counterMaxLength = 50
-        else title.editText!!.setText(getString(R.string.reply_to, mSendUser))
-        mListenerI?.toolbar?.menu?.run {
+        val isTitle = mReplyUser.isNullOrBlank()
+        eTitle.isCounterEnabled = isTitle
+        eTitle.editText!!.isEnabled = isTitle
+        if (isTitle) eTitle.counterMaxLength = 50
+        else eTitle.editText!!.setText(getString(R.string.reply_to, mReplyUser))
+        mListenerI?.toolbar?.menu?.apply {
             clear()
-            val sendTitle = title.editText!!.text.toString()
-            val sendContent = content.editText!!.text.toString()
             mAddButton = add(0, 0, 0, R.string.send)
-            mAddButton?.run {
+            mAddButton?.apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 setOnMenuItemClickListener {
-                    if (sendContent.length <= 3000 && sendTitle.length <= 50) {
-                        isEnabled = false
-                        if (isTitle) {
-                            // Title
-                            val cid = arguments?.getInt(Const.ID) ?: -1
-                            val tags = arguments?.getStringArray(Const.TAG) ?: emptyArray()
-                            API.Topics.create(cid, sendTitle, sendContent, tags.toList()) { msg ->
-                                activity?.runOnUiThread {
-                                    if (msg != Const.RET_OK) {
-                                        activity?.handleError(msg)
-                                        isEnabled = true
-                                    } else activity?.supportFragmentManager?.popBackStackImmediate()
-                                }
-                            }
-                        } else {
-                            val toPid = arguments?.getInt(Const.REPLY)
-                            val tid = arguments?.getInt(Const.ID) ?: -1
-                            // reply
-                            API.Topics.reply(tid, sendContent, toPid) { msg ->
+                    val titleText = eTitle.editText!!.text.toString()
+                    val contentText = content.editText!!.text.toString()
+                    val tagArray = tags.editText!!.text.toString().split(";")
+                    when (mType) {
+                        TYPE_POST -> {
+                            API.Topics.create(mId, titleText, contentText, tagArray.toList()) { msg ->
                                 activity?.runOnUiThread {
                                     if (msg != Const.RET_OK) {
                                         activity?.handleError(msg)
@@ -117,16 +127,45 @@ class SendFragment : Fragment() {
                                 }
                             }
                         }
-                    } else activity?.handleError(R.string.err_send_count)
+                        TYPE_REPLY -> {
+                            // reply
+                            API.Topics.reply(mId, contentText) { msg ->
+                                activity?.runOnUiThread {
+                                    if (msg != Const.RET_OK) {
+                                        activity?.handleError(msg)
+                                        isEnabled = true
+                                    } else {
+                                        submitAndRemoveCall(PostFragment.CALL_TAG)
+                                        activity?.supportFragmentManager?.popBackStackImmediate()
+                                    }
+                                }
+                            }
+                        }
+                        TYPE_REPLY_POST -> {
+                            // reply
+                            API.Topics.reply(mId, contentText, mReplyId) { msg ->
+                                activity?.runOnUiThread {
+                                    if (msg != Const.RET_OK) {
+                                        activity?.handleError(msg)
+                                        isEnabled = true
+                                    } else {
+                                        submitAndRemoveCall(PostFragment.CALL_TAG)
+                                        activity?.supportFragmentManager?.popBackStackImmediate()
+                                    }
+                                }
+                            }
+                        }
+                        else -> {
+                            activity?.handleError(R.string.err_send_count)
+                        }
+                    }
+
                     true
                 }
             }
         }
 
-        val savedTitle = savedInstanceState?.getString(Const.NAME)
-        val savedContent = savedInstanceState?.getString(Const.SAVE)
-        if (!savedTitle.isNullOrBlank()) title.editText?.setText(savedTitle)
-        if (!savedContent.isNullOrBlank()) title.editText?.setText(savedContent)
+        if (mType == TYPE_POST) tags.visibility = View.VISIBLE
     }
 
     private fun popupTextInput(type: Int) {

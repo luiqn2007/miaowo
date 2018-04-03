@@ -6,8 +6,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 
 /**
@@ -39,6 +39,7 @@ class GithubFragment : Fragment() {
         fun newInstance(): GithubFragment {
             val fragment = GithubFragment()
             val args = Bundle()
+            args.putString(Const.TAG, fragment.javaClass.name)
             args.putBoolean(Const.FG_ADD_TO_BACK_STACK, false)
             fragment.arguments = args
             return fragment

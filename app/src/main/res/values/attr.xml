@@ -11,4 +11,15 @@
         <attr name="layout_max_size" format="integer" />
         <attr name="android_layout_gravity" />
     </declare-styleable>
+
+    <declare-styleable name="LoadingView">
+        <attr name="title" format="string" />
+        <attr name="titleSize" format="dimension" />
+        <attr name="titleColor" format="color" />
+        <attr name="description" format="string" />
+        <attr name="descriptionSize" format="dimension" />
+        <attr name="descriptionColor" format="color" />
+        <attr name="loadingDrawable" format="color|reference" />
+        <attr name="totalDuring" format="integer" />
+    </declare-styleable>
 </resources>

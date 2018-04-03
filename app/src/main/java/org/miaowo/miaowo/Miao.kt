@@ -42,6 +42,7 @@ import org.miaowo.miaowo.bean.config.TextIconConfig
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.fragment.*
 import org.miaowo.miaowo.fragment.chat.ChatListFragment
+import org.miaowo.miaowo.fragment.setting.SettingFragment
 import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.fragment.website.BlogFragment
 import org.miaowo.miaowo.fragment.website.FeedbackFragment
@@ -81,6 +82,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     private val mFgUnread = UnreadFragment.newInstance()
 
     internal lateinit var mNavigation: Drawer
+    private val mLogoutRemoveLabel = arrayListOf(R.string.unread.toLong())
     internal val mLoginUser = mutableListOf<String>()
     internal val mLoginResult = mutableListOf<Pair<Long, Boolean>>()
     private lateinit var mNavigationAccount: AccountHeader
@@ -325,7 +327,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     fun updateNavigationItems(categories: List<Category>) {
         // 清空原 Category 数据
         val delIds = mNavigation.drawerItems
-                .filter { it.tag is Category }
+                .filter { it.tag is Category || mLogoutRemoveLabel.contains(it.identifier) }
                 .map { it.identifier }
         mNavigation.removeItems(*delIds.toLongArray())
         // 添加新信息
@@ -426,31 +428,28 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
         val tag = drawerItem.tag
         when (tag) {
         // 通知
-            R.string.notification -> if (API.isLogin) loadFragment(mFgNotification)
+            R.string.notification -> loadFragment(mFgNotification)
         // 收件箱
-            R.string.inbox -> if (API.isLogin) loadFragment(mFgInbox)
+            R.string.inbox -> loadFragment(mFgInbox)
         // 聊天
-            R.string.chat -> if (API.isLogin) loadFragment(mFgChat)
+            R.string.chat -> loadFragment(mFgChat)
         // 状态
-            R.string.status -> if (API.isLogin) loadFragment(mFgWebsiteStatus)
+            R.string.status -> loadFragment(mFgWebsiteStatus)
         // Blog
-            R.string.blog -> if (API.isLogin) loadFragment(mFgWebsiteBlog)
+            R.string.blog -> loadFragment(mFgWebsiteBlog)
         // 反馈
-            R.string.feedback -> if (API.isLogin) loadFragment(mFgWebsiteFeedback)
+            R.string.feedback -> loadFragment(mFgWebsiteFeedback)
         // 登出
-            R.string.logout -> if (API.isLogin) {
-                API.Profile.logout()
-                loadFragment(IndexFragment.INSTANCE)
-            } else finish()
+            R.string.logout -> logoutOrFinish()
         // 设置
             R.string.setting -> if (API.isLogin) loadFragment(mFgSetting)
         // 未读
-            R.string.unread -> if (API.isLogin) loadFragment(mFgUnread)
+            R.string.unread -> loadFragment(mFgUnread)
         // 其他各 Category
             is Category -> {
                 if (API.isLogin) {
-                    mFgCategory.loadCategory(tag)
                     loadFragment(mFgCategory)
+                    mFgCategory.loadCategory(tag)
                 }
             }
         }
@@ -459,10 +458,10 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
 
     override fun onBackPressed() {
         when {
+            isKeyboardOpen -> hideKeyboard()
             mNavigation.isDrawerOpen -> mNavigation.closeDrawer()
             supportFragmentManager.backStackEntryCount > 1 -> supportFragmentManager.popBackStack()
-            API.isLogin -> login(null, null)
-            else -> finish()
+            else -> logoutOrFinish()
         }
     }
 
@@ -476,5 +475,14 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     override fun onDestroy() {
         RichText.recycle()
         super.onDestroy()
+    }
+
+    private fun logoutOrFinish() {
+        if (API.isLogin
+                || !supportFragmentManager.findFragmentByTag(IndexFragment.INSTANCE.arguments?.getString(Const.TAG)
+                        ?: "NO TAG").isVisible) {
+            API.Profile.logout()
+            loadFragment(IndexFragment.INSTANCE)
+        } else finish()
     }
 }

@@ -25,6 +25,7 @@ class ImageFragment : Fragment() {
             val fragment = ImageFragment()
             val args = Bundle()
             args.putString(Const.NAME, imgUrl)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.url.$imgUrl")
             fragment.arguments = args
             return fragment
         }

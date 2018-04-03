@@ -6,9 +6,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.other.Const
 
 /**
  * 状态
@@ -19,6 +21,7 @@ class BlogFragment : Fragment() {
         fun newInstance(): BlogFragment {
             val fragment = BlogFragment()
             val args = Bundle()
+            args.putString(Const.TAG, fragment.javaClass.name)
             fragment.arguments = args
             return fragment
         }

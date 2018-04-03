@@ -22,12 +22,14 @@ import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
+import org.miaowo.miaowo.adapter.TopicAdapter
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.extra.handleError
 import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.bean.data.ChatRooms
 import org.miaowo.miaowo.bean.data.User
-import org.miaowo.miaowo.other.ViewBindHelper
+import org.miaowo.miaowo.other.setUserBackground
+import org.miaowo.miaowo.other.setUserIcon
 
 /**
  * 个人资料
@@ -39,6 +41,7 @@ class UserFragment : Fragment() {
             val fragment = UserFragment()
             val args = Bundle()
             args.putString(Const.NAME, name)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.name.$name")
             fragment.arguments = args
             return fragment
         }
@@ -48,6 +51,7 @@ class UserFragment : Fragment() {
             val args = Bundle()
             args.putInt(Const.ID, uid)
             fragment.arguments = args
+            args.putString(Const.TAG, "${fragment.javaClass.name}.uid.$uid")
             return fragment
         }
     }
@@ -78,8 +82,8 @@ class UserFragment : Fragment() {
         val callback: (user: User?) -> Unit = { gUser ->
             activity?.runOnUiThread {
                 if (gUser == null) return@runOnUiThread
-                ViewBindHelper.setUserBackground(background, gUser.coverUrl)
-                ViewBindHelper.setUserIcon(user, gUser)
+                background.setUserBackground(gUser.coverUrl)
+                user.setUserIcon(gUser)
                 username.text = gUser.username
                 focus.setText(if (gUser.isFollowing) R.string.focus else R.string.focus_cancel)
                 mListenerI?.setToolbar(gUser.username)
@@ -126,7 +130,7 @@ class UserFragment : Fragment() {
                         if (cView.size == 0) {
                             // 0 主题
                             val uReply = RecyclerView(context)
-                            val uReplyAdapter = PostAdapter(false, false)
+                            val uReplyAdapter = TopicAdapter(false, false)
                             uReply.adapter = uReplyAdapter
                             uReply.layoutManager = LinearLayoutManager(context)
                             API.Doc.topic(name.toLowerCase()) {

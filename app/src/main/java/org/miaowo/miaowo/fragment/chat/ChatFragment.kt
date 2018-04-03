@@ -113,6 +113,7 @@ class ChatFragment : Fragment() {
             args.putInt(Const.ID, room.roomId)
             args.putInt(Const.USER, room.lastUser?.uid ?: -1)
             args.putString(Const.NAME, room.lastUser?.username)
+            args.putString(Const.TAG, "${fragment.javaClass.name}.room.${room.roomId}")
             fragment.arguments = args
             return fragment
         }

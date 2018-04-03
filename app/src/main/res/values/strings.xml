@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">喵窝(阅读器)</string>
+    <string name="app_name">喵窝(无图版)</string>
     <string name="file_provider">org.miaowo.miaowo.fileProvider</string>
 
     <string name="square">广场</string>
@@ -15,6 +15,8 @@
     <string name="office">办公室</string>
     <string name="water">灌水</string>
     <string name="hint_title">标题</string>
+    <string name="hint_reply">回复正文</string>
+    <string name="hint_tags">话题，可以为空，以 ; (英文分号)分割</string>
     <string name="send">发送</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -28,7 +30,6 @@
     <string name="focus_canceled">已取消关注</string>
     <string name="focus_success">关注成功</string>
     <string name="post">帖子</string>
-    <string name="hint_reply">回复正文</string>
     <string name="reply">回复</string>
     <string name="reply_to">回复: %1$s</string>
     <string name="more99">99+</string>
@@ -119,5 +120,19 @@
         <item>如果你不能简洁的表达你的想法，那只说明你还不够了解它。</item>
         <item>如果你不能简洁的表达你的想法，那只说明你还不够了解它。</item>
         <item>如果你不能简洁的表达你的想法，那只说明你还不够了解它。</item>
+    </string-array>
+
+    <string-array name="feedback_title">
+        <item>我们的群</item>
+        <item>APP问题</item>
+        <item>网页及服务器问题</item>
+        <item>另一个客户端(基于网页)</item>
+    </string-array>
+
+    <string-array name="feedback_value">
+        <item>好奇喵 385231397</item>
+        <item>么么么喵(执着) 1105188240</item>
+        <item>Systemd</item>
+        <item>毛不二 1289770378</item>
     </string-array>
 </resources>

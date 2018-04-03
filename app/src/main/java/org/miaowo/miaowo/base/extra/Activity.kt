@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -31,12 +30,12 @@ import android.app.Fragment as OldFragment
 @SuppressLint("StaticFieldLeak")
 private val hActivityMaps = mutableMapOf<String, MutableMap<Activity?, *>>(
         Pair("ProcessBinding", mutableMapOf<Activity?, MutableMap<String, IProcessable>>()),
-        Pair("Fragment", mutableMapOf<Activity?, Fragment>())
+        Pair("FragmentLoaded", mutableMapOf<Activity?, Fragment>())
 )
 @Suppress("UNCHECKED_CAST")
 private val hProcessBinding = hActivityMaps["ProcessBinding"] as MutableMap<Activity?, MutableMap<String, IProcessable>>
 @Suppress("UNCHECKED_CAST")
-private val hLoadedFragment = hActivityMaps["Fragment"] as MutableMap<Activity?, Fragment>
+private val hLoadedFragment = hActivityMaps["FragmentLoaded"] as MutableMap<Activity?, Fragment>
 
 fun Activity.toast(msg: String, type: Int) = TastyToast.makeText(baseContext, msg, TastyToast.LENGTH_SHORT, type).show()
 fun Activity.toast(@StringRes stringId: Int, type: Int) = TastyToast.makeText(baseContext, getString(stringId), TastyToast.LENGTH_SHORT, type).show()
@@ -72,11 +71,16 @@ fun AppCompatActivity.requestPermissions(requestCode: Int, vararg permissions: S
 }
 
 fun AppCompatActivity.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.container) {
-    val lf = hLoadedFragment[this]
-    if (lf == fragment) return
-    if (hLoadFragment(supportFragmentManager, fragment, lf, container))
-        hLoadedFragment[this] = fragment!!
+    hLoadFragment(supportFragmentManager, fragment, fragment?.arguments?.getString(Const.TAG)
+            ?: "NO_TAG", container)
 }
+
+fun AppCompatActivity.showFragment(showFragment: Fragment?, hideFragment: Fragment, @IdRes container: Int = R.id.container) {
+    hShowFragment(supportFragmentManager, showFragment, hideFragment, showFragment?.arguments?.getString(Const.TAG)
+            ?: "NO_TAG", container)
+}
+
+val Activity.loadedFragment: Fragment? get() = hLoadedFragment[this]
 
 fun Activity.process(msg: String, processKey: String?) {
     if (processKey != null) {
