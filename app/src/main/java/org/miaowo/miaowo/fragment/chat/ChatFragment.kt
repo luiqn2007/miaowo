@@ -30,8 +30,9 @@ class ChatFragment : Fragment() {
     private var mRoomId = -1
     private var mUser = -1
     private var mName = ""
-    private var mTimer = Timer()
+    private var mTimer: Timer? = null
     private var mListener: IMiaoListener? = null
+    private var mViewShown: Boolean? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -47,7 +48,6 @@ class ChatFragment : Fragment() {
         mName = arguments!!.getString(Const.NAME, "")
 
         mListener?.setToolbar("聊天: $mName")
-
 
         btn_send.setOnClickListener {
             if (et_msg.text.toString().isBlank())
@@ -80,20 +80,30 @@ class ChatFragment : Fragment() {
             }
         }
 
-        mTimer.schedule(object : TimerTask() {
+        mViewShown = true
+
+        mTimer = Timer()
+        mTimer?.schedule(object : TimerTask() {
             override fun run() {
                 if (mRoomId >= 0) {
                     API.Doc.chatMessage(mRoomId) {
-                        if (it != null) {
-                            val receiveList = it.messages
-                            val adapterList = mAdapter.items
-                            if (it.messages.isEmpty() || adapterList.last().timestamp >= receiveList.last().timestamp)
-                                return@chatMessage
-                            if (adapterList.isEmpty())
-                                mAdapter.update(receiveList)
-                            val existLastTime = adapterList.last().timestamp
-                            val appendList = receiveList.filter { it.timestamp > existLastTime }
-                            mAdapter.append(appendList)
+                        try {
+                            if (it != null) {
+                                val receiveList = it.messages
+                                val adapterList = mAdapter.items
+                                if (adapterList.isEmpty())
+                                    mAdapter.update(receiveList)
+                                if (it.messages.isEmpty()
+                                        || adapterList.last().timestamp >= receiveList.last().timestamp)
+                                    return@chatMessage
+                                val existLastTime = adapterList.last().timestamp
+                                val appendList = receiveList.filter { it.timestamp > existLastTime }
+                                mAdapter.append(appendList)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            mTimer?.cancel()
+                            mTimer = null
                         }
                     }
                 }
@@ -102,7 +112,8 @@ class ChatFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        mTimer.cancel()
+        mTimer?.cancel()
+        mTimer = null
         super.onDestroy()
     }
 

@@ -3,11 +3,8 @@ package org.miaowo.miaowo.fragment.chat
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.mikepenz.fontawesome_typeface_library.FontAwesome
-import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
@@ -42,7 +39,7 @@ class ChatListFragment : BaseListFragment() {
         API.Doc.chatRoom {
             activity?.runOnUiThread {
                 mAdapter.update(it?.rooms ?: listOf())
-                springView.onFinishFreshAndLoad()
+                super.onRefresh()
             }
         }
     }
@@ -55,30 +52,27 @@ class ChatListFragment : BaseListFragment() {
         super.onViewCreated(view, savedInstanceState)
         val listener = attach as? IMiaoListener
         listener?.setToolbar(getString(R.string.chat))
-        var newBtn: MenuItem? = null
-        listener?.toolbar?.menu?.run {
-            clear()
-            newBtn = add(0, 0, 0, "New")
-        }
+        listener?.buttonVisible = true
 
-        newBtn?.run {
-            icon = IconicsDrawable(context, FontAwesome.Icon.faw_address_card)
-            setOnMenuItemClickListener {
-                val call = object : FragmentCall("newRoom", this@ChatListFragment) {
-                    override fun call(vararg params: Any?) {
-                        newRoom(params[0] as User)
-                    }
+        listener?.button?.setOnClickListener {
+            val call = object : FragmentCall("newRoom", this) {
+                override fun call(vararg params: Any?) {
+                    newRoom(params[0] as User)
                 }
-                registerCall(call)
-                UserListFragment.newInstance().loadSelf(Miao.i)
-                true
             }
+            registerCall(call)
+            UserListFragment.newInstance().showSelf(Miao.i, this)
         }
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        (attach as? IMiaoListener)?.buttonVisible = !hidden
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
         val clickItem = mAdapter.getItem(position)
-        Miao.i.loadFragment(ChatFragment.newInstance(clickItem))
+        Miao.i.showFragment(ChatFragment.newInstance(clickItem), this)
         return true
     }
 

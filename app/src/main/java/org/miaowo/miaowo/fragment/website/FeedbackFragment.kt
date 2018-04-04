@@ -15,7 +15,7 @@ import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.base.extra.loadSelf
+import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
@@ -79,7 +79,7 @@ class FeedbackFragment : BaseListFragment() {
                 }
             }
             2 -> {
-                UserFragment.newInstance("Systemd").loadSelf(Miao.i)
+                UserFragment.newInstance("Systemd").showSelf(Miao.i, this)
             }
             3 -> {
                 val uri = "mqqwpa://im/chat?chat_type=wpa&uin=1289770378"

@@ -73,7 +73,6 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     private val mFgNotification = NotificationFragment.newInstance()
     private val mFgInbox = InboxFragment.newInstance()
     private val mFgChat = ChatListFragment.newInstance()
-    private val mFgUser = UserFragment.newInstance()
     private val mFgSetting = SettingFragment.newInstance()
     private val mFgWebsiteStatus = StatusFragment.newInstance()
     private val mFgWebsiteBlog = BlogFragment.newInstance()
@@ -146,7 +145,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
         initFab()
         // 加载欢迎界面
         supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifeRecycleCallback, true)
-        loadFragment(IndexFragment.INSTANCE)
+        IndexFragment.INSTANCE.loadSelf(this)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
@@ -192,7 +191,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
                 onProfileImageClick { _, _, _ ->
                     if (API.isLogin) {
                         mNavigation.closeDrawer()
-                        loadFragment(mFgUser)
+                        showFragment(UserFragment.newInstance(API.user.username), this@Miao.loadedFragment)
                         true
                     } else {
                         toast(R.string.please_login, TastyToast.ERROR)
@@ -363,8 +362,6 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
                         withTag(R.string.unread)
                     }, insertIndex + categories.size
             )
-//            for (i in 0..supportFragmentManager.backStackEntryCount)
-//                supportFragmentManager.popBackStackImmediate()
             mNavigation.setSelection(categories[0].cid.toLong())
         }
     }
@@ -428,27 +425,27 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
         val tag = drawerItem.tag
         when (tag) {
         // 通知
-            R.string.notification -> loadFragment(mFgNotification)
+            R.string.notification -> mFgNotification.loadSelf(this)
         // 收件箱
-            R.string.inbox -> loadFragment(mFgInbox)
+            R.string.inbox -> mFgInbox.loadSelf(this)
         // 聊天
-            R.string.chat -> loadFragment(mFgChat)
+            R.string.chat -> mFgChat.loadSelf(this)
         // 状态
-            R.string.status -> loadFragment(mFgWebsiteStatus)
+            R.string.status -> mFgWebsiteStatus.loadSelf(this)
         // Blog
-            R.string.blog -> loadFragment(mFgWebsiteBlog)
+            R.string.blog -> mFgWebsiteBlog.loadSelf(this)
         // 反馈
-            R.string.feedback -> loadFragment(mFgWebsiteFeedback)
+            R.string.feedback -> mFgWebsiteFeedback.loadSelf(this)
         // 登出
             R.string.logout -> logoutOrFinish()
         // 设置
-            R.string.setting -> if (API.isLogin) loadFragment(mFgSetting)
+            R.string.setting -> mFgSetting.loadSelf(this)
         // 未读
-            R.string.unread -> loadFragment(mFgUnread)
+            R.string.unread -> mFgUnread.loadSelf(this)
         // 其他各 Category
             is Category -> {
                 if (API.isLogin) {
-                    loadFragment(mFgCategory)
+                    mFgCategory.loadSelf(this)
                     mFgCategory.loadCategory(tag)
                 }
             }
@@ -482,7 +479,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
                 || !supportFragmentManager.findFragmentByTag(IndexFragment.INSTANCE.arguments?.getString(Const.TAG)
                         ?: "NO TAG").isVisible) {
             API.Profile.logout()
-            loadFragment(IndexFragment.INSTANCE)
+            IndexFragment.INSTANCE.loadSelf(this)
         } else finish()
     }
 }

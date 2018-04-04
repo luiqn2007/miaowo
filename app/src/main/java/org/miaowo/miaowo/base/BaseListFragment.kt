@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.firstPosition
 import org.miaowo.miaowo.base.extra.inflateId
-import org.miaowo.miaowo.base.extra.lInfo
 
 /**
  * 列表
@@ -93,11 +92,17 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
     }
 
     override fun onLoadmore() {
-        springView.onFinishFreshAndLoad()
+        loadOver()
+    }
+
+    fun loadOverOnUIThread() {
+        activity?.runOnUiThread {
+            loadOver()
+        }
     }
 
     override fun onRefresh() {
-        springView.onFinishFreshAndLoad()
+        loadOver()
     }
 
     private fun findView(viewGroup: ViewGroup, x: Int, y: Int, rect: Rect? = null): View {
@@ -142,6 +147,11 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
         }
 
     var attach: Context? = null
+
+    fun loadOver() {
+        loading.hide()
+        springView?.onFinishFreshAndLoad()
+    }
 
     abstract fun setAdapter(list: RecyclerView)
 }

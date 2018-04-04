@@ -41,10 +41,10 @@ class PostFragment : BaseListFragment() {
             API.Doc.topic(mTid) {
                 activity?.runOnUiThread {
                     mAdapter.update(it?.posts ?: emptyList())
-                    springView.onFinishFreshAndLoad()
+                    super.onRefresh()
                 }
             }
-        }
+        } else super.loadOver()
     }
 
     private var mTid = -1

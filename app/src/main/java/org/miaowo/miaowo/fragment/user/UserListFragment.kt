@@ -9,6 +9,7 @@ import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.adapter.UserListAdapter
 import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.loadSelf
+import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.base.extra.submitAndRemoveCall
 import org.miaowo.miaowo.bean.data.Pagination
 import org.miaowo.miaowo.interfaces.IMiaoListener
@@ -45,23 +46,24 @@ class UserListFragment : BaseListFragment() {
 
     override fun onRefresh() {
         API.Doc.users {
-            if (it == null) return@users
+            if (it == null) return@users loadOverOnUIThread()
             mPagination = it.pagination
             Miao.i.runOnUiThread {
                 mAdapter.update(it.users)
-                springView.onFinishFreshAndLoad()
+                super.onRefresh()
             }
         }
     }
 
     override fun onLoadmore() {
-        if (mPagination?.atLast == true) return
+        if (mPagination?.atLast == true)
+            return super.onLoadmore()
         API.Doc.users(mPagination?.next?.qs) {
             if (it == null) return@users
             mPagination = it.pagination
             Miao.i.runOnUiThread {
                 mAdapter.append(it.users)
-                springView.onFinishFreshAndLoad()
+                super.onLoadmore()
             }
         }
     }
@@ -72,7 +74,7 @@ class UserListFragment : BaseListFragment() {
         if (mCallTag != null)
             handlerOver = submitAndRemoveCall(mCallTag!!, user)
         if (!handlerOver)
-            UserFragment.newInstance(user.username).loadSelf(Miao.i)
+            UserFragment.newInstance(user.username).showSelf(Miao.i, this)
         return true
     }
 }

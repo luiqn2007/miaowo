@@ -60,6 +60,7 @@ fun ImageView.setUserIcon(user: User?) {
         val color =
                 if (colorStr.length != 7 && colorStr.length != 9) Color.BLACK
                 else Color.parseColor(colorStr)
+
         val text = user.iconText
         val drawable = TextDrawable.builder().beginConfig()
                 .textColor(Color.WHITE)

@@ -16,6 +16,7 @@ import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.handleError
 import org.miaowo.miaowo.base.extra.loadSelf
+import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.bean.data.Pagination
 import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
@@ -50,20 +51,23 @@ class UnreadFragment : BaseListFragment() {
     }
 
     override fun onLoadmore() {
-        if (mPagination?.atLast == true) return
+        if (mPagination?.atLast == true)
+            return super.onLoadmore()
         API.Doc.unread(mPagination?.next?.qs) {
-            if (it == null) return@unread
+            if (it == null)
+                return@unread loadOverOnUIThread()
             mPagination = it.pagination
             activity?.runOnUiThread {
                 mAdapter.append(it.topics, false)
-                springView?.onFinishFreshAndLoad()
+                super.onLoadmore()
             }
         }
     }
 
     override fun onRefresh() {
         API.Doc.unread {
-            if (it == null) return@unread
+            if (it == null)
+                return@unread loadOverOnUIThread()
             mPagination = it.pagination
             activity?.runOnUiThread {
                 mAdapter.update(it.topics)
@@ -83,7 +87,7 @@ class UnreadFragment : BaseListFragment() {
                 }
             }
         }
-        PostFragment.newInstance(item.tid).loadSelf(Miao.i)
+        PostFragment.newInstance(item.tid).showSelf(Miao.i, this)
         return true
     }
 }

@@ -31,10 +31,6 @@ class NotificationFragment : BaseListFragment() {
         list.adapter = mAdapter
     }
 
-    override fun onRefresh() {
-
-    }
-
     companion object {
         fun newInstance(): UserFragment {
             val fragment = UserFragment()

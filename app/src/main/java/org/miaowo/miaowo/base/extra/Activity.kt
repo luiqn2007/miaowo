@@ -75,7 +75,7 @@ fun AppCompatActivity.loadFragment(fragment: Fragment?, @IdRes container: Int = 
             ?: "NO_TAG", container)
 }
 
-fun AppCompatActivity.showFragment(showFragment: Fragment?, hideFragment: Fragment, @IdRes container: Int = R.id.container) {
+fun AppCompatActivity.showFragment(showFragment: Fragment?, hideFragment: Fragment?, @IdRes container: Int = R.id.container) {
     hShowFragment(supportFragmentManager, showFragment, hideFragment, showFragment?.arguments?.getString(Const.TAG)
             ?: "NO_TAG", container)
 }

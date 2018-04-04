@@ -3,7 +3,6 @@ package org.miaowo.miaowo.other
 import android.graphics.drawable.Drawable
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +13,7 @@ import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.User
-import org.miaowo.miaowo.fragment.ImageFragment
-import org.miaowo.miaowo.fragment.PostFragment
-import org.miaowo.miaowo.fragment.SendFragment
-import org.miaowo.miaowo.fragment.user.UserFragment
-import org.miaowo.miaowo.fragment.user.UserListFragment
-import org.miaowo.miaowo.fragment.welcome.*
+import org.miaowo.miaowo.fragment.welcome.IndexFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.ui.processView.IProcessable
 
@@ -63,7 +57,7 @@ class MiaoHandler : IMiaoListener {
         if (user == null || user.uid == User.logout.uid) {
             API.Profile.logout()
             Miao.i.updateNavigationItems(emptyList())
-            Miao.i.loadFragment(IndexFragment.INSTANCE)
+            IndexFragment.INSTANCE.loadSelf(Miao.i)
             return
         }
         // 登录

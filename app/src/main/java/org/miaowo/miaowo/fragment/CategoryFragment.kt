@@ -16,7 +16,6 @@ import org.miaowo.miaowo.adapter.TopicAdapter
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.handleError
-import org.miaowo.miaowo.base.extra.loadSelf
 import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.Pagination
@@ -81,12 +80,11 @@ class CategoryFragment : BaseListFragment() {
     }
 
     override fun onLoadmore() {
-        if (mPagination?.atLast == true) {
-            super.onLoadmore()
-            return
-        }
+        if (mPagination?.atLast == true)
+            return super.onLoadmore()
         API.Doc.category(mCategory?.cid ?: -1, mPagination?.next?.qs) {
-            if (it == null) return@category
+            if (it == null || it.topics.isEmpty())
+                return@category loadOverOnUIThread()
             mPagination = it.pagination
             var added = 0
             val topics = it.topics
@@ -95,7 +93,6 @@ class CategoryFragment : BaseListFragment() {
                 API.Doc.topic(item.tid) {
                     topicArray[position] = it
                     added++
-
                     if (added == topics.size) {
                         val topicList = mutableListOf<Topic>()
                         for (i in 0 until topicArray.size) {
@@ -104,7 +101,6 @@ class CategoryFragment : BaseListFragment() {
                         }
                         activity?.runOnUiThread {
                             mAdapter.append(topicList, false)
-                            loading.hide()
                             super.onLoadmore()
                         }
                     }
@@ -115,7 +111,8 @@ class CategoryFragment : BaseListFragment() {
 
     override fun onRefresh() {
         API.Doc.category(mCategory?.cid ?: -1, null) {
-            if (it == null) return@category
+            if (it == null || it.topics.isEmpty())
+                return@category loadOverOnUIThread()
             mPagination = it.pagination
             var added = 0
             val topics = it.topics
@@ -133,8 +130,7 @@ class CategoryFragment : BaseListFragment() {
                         }
                         activity?.runOnUiThread {
                             mAdapter.update(topicList)
-                            loading.hide()
-                            springView?.onFinishFreshAndLoad()
+                            super.onRefresh()
                         }
                     }
                 }

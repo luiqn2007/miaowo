@@ -91,7 +91,7 @@ fun hLoadFragment(fragmentManager: FragmentManager, fragment: Fragment?, tag: St
     return false
 }
 
-fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hideFragment: Fragment, tag: String, container: Int): Boolean {
+fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hideFragment: Fragment?, tag: String, container: Int): Boolean {
     if (showFragment != null && !showFragment.isVisible) {
         val isAdded = (showFragment.isAdded) || (fragmentManager.findFragmentByTag(showFragment.tag) != null)
         fragmentManager.beginTransaction().apply {
@@ -104,7 +104,7 @@ fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hid
             if (showFragment.arguments?.getBoolean(Const.FG_ADD_TO_BACK_STACK, true) != false)
                 addToBackStack(null)
             if (!isAdded) add(container, showFragment, tag)
-            if (hideFragment.isVisible) hide(hideFragment)
+            if (hideFragment?.isVisible == true) hide(hideFragment)
             show(showFragment)
         }.commitAllowingStateLoss()
 
