@@ -130,7 +130,7 @@ class UserFragment : Fragment() {
                         if (cView.size == 0) {
                             // 0 主题
                             val uReply = RecyclerView(context)
-                            val uReplyAdapter = TopicAdapter(false, false)
+                            val uReplyAdapter = TopicAdapter(false, false, hFragment = this@UserFragment)
                             uReply.adapter = uReplyAdapter
                             uReply.layoutManager = LinearLayoutManager(context)
                             API.Doc.topic(name.toLowerCase()) {
@@ -140,7 +140,7 @@ class UserFragment : Fragment() {
                             }
                             // 1 回复
                             val uTopic = RecyclerView(context)
-                            val uTopicAdapter = PostAdapter(false, false)
+                            val uTopicAdapter = PostAdapter(false, false, this@UserFragment)
                             uTopic.adapter = uTopicAdapter
                             uTopic.layoutManager = LinearLayoutManager(context)
                             API.Doc.post(name.toLowerCase()) {

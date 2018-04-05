@@ -11,7 +11,6 @@ import android.widget.ImageView
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.squareup.picasso.Picasso
 //import com.tencent.bugly.crashreport.CrashReport
-import com.zzhoujay.richtext.RichText
 import okhttp3.Request
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.MyActivityLifecycle
@@ -44,9 +43,7 @@ class App : Application() {
                 + "\n全体起立，敬礼\n")
 
         registerActivityLifecycleCallbacks(MyActivityLifecycle)
-        // RichText
-        RichText.debugMode = true
-        RichText.initCacheDir(this)
+
         DrawerImageLoader.init(object : DrawerImageLoader.IDrawerImageLoader {
             override fun placeholder(ctx: Context?) = placeholder(ctx, null)
             override fun set(imageView: ImageView?, uri: Uri?, placeholder: Drawable?) = set(imageView, uri, placeholder, null)

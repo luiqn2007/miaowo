@@ -1,18 +1,19 @@
 package org.miaowo.miaowo.adapter
 
+import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.bean.data.ChatMessage
-import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.API
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
+import org.miaowo.miaowo.bean.data.ChatMessage
+import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.setHTML
 import org.miaowo.miaowo.other.setUserIcon
 
@@ -21,7 +22,7 @@ import org.miaowo.miaowo.other.setUserIcon
  * Created by luqin on 17-4-7.
  */
 
-class ChatMsgAdapter : ListAdapter<ChatMessage>(
+class ChatMsgAdapter(val cFg: Fragment) : ListAdapter<ChatMessage>(
         object : ListAdapter.ViewCreator<ChatMessage> {
 
             override fun createHolder(parent: ViewGroup?, viewType: Int) = ListHolder(R.layout.list_chat_message, parent)
@@ -35,7 +36,7 @@ class ChatMsgAdapter : ListAdapter<ChatMessage>(
                     layoutParams.addRule(if (my) RelativeLayout.ALIGN_PARENT_RIGHT else RelativeLayout.ALIGN_PARENT_LEFT)
                     holder.find(R.id.tv_msg)?.layoutParams = layoutParams
                     holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item?.fromUser)
-                    holder.find<TextView>(R.id.tv_msg)?.setHTML(item?.content)
+                    holder.find<TextView>(R.id.tv_msg)?.setHTML(item?.content, hideFragment = cFg)
                 }
             }
 

@@ -34,7 +34,6 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import com.sdsmdg.tastytoast.TastyToast
-import com.zzhoujay.richtext.RichText
 import kotlinx.android.synthetic.main.activity_miao.*
 import org.miaowo.miaowo.base.App
 import org.miaowo.miaowo.base.extra.*
@@ -472,11 +471,6 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         mToolbarDrawerToggle.onConfigurationChanged(newConfig)
-    }
-
-    override fun onDestroy() {
-        RichText.recycle()
-        super.onDestroy()
     }
 
     private fun logoutOrFinish() {

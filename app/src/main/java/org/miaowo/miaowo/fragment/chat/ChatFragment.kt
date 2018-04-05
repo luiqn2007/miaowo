@@ -27,7 +27,7 @@ import java.util.*
  */
 
 class ChatFragment : Fragment() {
-    private val mAdapter = ChatMsgAdapter()
+    private val mAdapter = ChatMsgAdapter(this)
     private var mRoomId = -1
     private var mUser = -1
     private var mName = ""

@@ -33,7 +33,7 @@ class UserSetting : Fragment() {
         et_location.setHTML(API.user.location, false)
         et_website.setHTML(API.user.website, false)
         et_birthday.setHTML(API.user.birthday, false)
-        et_signature.setHTML(API.user.signature)
+        et_signature.setHTML(API.user.signature, false)
 
         show_ori.setOnTouchListener(PwdShowListener(et_pwd_ori))
         show_new.setOnTouchListener(PwdShowListener(et_pwd_new))

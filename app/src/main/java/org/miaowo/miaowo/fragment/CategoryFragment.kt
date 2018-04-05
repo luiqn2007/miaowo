@@ -36,7 +36,7 @@ class CategoryFragment : MiaoListFragment("No Title", true) {
         }
     }
 
-    private val mAdapter = TopicAdapter(true, false, true)
+    private val mAdapter = TopicAdapter(true, false, true, this)
     private var mCategory: Category? = null
         set(value) {
             title = value?.name

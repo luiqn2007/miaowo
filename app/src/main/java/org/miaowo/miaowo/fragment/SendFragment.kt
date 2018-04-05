@@ -209,11 +209,11 @@ class SendFragment : Fragment() {
 
     private fun fromTextToHtml(type: Int, content: String, extra: String?): String {
         return when (type) {
-            Const.MD_BOLD -> "<b>$content</b>"
-            Const.MD_CODE -> "<code>$content</code>"
+            Const.MD_BOLD -> "**$content**"
+            Const.MD_CODE -> "```\n$content\n```"
             Const.MD_EMOJI -> content //TODO: 表情
             Const.MD_FULL -> content //TODO: 未知功能
-            Const.MD_IMAGE -> "<img src=\"$content\"  alt=\"$extra\" />"
+            Const.MD_IMAGE -> "![$content]($extra)"
             Const.MD_ITALIC -> "<i>$content</i>"
             Const.MD_LINK -> "<a href=\"$content\">$extra</a>"
             Const.MD_LIST -> {

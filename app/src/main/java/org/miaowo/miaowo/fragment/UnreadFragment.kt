@@ -32,7 +32,7 @@ class UnreadFragment : MiaoListFragment(R.string.unread) {
         }
     }
 
-    private val mAdapter = TopicAdapter(true, false)
+    private val mAdapter = TopicAdapter(true, false, hFragment = this)
     private var mPagination: Pagination? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

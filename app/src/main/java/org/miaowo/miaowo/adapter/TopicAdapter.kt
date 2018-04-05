@@ -1,5 +1,6 @@
 package org.miaowo.miaowo.adapter
 
+import android.support.v4.app.Fragment
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -21,7 +22,7 @@ import org.miaowo.miaowo.util.FormatUtil
  * 显示问题的 Adapter
  * Created by lq2007 on 2017/7/22 0022.
  */
-class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boolean = false) : ListAdapter<Topic>(
+class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boolean = false, hFragment: Fragment?) : ListAdapter<Topic>(
         object : ListAdapter.ViewCreator<Topic> {
             override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
                 return ListHolder(R.layout.list_post, parent)
@@ -67,25 +68,25 @@ class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boo
                             else -> null
                         }
                         time.text = FormatUtil.time(post?.timestamp)
-                        content.setHTML(post?.content)
+                        content.setHTML(post?.content, hideFragment = hFragment)
                     } else {
                         when {
                             item.teaser != null -> {
                                 time.text = FormatUtil.time(item.teaser.timestamp)
-                                content.setHTML(item.teaser.content)
+                                content.setHTML(item.teaser.content, hideFragment = hFragment)
                                 head.setUserIcon(item.user)
                                 username.text = item.user?.username ?: ""
                             }
                             item.posts.isNotEmpty() -> {
                                 val post = item.posts.firstOrNull { it.pid == item.teaserPid }
                                 time.text = FormatUtil.time(post?.timestamp)
-                                content.setHTML(post?.content)
+                                content.setHTML(post?.content, hideFragment = hFragment)
                                 head.setUserIcon(item.posts[0].user)
                                 username.text = item.posts[0].user?.username ?: ""
                             }
                             else -> {
                                 time.text = FormatUtil.time(item.timestamp)
-                                content.setHTML("")
+                                content.setHTML("", false)
                                 head.setUserIcon(item.user)
                                 username.text = item.user?.username ?: ""
                             }

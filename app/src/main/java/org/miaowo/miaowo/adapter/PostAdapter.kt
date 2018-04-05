@@ -1,5 +1,6 @@
 package org.miaowo.miaowo.adapter
 
+import android.support.v4.app.Fragment
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -18,7 +19,7 @@ import org.miaowo.miaowo.util.FormatUtil
  * 显示问题的 Adapter
  * Created by lq2007 on 2017/7/22 0022.
  */
-class PostAdapter(likeVisible: Boolean, replyVisible: Boolean) : ListAdapter<Post>(
+class PostAdapter(likeVisible: Boolean, replyVisible: Boolean, hFragment: Fragment?) : ListAdapter<Post>(
         object : ListAdapter.ViewCreator<Post> {
             override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
                 return ListHolder(R.layout.list_post, parent)
@@ -46,7 +47,7 @@ class PostAdapter(likeVisible: Boolean, replyVisible: Boolean) : ListAdapter<Pos
                     username.text = item.user?.username ?: ""
                     time.text = FormatUtil.time(item.timestamp)
                     title.setHTML(item.topic?.titleRaw, false)
-                    content.setHTML(item.content)
+                    content.setHTML(item.content, hideFragment = hFragment)
                     likeCount.text = item.votes.toString()
                     like.setIcon(FontAwesome.Icon.faw_heart)
                     reply.setIcon(FontAwesome.Icon.faw_reply)

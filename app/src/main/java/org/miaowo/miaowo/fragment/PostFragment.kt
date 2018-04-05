@@ -32,7 +32,7 @@ class PostFragment : MiaoListFragment(R.string.question_detail) {
         }
     }
 
-    private val mAdapter = PostAdapter(true, true)
+    private val mAdapter = PostAdapter(true, true, this)
 
     override fun setAdapter(list: RecyclerView) {
         list.adapter = mAdapter
@@ -57,7 +57,7 @@ class PostFragment : MiaoListFragment(R.string.question_detail) {
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
-        (mAdapter.getItem(position) as? Post)?.also {
+        if (view.id == R.id.reply) (mAdapter.getItem(position) as? Post)?.also {
             val sFg =
                     if (position == 0) SendFragment.newInstance(it.tid, it.user?.username
                             ?: "Unknown User", CALL_TAG)
@@ -74,6 +74,7 @@ class PostFragment : MiaoListFragment(R.string.question_detail) {
                 }
             })
             sFg.showSelf(Miao.i, this)
+            return true
         }
 
         return super.onClickListener(view, position)
