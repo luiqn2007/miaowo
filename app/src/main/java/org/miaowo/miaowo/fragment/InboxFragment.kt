@@ -37,8 +37,8 @@ class InboxFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(): GithubFragment {
-            val fragment = GithubFragment()
+        fun newInstance(): InboxFragment {
+            val fragment = InboxFragment()
             val args = Bundle()
             args.putString(Const.TAG, "${fragment.javaClass.name}.user.${API.user.uid}")
             fragment.arguments = args

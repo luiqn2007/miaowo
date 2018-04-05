@@ -1,11 +1,11 @@
 package org.miaowo.miaowo.other
 
 import android.graphics.drawable.Drawable
+import android.support.annotation.StringRes
 import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_miao.*
 import org.miaowo.miaowo.API
@@ -123,8 +123,29 @@ class MiaoHandler : IMiaoListener {
         if (imgVisible) toolbarImg.setImageDrawable(img)
     }
 
-    override fun snackBar(msg: String, duration: Int): Snackbar {
-        val coordinatorLayout = Miao.i.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
-        return Snackbar.make(coordinatorLayout, msg, duration)
+    override fun addToolbarButton(groupId: Int, id: Int, order: Int, title: String, showAsAction: Int, listener: (item: MenuItem) -> Boolean): MenuItem {
+        val menu = toolbar.menu
+        val btn = menu.add(groupId, id, order, title)
+        btn.setShowAsAction(showAsAction)
+        btn.setOnMenuItemClickListener(listener)
+        return btn
+    }
+
+    override fun addToolbarButton(groupId: Int, id: Int, order: Int, @StringRes title: Int, showAsAction: Int, listener: (item: MenuItem) -> Boolean): MenuItem {
+        val menu = toolbar.menu
+        val btn = menu.add(groupId, id, order, title)
+        btn.setShowAsAction(showAsAction)
+        btn.setOnMenuItemClickListener(listener)
+        return btn
+    }
+
+    override fun removeToolbarButton(id: Int) {
+        val menu = toolbar.menu
+        menu.removeItem(id)
+    }
+
+    override fun resetToolbarButton() {
+        val menu = toolbar.menu
+        menu.clear()
     }
 }

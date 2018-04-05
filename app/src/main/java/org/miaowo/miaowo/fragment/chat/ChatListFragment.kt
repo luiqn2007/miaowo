@@ -2,22 +2,18 @@ package org.miaowo.miaowo.fragment.chat
 
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.ChatRoomListAdapter
-import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.fragment.user.UserListFragment
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoListFragment
 
-class ChatListFragment : BaseListFragment() {
+class ChatListFragment : MiaoListFragment(R.string.chat, true) {
     companion object {
         fun newInstance(): ChatListFragment {
             val fragment = ChatListFragment()
@@ -37,37 +33,23 @@ class ChatListFragment : BaseListFragment() {
 
     override fun onRefresh() {
         API.Doc.chatRoom {
-            activity?.runOnUiThread {
-                mAdapter.update(it?.rooms ?: listOf())
-                super.onRefresh()
-            }
+            mAdapter.update(it?.rooms ?: listOf())
+            super.onRefresh()
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val listener = attach as? IMiaoListener
-        listener?.setToolbar(getString(R.string.chat))
-        listener?.buttonVisible = true
-
-        listener?.button?.setOnClickListener {
-            val call = object : FragmentCall("newRoom", this) {
+        miaoListener?.button?.setOnClickListener {
+            val fg = UserListFragment.newInstance()
+            val call = object : FragmentCall("newRoom", this, fg) {
                 override fun call(vararg params: Any?) {
                     newRoom(params[0] as User)
                 }
             }
             registerCall(call)
-            UserListFragment.newInstance().showSelf(Miao.i, this)
+            fg.showSelf(Miao.i, this)
         }
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        (attach as? IMiaoListener)?.buttonVisible = !hidden
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
@@ -76,7 +58,5 @@ class ChatListFragment : BaseListFragment() {
         return true
     }
 
-    private fun newRoom(user: User) {
-        lInfo(user)
-    }
+    private fun newRoom(user: User) = lInfo(user)
 }

@@ -8,6 +8,7 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
+import org.miaowo.miaowo.base.extra.lInfo
 import org.miaowo.miaowo.base.extra.spGet
 import org.miaowo.miaowo.bean.data.Topic
 import org.miaowo.miaowo.other.Const
@@ -42,7 +43,7 @@ class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boo
                     like.visibility = if (likeVisible) View.VISIBLE else View.GONE
                     reply.visibility = if (replyVisible) View.VISIBLE else View.GONE
 
-                    if (item == null || item.posts.isEmpty()) return
+                    if (item == null) return
 
                     title.setHTML(item.titleRaw, false)
                     likeCount.text = item.postcount.toString()
@@ -50,6 +51,7 @@ class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boo
                     reply.setIcon(FontAwesome.Icon.faw_reply)
 
                     if (bodyControl) {
+                        if (item.posts.isEmpty()) return
                         head.setUserIcon(item.posts[0].user)
                         username.text = item.posts[0].user?.username ?: ""
 
@@ -58,7 +60,6 @@ class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boo
 
                         content.visibility = if (bodyHide) View.GONE else View.VISIBLE
 
-                        if (item.posts.isEmpty()) return
                         val post = when (bodyType) {
                             Const.CBODY_CONTENT -> item.posts.firstOrNull()
                             Const.CBODY_FIRST -> item.posts[1]
@@ -68,17 +69,26 @@ class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boo
                         time.text = FormatUtil.time(post?.timestamp)
                         content.setHTML(post?.content)
                     } else {
-                        if (item.teaser == null) {
-                            val post = item.posts.firstOrNull { it.pid == item.teaserPid }
-                            time.text = FormatUtil.time(post?.timestamp)
-                            content.setHTML(post?.content)
-                            head.setUserIcon(item.posts[0].user)
-                            username.text = item.posts[0].user?.username ?: ""
-                        } else {
-                            time.text = FormatUtil.time(item.teaser.timestamp)
-                            content.setHTML(item.teaser.content)
-                            head.setUserIcon(item.user)
-                            username.text = item.user?.username ?: ""
+                        when {
+                            item.teaser != null -> {
+                                time.text = FormatUtil.time(item.teaser.timestamp)
+                                content.setHTML(item.teaser.content)
+                                head.setUserIcon(item.user)
+                                username.text = item.user?.username ?: ""
+                            }
+                            item.posts.isNotEmpty() -> {
+                                val post = item.posts.firstOrNull { it.pid == item.teaserPid }
+                                time.text = FormatUtil.time(post?.timestamp)
+                                content.setHTML(post?.content)
+                                head.setUserIcon(item.posts[0].user)
+                                username.text = item.posts[0].user?.username ?: ""
+                            }
+                            else -> {
+                                time.text = FormatUtil.time(item.timestamp)
+                                content.setHTML("")
+                                head.setUserIcon(item.user)
+                                username.text = item.user?.username ?: ""
+                            }
                         }
                     }
                 }

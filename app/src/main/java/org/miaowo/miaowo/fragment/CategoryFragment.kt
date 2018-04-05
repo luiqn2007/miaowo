@@ -14,18 +14,18 @@ import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.TopicAdapter
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseListFragment
-import org.miaowo.miaowo.base.extra.handleError
-import org.miaowo.miaowo.base.extra.showSelf
+import org.miaowo.miaowo.base.extra.*
 import org.miaowo.miaowo.bean.data.Category
 import org.miaowo.miaowo.bean.data.Pagination
 import org.miaowo.miaowo.bean.data.Topic
 import org.miaowo.miaowo.fragment.user.UserFragment
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoListFragment
 
-class CategoryFragment : BaseListFragment() {
+class CategoryFragment : MiaoListFragment("No Title", true) {
     companion object {
+        const val CALL_TAG = "callTagCategory"
+
         fun newInstance(): CategoryFragment {
             val fragment = CategoryFragment()
             val args = Bundle()
@@ -38,19 +38,27 @@ class CategoryFragment : BaseListFragment() {
 
     private val mAdapter = TopicAdapter(true, false, true)
     private var mCategory: Category? = null
+        set(value) {
+            title = value?.name
+            field = value
+        }
     private var mPagination: Pagination? = null
-    private var mViewCreated = springView != null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mViewCreated = true
-
-        (attach as? IMiaoListener)?.apply {
-            setToolbar(mCategory?.name ?: "")
-            buttonVisible = true
+        val sFg = SendFragment.newInstance(mCategory?.cid ?: -1, CALL_TAG)
+        registerCall(object : FragmentCall(CALL_TAG, this, sFg) {
+            override fun call(vararg params: Any?) {
+                fragmentManager?.beginTransaction()?.apply {
+                    remove(sFg)
+                    show(this@CategoryFragment)
+                }?.commitAllowingStateLoss()
+                onRefresh()
+            }
+        })
+        miaoListener?.apply {
             button.setOnClickListener {
-                SendFragment.newInstance(mCategory?.cid
-                        ?: -1).showSelf(Miao.i, this@CategoryFragment)
+                sFg.showSelf(Miao.i, this@CategoryFragment)
             }
         }
         mAdapter.clear()
@@ -59,20 +67,6 @@ class CategoryFragment : BaseListFragment() {
         loading.description = mCategory?.description
         loading.loadingDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_loading, null)
         loading.show()
-        view.postInvalidate()
-    }
-
-    override fun onDestroyView() {
-        mViewCreated = false
-        super.onDestroyView()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        (attach as? IMiaoListener)?.buttonVisible = !hidden
-        if (!hidden) {
-            (attach as? IMiaoListener)?.setToolbar(mCategory?.name ?: "")
-        }
     }
 
     override fun setAdapter(list: RecyclerView) {
@@ -83,8 +77,7 @@ class CategoryFragment : BaseListFragment() {
         if (mPagination?.atLast == true)
             return super.onLoadmore()
         API.Doc.category(mCategory?.cid ?: -1, mPagination?.next?.qs) {
-            if (it == null || it.topics.isEmpty())
-                return@category loadOverOnUIThread()
+            if (it == null || it.topics.isEmpty()) return@category super.onLoadmore()
             mPagination = it.pagination
             var added = 0
             val topics = it.topics
@@ -99,10 +92,8 @@ class CategoryFragment : BaseListFragment() {
                             val topic = topicArray[i]
                             if (topic != null) topicList.add(topic)
                         }
-                        activity?.runOnUiThread {
-                            mAdapter.append(topicList, false)
-                            super.onLoadmore()
-                        }
+                        mAdapter.append(topicList, false)
+                        super.onLoadmore()
                     }
                 }
             }
@@ -112,7 +103,7 @@ class CategoryFragment : BaseListFragment() {
     override fun onRefresh() {
         API.Doc.category(mCategory?.cid ?: -1, null) {
             if (it == null || it.topics.isEmpty())
-                return@category loadOverOnUIThread()
+                return@category super.onRefresh()
             mPagination = it.pagination
             var added = 0
             val topics = it.topics
@@ -122,16 +113,15 @@ class CategoryFragment : BaseListFragment() {
                     topicArray[position] = it
                     added++
 
+                    lInfo("$added / ${topics.size}")
                     if (added == topics.size) {
                         val topicList = mutableListOf<Topic>()
                         for (i in 0 until topicArray.size) {
                             val topic = topicArray[i]
                             if (topic != null) topicList.add(topic)
                         }
-                        activity?.runOnUiThread {
-                            mAdapter.update(topicList)
-                            super.onRefresh()
-                        }
+                        mAdapter.update(topicList)
+                        super.onRefresh()
                     }
                 }
             }
@@ -141,23 +131,23 @@ class CategoryFragment : BaseListFragment() {
     override fun onClickListener(view: View, position: Int): Boolean {
         val item = mAdapter.getItem(position)
         when (view.id) {
-            R.id.head ->
-                UserFragment.newInstance(item.user?.username ?: "").showSelf(Miao.i, this)
+            R.id.head -> UserFragment.newInstance(item.user?.username
+                    ?: item.posts.firstOrNull()?.user?.username ?: "").showSelf(Miao.i, this)
             R.id.like -> API.Topics.follow(item.tid) {
                 activity?.runOnUiThread {
                     if (it != Const.RET_OK) activity?.handleError(it)
                     else (view as? ImageView)?.setImageDrawable(IconicsDrawable(App.i, FontAwesome.Icon.faw_heart).color(Color.RED).actionBar())
                 }
             }
+            else -> PostFragment.newInstance(item.tid).showSelf(Miao.i, this)
         }
-        PostFragment.newInstance(item.tid).showSelf(Miao.i, this)
         return true
     }
 
     fun loadCategory(category: Category) {
         if (category.cid != mCategory?.cid ?: -1) {
             mCategory = category
-            if (mViewCreated) onViewCreated(springView, null)
+            if (isVisible) onViewCreated(springView, null)
         }
     }
 }

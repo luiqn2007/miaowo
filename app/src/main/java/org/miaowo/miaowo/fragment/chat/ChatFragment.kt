@@ -2,6 +2,7 @@ package org.miaowo.miaowo.fragment.chat
 
 import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -30,9 +31,8 @@ class ChatFragment : Fragment() {
     private var mRoomId = -1
     private var mUser = -1
     private var mName = ""
-    private var mTimer: Timer? = null
+    private var mCheckThread: Thread? = null
     private var mListener: IMiaoListener? = null
-    private var mViewShown: Boolean? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -55,11 +55,8 @@ class ChatFragment : Fragment() {
             else {
                 API.Users.chat(mUser, et_msg.text.toString(), mRoomId) {
                     Miao.i.runOnUiThread {
-                        if (it != "OK") {
-                            Miao.i.handleError(it)
-                        } else {
-                            list.scrollToPosition(mAdapter.itemCount)
-                        }
+                        if (it != "OK") Miao.i.handleError(it)
+                        else list.scrollToPosition(mAdapter.itemCount)
                     }
                 }
             }
@@ -70,51 +67,48 @@ class ChatFragment : Fragment() {
         list.itemAnimator = ChatListAnimator()
 
         if (mRoomId >= 0) {
-            API.Doc.chatMessage(mRoomId) {
-                if (it != null) {
-                    activity?.runOnUiThread {
-                        mAdapter.update(it.messages)
-                        list.scrollToPosition(mAdapter.itemCount)
-                    }
-                }
-            }
-        }
+            checkMsgUpdate()
 
-        mViewShown = true
-
-        mTimer = Timer()
-        mTimer?.schedule(object : TimerTask() {
-            override fun run() {
-                if (mRoomId >= 0) {
-                    API.Doc.chatMessage(mRoomId) {
-                        try {
-                            if (it != null) {
-                                val receiveList = it.messages
-                                val adapterList = mAdapter.items
-                                if (adapterList.isEmpty())
-                                    mAdapter.update(receiveList)
-                                if (it.messages.isEmpty()
-                                        || adapterList.last().timestamp >= receiveList.last().timestamp)
-                                    return@chatMessage
-                                val existLastTime = adapterList.last().timestamp
-                                val appendList = receiveList.filter { it.timestamp > existLastTime }
-                                mAdapter.append(appendList)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            mTimer?.cancel()
-                            mTimer = null
+            mCheckThread = Thread {
+                var isFinish = true
+                try {
+                    while (true) {
+                        while (!isFinish) {
+                        }
+                        isFinish = false
+                        Thread.sleep(5000)
+                        checkMsgUpdate {
+                            isFinish = true
                         }
                     }
+                } catch (e: InterruptedException) {
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
-        }, 1000)
+            mCheckThread?.start()
+        } else fragmentManager?.popBackStackImmediate()
     }
 
     override fun onDestroy() {
-        mTimer?.cancel()
-        mTimer = null
+        mCheckThread?.interrupt()
+        mCheckThread = null
         super.onDestroy()
+    }
+
+    private fun checkMsgUpdate(run: (() -> Unit)? = null) {
+        API.Doc.chatMessage(mRoomId) {
+            if (isVisible) {
+                val receiveList = it?.messages ?: emptyList()
+                // 未成功获取数据
+                if (receiveList.isEmpty()) return@chatMessage
+                // 成功获取数据
+                val existLastTime = mAdapter.items.lastOrNull()?.timestamp ?: -1
+                val appendList = receiveList.filter { it.timestamp > existLastTime }
+                if (appendList.isNotEmpty() && isVisible) mAdapter.append(appendList)
+            }
+            run?.invoke()
+        }
     }
 
     companion object {

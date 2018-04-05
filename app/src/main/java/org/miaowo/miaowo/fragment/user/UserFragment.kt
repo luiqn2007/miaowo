@@ -226,7 +226,7 @@ class UserFragment : Fragment() {
     }
 
     private fun sendAMessage(user: User, roomId: Int? = null) {
-        mListenerI?.snackBar("Choose", Snackbar.LENGTH_LONG)?.apply {
+        Snackbar.make(this.view!!, "Choose", Snackbar.LENGTH_LONG).apply {
             // 将 mMessageText 更换为 EditText, 原本为 TextView
             val contentLayout = (view as SnackbarContentLayout).getChildAt(0) as SnackbarContentLayout
             val text = contentLayout.javaClass.getField("mMessageView")
@@ -244,6 +244,6 @@ class UserFragment : Fragment() {
                         dismiss()
                 }
             }
-        }?.show()
+        }.show()
     }
 }

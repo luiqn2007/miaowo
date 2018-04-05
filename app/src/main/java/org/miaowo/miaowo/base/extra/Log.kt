@@ -11,7 +11,9 @@ import org.miaowo.miaowo.Miao
  * Created by luqin on 17-4-20.
  */
 
-fun lInfo(vararg info: Any, printStack: Boolean = false) = Log.i(createTag(), createMessage(printStack, *info))
+fun lInfo(vararg info: Any) = Log.i(createTag(), createMessage(false, *info))
+
+fun lInfoStack(vararg info: Any) = Log.i(createTag(), createMessage(true, *info))
 fun lError(exception: Throwable?) {
     if (exception == null) {
         Log.e(createTag(), "e: null")
@@ -45,5 +47,6 @@ private fun toString(`object`: Any?) = when(`object`) {
     null -> "null"
     is Response ->
         `object`.body()!!.string()
+    is String -> `object`
     else -> `object`.toString()
 }

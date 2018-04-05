@@ -8,12 +8,14 @@
     <string name="topic">话题</string>
     <string name="title">主题</string>
     <string name="user">会员</string>
+    <string name="user_list">用户详情</string>
     <string name="search">搜索</string>
     <string name="question">提问</string>
     <string name="setting">设置</string>
     <string name="daily">每日</string>
     <string name="office">办公室</string>
     <string name="water">灌水</string>
+    <string name="question_detail">问题详情</string>
     <string name="hint_title">标题</string>
     <string name="hint_reply">回复正文</string>
     <string name="hint_tags">话题，可以为空，以 ; (英文分号)分割</string>
@@ -76,7 +78,7 @@
     <string name="to_login">已经有账号了？点击这里登录</string>
     <string name="register_toolbar">加入喵窝</string>
     <string name="login_toolbar">登录至喵窝</string>
-    <string name="login_hint">用户名或邮箱</string>
+    <string name="login_hint">用户名</string>
     <string name="join">加入喵窝</string>
     <string name="github">使用 GitHub 账户登录</string>
     <string name="forget">我忘记了密码</string>

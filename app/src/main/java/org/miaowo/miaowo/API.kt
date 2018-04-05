@@ -53,7 +53,6 @@ object API {
 
     private fun getResultMessage(response: Response?): String {
         val msg = JSONObject(response?.body()?.string() ?: "")
-        lInfo("resultMessage: $msg")
         return if (Const.RET_OK == msg["code"].toString().toUpperCase()) {
             Const.RET_OK
         } else {

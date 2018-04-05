@@ -14,14 +14,16 @@ import android.widget.PopupWindow
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.materialdrawer.holder.ImageHolder
 import kotlinx.android.synthetic.main.fragment_add.*
-import kotlinx.android.synthetic.main.fragment_add.title as eTitle
 import org.miaowo.miaowo.API
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.handleError
+import org.miaowo.miaowo.base.extra.hideKeyboard
 import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.base.extra.submitAndRemoveCall
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import kotlinx.android.synthetic.main.fragment_add.title as eTitle
 
 /**
  * 发送器
@@ -32,11 +34,12 @@ class SendFragment : Fragment() {
         const val TYPE_REPLY = 1
         const val TYPE_REPLY_POST = 2
 
-        fun newInstance(cid: Int): SendFragment {
+        fun newInstance(cid: Int, call: String): SendFragment {
             val fragment = SendFragment()
             val args = Bundle()
             args.putInt(Const.ID, cid)
             args.putInt(Const.TYPE, TYPE_POST)
+            args.putString(Const.CALL, call)
             args.putString(Const.TAG, "${fragment.javaClass.name}.cid.$cid")
             fragment.arguments = args
             return fragment
@@ -107,65 +110,57 @@ class SendFragment : Fragment() {
         eTitle.editText!!.isEnabled = isTitle
         if (isTitle) eTitle.counterMaxLength = 50
         else eTitle.editText!!.setText(getString(R.string.reply_to, mReplyUser))
-        mListenerI?.toolbar?.menu?.apply {
-            clear()
-            mAddButton = add(0, 0, 0, R.string.send)
-            mAddButton?.apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                setOnMenuItemClickListener {
-                    val titleText = eTitle.editText!!.text.toString()
-                    val contentText = content.editText!!.text.toString()
-                    val tagArray = tags.editText!!.text.toString().split(";")
-                    when (mType) {
-                        TYPE_POST -> {
-                            API.Topics.create(mId, titleText, contentText, tagArray.toList()) { msg ->
-                                activity?.runOnUiThread {
-                                    if (msg != Const.RET_OK) {
-                                        activity?.handleError(msg)
-                                        isEnabled = true
-                                    } else activity?.supportFragmentManager?.popBackStackImmediate()
-                                }
-                            }
-                        }
-                        TYPE_REPLY -> {
-                            // reply
-                            API.Topics.reply(mId, contentText) { msg ->
-                                activity?.runOnUiThread {
-                                    if (msg != Const.RET_OK) {
-                                        activity?.handleError(msg)
-                                        isEnabled = true
-                                    } else {
-                                        submitAndRemoveCall(PostFragment.CALL_TAG)
-                                        activity?.supportFragmentManager?.popBackStackImmediate()
-                                    }
-                                }
-                            }
-                        }
-                        TYPE_REPLY_POST -> {
-                            // reply
-                            API.Topics.reply(mId, contentText, mReplyId) { msg ->
-                                activity?.runOnUiThread {
-                                    if (msg != Const.RET_OK) {
-                                        activity?.handleError(msg)
-                                        isEnabled = true
-                                    } else {
-                                        submitAndRemoveCall(PostFragment.CALL_TAG)
-                                        activity?.supportFragmentManager?.popBackStackImmediate()
-                                    }
-                                }
-                            }
-                        }
-                        else -> {
-                            activity?.handleError(R.string.err_send_count)
+        mListenerI?.addToolbarButton(0, 0, 0, R.string.send, MenuItem.SHOW_AS_ACTION_ALWAYS) {
+            Miao.i.hideKeyboard()
+            it.isEnabled = false
+            val titleText = eTitle.editText!!.text.toString()
+            val contentText = content.editText!!.text.toString()
+            val tagArray = tags.editText!!.text.toString().split(";")
+            when (mType) {
+                TYPE_POST -> {
+                    // send
+                    API.Topics.create(mId, titleText, contentText, tagArray.toList()) { msg ->
+                        activity?.runOnUiThread {
+                            if (msg != Const.RET_OK) {
+                                activity?.handleError(msg)
+                                it.isEnabled = true
+                            } else submitFinish(CategoryFragment.CALL_TAG)
                         }
                     }
-
-                    true
                 }
+                TYPE_REPLY -> {
+                    // reply
+                    API.Topics.reply(mId, contentText) { msg ->
+                        activity?.runOnUiThread {
+                            if (msg != Const.RET_OK) {
+                                activity?.handleError(msg)
+                                it.isEnabled = true
+                            } else submitFinish(PostFragment.CALL_TAG)
+                        }
+                    }
+                }
+                TYPE_REPLY_POST -> {
+                    // reply
+                    API.Topics.reply(mId, contentText, mReplyId) { msg ->
+                        activity?.runOnUiThread {
+                            if (msg != Const.RET_OK) {
+                                activity?.handleError(msg)
+                                it.isEnabled = true
+                            } else submitFinish(PostFragment.CALL_TAG)
+                        }
+                    }
+                }
+                else -> activity?.handleError(R.string.err_send_count)
             }
+            true
         }
 
         if (mType == TYPE_POST) tags.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        mListenerI?.resetToolbarButton()
+        super.onDestroyView()
     }
 
     private fun popupTextInput(type: Int) {
@@ -264,5 +259,9 @@ class SendFragment : Fragment() {
         ImageHolder(FontAwesome.Icon.faw_file_image_o).applyTo(image)
         ImageHolder(FontAwesome.Icon.faw_smile_o).applyTo(emoji)
         ImageHolder(FontAwesome.Icon.faw_link).applyTo(link)
+    }
+
+    private fun submitFinish(call: String) {
+        submitAndRemoveCall(call)
     }
 }

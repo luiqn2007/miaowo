@@ -13,16 +13,14 @@ import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.TopicAdapter
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.extra.handleError
-import org.miaowo.miaowo.base.extra.loadSelf
 import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.bean.data.Pagination
 import org.miaowo.miaowo.fragment.user.UserFragment
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoListFragment
 
-class UnreadFragment : BaseListFragment() {
+class UnreadFragment : MiaoListFragment(R.string.unread) {
     companion object {
         fun newInstance(): UnreadFragment {
             val fragment = UnreadFragment()
@@ -39,10 +37,6 @@ class UnreadFragment : BaseListFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (attach as? IMiaoListener)?.run {
-            decorationVisible = false
-            setToolbar(App.i.getString(R.string.unread))
-        }
         onRefresh()
     }
 
@@ -54,25 +48,19 @@ class UnreadFragment : BaseListFragment() {
         if (mPagination?.atLast == true)
             return super.onLoadmore()
         API.Doc.unread(mPagination?.next?.qs) {
-            if (it == null)
-                return@unread loadOverOnUIThread()
+            if (it == null) return@unread super.onLoadmore()
             mPagination = it.pagination
-            activity?.runOnUiThread {
-                mAdapter.append(it.topics, false)
-                super.onLoadmore()
-            }
+            mAdapter.append(it.topics, false)
+            super.onLoadmore()
         }
     }
 
     override fun onRefresh() {
         API.Doc.unread {
-            if (it == null)
-                return@unread loadOverOnUIThread()
+            if (it == null) return@unread super.onRefresh()
             mPagination = it.pagination
-            activity?.runOnUiThread {
-                mAdapter.update(it.topics)
-                springView?.onFinishFreshAndLoad()
-            }
+            mAdapter.update(it.topics)
+            springView?.onFinishFreshAndLoad()
         }
     }
 

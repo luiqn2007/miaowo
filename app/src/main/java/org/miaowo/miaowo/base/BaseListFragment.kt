@@ -3,6 +3,7 @@ package org.miaowo.miaowo.base
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -11,6 +12,7 @@ import com.liaoinstan.springview.container.DefaultFooter
 import com.liaoinstan.springview.container.DefaultHeader
 import com.liaoinstan.springview.widget.SpringView
 import kotlinx.android.synthetic.main.fragment_list.*
+import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.firstPosition
 import org.miaowo.miaowo.base.extra.inflateId
@@ -77,8 +79,7 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
         if (mScrollPosition < 0) {
             mScrollPosition = 0
             onRefresh()
-        } else
-            list.scrollToPosition(mScrollPosition)
+        } else list.scrollToPosition(mScrollPosition)
     }
 
     override fun onAttach(context: Context?) {
@@ -91,19 +92,9 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
         attach = null
     }
 
-    override fun onLoadmore() {
-        loadOver()
-    }
+    override fun onLoadmore() = loadOver()
 
-    fun loadOverOnUIThread() {
-        activity?.runOnUiThread {
-            loadOver()
-        }
-    }
-
-    override fun onRefresh() {
-        loadOver()
-    }
+    override fun onRefresh() = loadOver()
 
     private fun findView(viewGroup: ViewGroup, x: Int, y: Int, rect: Rect? = null): View {
         val count = viewGroup.childCount
@@ -123,8 +114,7 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
 
     open fun onLongListener(view: View, position: Int) {}
 
-
-    var header: SpringView.DragHander?
+    protected var header: SpringView.DragHander?
         get() = springView.header
         set(value) {
             if (header == null)
@@ -135,7 +125,7 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
             }
         }
 
-    var footer: SpringView.DragHander?
+    protected var footer: SpringView.DragHander?
         get() = springView.footer
         set(value) {
             if (footer != null) {
@@ -146,11 +136,19 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
             }
         }
 
-    var attach: Context? = null
+    protected var attach: Context? = null
 
     fun loadOver() {
-        loading.hide()
-        springView?.onFinishFreshAndLoad()
+        if (Thread.currentThread() == Looper.getMainLooper().thread) _loadOver()
+        else Miao.i.runOnUiThread { _loadOver() }
+    }
+
+    @Suppress("FunctionName")
+    private fun _loadOver() {
+        if (isVisible) {
+            loading.hide()
+            springView?.onFinishFreshAndLoad()
+        }
     }
 
     abstract fun setAdapter(list: RecyclerView)

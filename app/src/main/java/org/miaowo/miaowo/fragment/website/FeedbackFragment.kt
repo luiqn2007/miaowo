@@ -12,21 +12,20 @@ import com.sdsmdg.tastytoast.TastyToast
 import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
 import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.fragment.user.UserFragment
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoListFragment
 import kotlin.math.min
 
 /**
  * 状态
  * Created by lq2007 on 2017/7/22 0022.
  */
-class FeedbackFragment : BaseListFragment() {
+class FeedbackFragment : MiaoListFragment(R.string.feedback) {
 
     private val mAdapter = ListAdapter(object : ListAdapter.ViewCreator<Array<String>> {
         override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
@@ -62,34 +61,23 @@ class FeedbackFragment : BaseListFragment() {
                 val uri = "mqqwpa://im/chat?chat_type=group&uin=385231397&version=1"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
                 val support = context?.packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                if (support == null || support.isEmpty()) {
-                    activity?.toast("无法打开 QQ", TastyToast.ERROR)
-                } else {
-                    startActivity(intent)
-                }
+                if (support?.isNotEmpty() == true) startActivity(intent)
+                else activity?.toast("无法打开 QQ", TastyToast.ERROR)
             }
             1 -> {
                 val uri = "mqqwpa://im/chat?chat_type=wpa&uin=1105188240"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
                 val support = context?.packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                if (support == null || support.isEmpty()) {
-                    activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
-                } else {
-                    startActivity(intent)
-                }
+                if (support?.isNotEmpty() == true) startActivity(intent)
+                else activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
             }
-            2 -> {
-                UserFragment.newInstance("Systemd").showSelf(Miao.i, this)
-            }
+            2 -> UserFragment.newInstance("Systemd").showSelf(Miao.i, this)
             3 -> {
                 val uri = "mqqwpa://im/chat?chat_type=wpa&uin=1289770378"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
                 val support = context?.packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                if (support == null || support.isEmpty()) {
-                    activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
-                } else {
-                    startActivity(intent)
-                }
+                if (support?.isNotEmpty() == true) startActivity(intent)
+                else activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
             }
             else -> return false
         }
@@ -105,10 +93,5 @@ class FeedbackFragment : BaseListFragment() {
         }
         mAdapter.update(listArr)
         super.onRefresh()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (attach as? IMiaoListener)?.setToolbar(App.i.getString(R.string.feedback))
     }
 }

@@ -3,22 +3,20 @@ package org.miaowo.miaowo.fragment.user
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import kotlinx.android.synthetic.main.fragment_list.*
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
+import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.UserListAdapter
-import org.miaowo.miaowo.base.BaseListFragment
-import org.miaowo.miaowo.base.extra.loadSelf
 import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.base.extra.submitAndRemoveCall
 import org.miaowo.miaowo.bean.data.Pagination
-import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
+import org.miaowo.miaowo.other.MiaoListFragment
 
 /**
  * 用户列表
  */
-class UserListFragment : BaseListFragment() {
+class UserListFragment : MiaoListFragment(R.string.user_list) {
     companion object {
         fun newInstance(callTag: String? = null): UserListFragment {
             val fragment = UserListFragment()
@@ -46,12 +44,10 @@ class UserListFragment : BaseListFragment() {
 
     override fun onRefresh() {
         API.Doc.users {
-            if (it == null) return@users loadOverOnUIThread()
+            if (it == null) return@users super.onRefresh()
             mPagination = it.pagination
-            Miao.i.runOnUiThread {
-                mAdapter.update(it.users)
-                super.onRefresh()
-            }
+            mAdapter.update(it.users)
+            super.onRefresh()
         }
     }
 
@@ -61,20 +57,16 @@ class UserListFragment : BaseListFragment() {
         API.Doc.users(mPagination?.next?.qs) {
             if (it == null) return@users
             mPagination = it.pagination
-            Miao.i.runOnUiThread {
-                mAdapter.append(it.users)
-                super.onLoadmore()
-            }
+            mAdapter.append(it.users)
+            super.onLoadmore()
         }
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
         val user = mAdapter.getItem(position)
         var handlerOver = false
-        if (mCallTag != null)
-            handlerOver = submitAndRemoveCall(mCallTag!!, user)
-        if (!handlerOver)
-            UserFragment.newInstance(user.username).showSelf(Miao.i, this)
+        if (mCallTag != null) handlerOver = submitAndRemoveCall(mCallTag!!, user)
+        if (!handlerOver) UserFragment.newInstance(user.username).showSelf(Miao.i, this)
         return true
     }
 }

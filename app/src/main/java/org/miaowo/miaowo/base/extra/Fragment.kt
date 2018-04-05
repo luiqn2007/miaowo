@@ -30,9 +30,13 @@ fun Fragment.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.cont
 fun Fragment.loadSelf(activity: AppCompatActivity, @IdRes container: Int = R.id.container) = activity.loadFragment(this, container)
 fun Fragment.showSelf(activity: AppCompatActivity, hideFragment: Fragment, @IdRes container: Int = R.id.container) = activity.showFragment(this, hideFragment, container)
 
-fun Fragment.registerCall(callback: FragmentCall) = hFragmentCallbackList.add(callback)
+fun Fragment.registerCall(callback: FragmentCall) {
+    lInfo("registerCall: ${callback.from} -> ${callback.target}, tag = ${callback.tag}")
+    hFragmentCallbackList.add(callback)
+}
 
 fun Fragment.getCalls(tag: String? = null, from: Fragment? = null): List<FragmentCall> {
+    lInfo("getCall: $from -> $this, tag = $tag")
     return hFragmentCallbackList.filter {
         it.target == this
                 && (tag == null || it.tag == tag)
@@ -42,6 +46,7 @@ fun Fragment.getCalls(tag: String? = null, from: Fragment? = null): List<Fragmen
 
 fun Fragment.submitCall(tag: String, vararg params: Any?): Boolean {
     val calls = getCalls(tag)
+    lInfo(calls)
     if (calls.isEmpty()) return false
     for (call in calls) call.call(params)
     return true
@@ -61,8 +66,7 @@ fun Fragment.submitAndRemoveCall(tag: String, vararg params: Any?): Boolean {
 
 object MyFragmentLifeRecycleCallback : FragmentManager.FragmentLifecycleCallbacks()
 
-abstract class FragmentCall(val tag: String, val from: Fragment) {
-    var target: Fragment? = null
+abstract class FragmentCall(val tag: String, val from: Fragment, val target: Fragment) {
     abstract fun call(vararg params: Any?)
 }
 

@@ -423,6 +423,11 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     private fun onChoose(drawerItem: IDrawerItem<out Any, out RecyclerView.ViewHolder>) {
         lInfo("drawerClick: $drawerItem")
         val tag = drawerItem.tag
+        lInfo("drawerClickContent: ${when (tag) {
+            is Category -> tag.name
+            is Int -> getString(tag)
+            else -> tag.toString()
+        }}")
         when (tag) {
         // 通知
             R.string.notification -> mFgNotification.loadSelf(this)

@@ -1,5 +1,6 @@
 package org.miaowo.miaowo.base
 
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import org.miaowo.miaowo.Miao
@@ -36,7 +37,9 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
     fun update(newItems: List<E>) {
         mItems.clear()
         mItems = newItems as? MutableList ?: newItems.toMutableList()
-        notifyDataSetChanged()
+        runOnUiThread {
+            notifyDataSetChanged()
+        }
     }
 
     fun append(newItems: List<E>, toHead: Boolean = false) {
@@ -46,7 +49,7 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
         mLastAddedSize = newItems.size
         mLastAddedPosition = if (toHead) 0 else mItems.size
         mItems.addAll(mLastAddedPosition, newItems)
-        Miao.i.runOnUiThread {
+        runOnUiThread {
             notifyItemRangeInserted(mLastAddedPosition, newItems.size)
         }
     }
@@ -58,13 +61,27 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
         mLastAddedSize = 1
         mLastAddedPosition = if (toHead) 0 else mItems.size
         mItems.add(mLastAddedPosition, item)
-        notifyItemInserted(mLastAddedPosition)
+        runOnUiThread {
+            notifyItemInserted(mLastAddedPosition)
+        }
     }
 
     fun clear() {
         if (mItems.isNotEmpty())
             mItems.clear()
-        notifyDataSetChanged()
+        runOnUiThread {
+            notifyDataSetChanged()
+        }
+    }
+
+    fun runOnUiThread(run: () -> Unit) {
+        if (Thread.currentThread() == Looper.getMainLooper().thread) {
+            run()
+        } else {
+            Miao.i.runOnUiThread {
+                run()
+            }
+        }
     }
 
     private fun prepareList() {
