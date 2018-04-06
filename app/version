@@ -1,6 +1,6 @@
 {
-  "version": 11,
-  "versionName": "test2.3",
-  "message": "喵窝阅读器\n修复了图片显示，加入了更多bug",
+  "version": 12,
+  "versionName": "test2.4",
+  "message": "喵窝\n支持Markdown",
   "url": "https://gitee.com/lq2007/miaowo/raw/master/app/release/app-release.apk"
 }

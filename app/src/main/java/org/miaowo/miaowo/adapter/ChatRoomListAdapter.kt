@@ -15,14 +15,11 @@ import org.miaowo.miaowo.base.ListHolder
 class ChatRoomListAdapter : ListAdapter<ChatRoom>(
         object : ListAdapter.ViewCreator<ChatRoom> {
 
-            override fun createHolder(parent: ViewGroup?, viewType: Int) = ListHolder(R.layout.list_chat, parent)
+            override fun createHolder(parent: ViewGroup, viewType: Int) = ListHolder(R.layout.list_chat, parent)
 
-            override fun bindView(item: ChatRoom?, holder: ListHolder?, type: Int) {
-                if (holder != null) {
-                    // DataBinding
-                    holder.find<TextView>(R.id.username)?.text = item?.lastUser?.username
-                }
+            override fun bindView(item: ChatRoom, holder: ListHolder, type: Int) {
+                holder.find<TextView>(R.id.username)?.text = item.lastUser?.username
             }
 
-            override fun setType(item: ChatRoom?, position: Int): Int = 1
+            override fun setType(item: ChatRoom, position: Int): Int = 1
         })

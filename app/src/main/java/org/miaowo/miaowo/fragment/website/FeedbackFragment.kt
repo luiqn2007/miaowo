@@ -28,14 +28,14 @@ import kotlin.math.min
 class FeedbackFragment : MiaoListFragment(R.string.feedback) {
 
     private val mAdapter = ListAdapter(object : ListAdapter.ViewCreator<Array<String>> {
-        override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
+        override fun createHolder(parent: ViewGroup, viewType: Int): ListHolder {
             return ListHolder(android.R.layout.simple_list_item_activated_2, parent, App.i)
         }
 
-        override fun bindView(item: Array<String>?, holder: ListHolder?, type: Int) {
-            if (item != null && item.size >= 2) {
-                holder?.find<TextView>(android.R.id.text1)?.text = item[0]
-                holder?.find<TextView>(android.R.id.text2)?.text = item[1]
+        override fun bindView(item: Array<String>, holder: ListHolder, type: Int) {
+            if (item.size >= 2) {
+                holder.find<TextView>(android.R.id.text1)?.text = item[0]
+                holder.find<TextView>(android.R.id.text2)?.text = item[1]
             }
         }
 

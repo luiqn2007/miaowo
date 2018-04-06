@@ -50,6 +50,7 @@ import org.miaowo.miaowo.fragment.welcome.IndexFragment
 import org.miaowo.miaowo.interfaces.IMiaoListener
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.MiaoHandler
+import org.miaowo.miaowo.ui.FloatView
 import org.miaowo.miaowo.util.ImageUtil
 import java.text.SimpleDateFormat
 import java.util.*
@@ -142,6 +143,8 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
         initToolbar()
         // FloatingActionButton
         initFab()
+        // FloatWindow
+        FloatView.setDimAmount(this, 0.7f)
         // 加载欢迎界面
         supportFragmentManager.registerFragmentLifecycleCallbacks(MyFragmentLifeRecycleCallback, true)
         IndexFragment.INSTANCE.loadSelf(this)
@@ -460,6 +463,9 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
     override fun onBackPressed() {
         when {
             isKeyboardOpen -> hideKeyboard()
+            FloatView.shownWindows.isNotEmpty() -> {
+                FloatView.shownWindows.forEach { it.dismiss(true) }
+            }
             mNavigation.isDrawerOpen -> mNavigation.closeDrawer()
             supportFragmentManager.backStackEntryCount > 1 -> supportFragmentManager.popBackStack()
             else -> logoutOrFinish()

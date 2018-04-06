@@ -8,7 +8,6 @@ import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.MiaoListFragment
 
@@ -17,10 +16,10 @@ import org.miaowo.miaowo.other.MiaoListFragment
  */
 class NotificationFragment : MiaoListFragment(R.string.notification) {
     private val mAdapter = ListAdapter(object : ListAdapter.ViewCreator<Any> {
-        override fun createHolder(parent: ViewGroup?, viewType: Int) = ListHolder(R.layout.list_notification, parent)
+        override fun createHolder(parent: ViewGroup, viewType: Int) = ListHolder(R.layout.list_notification, parent)
 
-        override fun bindView(item: Any?, holder: ListHolder?, type: Int) {
-            holder?.find<TextView>(R.id.notification)?.run {
+        override fun bindView(item: Any, holder: ListHolder, type: Int) {
+            holder.find<TextView>(R.id.notification)?.run {
 
             }
         }

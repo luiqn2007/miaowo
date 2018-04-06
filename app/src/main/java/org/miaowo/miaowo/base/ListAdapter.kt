@@ -98,8 +98,8 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
     }
 
     interface ViewCreator<in E> {
-        fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder
-        fun bindView(item: E?, holder: ListHolder?, type: Int)
-        fun setType(item: E?, position: Int): Int = 0
+        fun createHolder(parent: ViewGroup, viewType: Int): ListHolder
+        fun bindView(item: E, holder: ListHolder, type: Int)
+        fun setType(item: E, position: Int): Int = 0
     }
 }

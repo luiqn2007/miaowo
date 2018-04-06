@@ -28,6 +28,8 @@ object Const {
     const val SP_HIDE_BODY = "square_tab_mode"
     const val SP_CLEAN_TOKENS = "auto_clean_token"
     const val SP_SHOW_TYPE = "auto_clean_token"
+    const val SP_PW_INPUT_X = "last_input_popup_window_x"
+    const val SP_PW_INPUT_Y = "last_input_popup_window_y"
     // category
     const val CBODY_CONTENT = 0
     const val CBODY_FIRST = 1

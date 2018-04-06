@@ -21,36 +21,32 @@ import org.miaowo.miaowo.util.FormatUtil
  */
 class PostAdapter(likeVisible: Boolean, replyVisible: Boolean, hFragment: Fragment?) : ListAdapter<Post>(
         object : ListAdapter.ViewCreator<Post> {
-            override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
+            override fun createHolder(parent: ViewGroup, viewType: Int): ListHolder {
                 return ListHolder(R.layout.list_post, parent)
             }
 
-            override fun bindView(item: Post?, holder: ListHolder?, type: Int) {
-                if (holder != null) {
-                    // DataBinding
-                    val head = holder[R.id.head] as ImageView
-                    val username = holder[R.id.username] as TextView
-                    val time = holder[R.id.tv_time] as TextView
-                    val title = holder[R.id.title] as TextView
-                    val content = holder[R.id.content] as TextView
-                    val like = holder[R.id.like] as ImageView
-                    val likeCount = holder[R.id.like_count] as TextView
-                    val reply = holder[R.id.reply] as ImageView
+            override fun bindView(item: Post, holder: ListHolder, type: Int) {
+                // DataBinding
+                val head = holder[R.id.head] as ImageView
+                val username = holder[R.id.username] as TextView
+                val time = holder[R.id.tv_time] as TextView
+                val title = holder[R.id.title] as TextView
+                val content = holder[R.id.content] as TextView
+                val like = holder[R.id.like] as ImageView
+                val likeCount = holder[R.id.like_count] as TextView
+                val reply = holder[R.id.reply] as ImageView
 
-                    likeCount.visibility = if (likeVisible) View.VISIBLE else View.GONE
-                    like.visibility = if (likeVisible) View.VISIBLE else View.GONE
-                    reply.visibility = if (replyVisible) View.VISIBLE else View.GONE
+                likeCount.visibility = if (likeVisible) View.VISIBLE else View.GONE
+                like.visibility = if (likeVisible) View.VISIBLE else View.GONE
+                reply.visibility = if (replyVisible) View.VISIBLE else View.GONE
 
-                    if (item == null) return
-
-                    head.setUserIcon(item.user)
-                    username.text = item.user?.username ?: ""
-                    time.text = FormatUtil.time(item.timestamp)
-                    title.setHTML(item.topic?.titleRaw, false)
-                    content.setHTML(item.content, hideFragment = hFragment)
-                    likeCount.text = item.votes.toString()
-                    like.setIcon(FontAwesome.Icon.faw_heart)
-                    reply.setIcon(FontAwesome.Icon.faw_reply)
-                }
+                head.setUserIcon(item.user)
+                username.text = item.user?.username ?: ""
+                time.text = FormatUtil.time(item.timestamp)
+                title.setHTML(item.topic?.titleRaw, false)
+                content.setHTML(item.content, hideFragment = hFragment)
+                likeCount.text = item.votes.toString()
+                like.setIcon(FontAwesome.Icon.faw_heart)
+                reply.setIcon(FontAwesome.Icon.faw_reply)
             }
         })

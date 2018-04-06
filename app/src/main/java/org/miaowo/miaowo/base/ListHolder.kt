@@ -22,7 +22,7 @@ open class ListHolder(view: View, private val bundleMap: MutableMap<String, Any?
 
     constructor(view: View) : this(view, mutableMapOf())
 
-    constructor(@LayoutRes viewId: Int, parent: ViewGroup?, context: Context = App.i, attach: Boolean = false) : this(
+    constructor(@LayoutRes viewId: Int, parent: ViewGroup, context: Context = App.i, attach: Boolean = false) : this(
             LayoutInflater.from(context).inflate(viewId, parent, attach)
     )
 

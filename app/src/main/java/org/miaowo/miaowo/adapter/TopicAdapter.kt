@@ -24,72 +24,68 @@ import org.miaowo.miaowo.util.FormatUtil
  */
 class TopicAdapter(likeVisible: Boolean, replyVisible: Boolean, bodyControl: Boolean = false, hFragment: Fragment?) : ListAdapter<Topic>(
         object : ListAdapter.ViewCreator<Topic> {
-            override fun createHolder(parent: ViewGroup?, viewType: Int): ListHolder {
+            override fun createHolder(parent: ViewGroup, viewType: Int): ListHolder {
                 return ListHolder(R.layout.list_post, parent)
             }
 
-            override fun bindView(item: Topic?, holder: ListHolder?, type: Int) {
-                if (holder != null) {
-                    // DataBinding
-                    val head = holder[R.id.head] as ImageView
-                    val username = holder[R.id.username] as TextView
-                    val time = holder[R.id.tv_time] as TextView
-                    val title = holder[R.id.title] as TextView
-                    val content = holder[R.id.content] as TextView
-                    val like = holder[R.id.like] as ImageView
-                    val likeCount = holder[R.id.like_count] as TextView
-                    val reply = holder[R.id.reply] as ImageView
+            override fun bindView(item: Topic, holder: ListHolder, type: Int) {
+                // DataBinding
+                val head = holder[R.id.head] as ImageView
+                val username = holder[R.id.username] as TextView
+                val time = holder[R.id.tv_time] as TextView
+                val title = holder[R.id.title] as TextView
+                val content = holder[R.id.content] as TextView
+                val like = holder[R.id.like] as ImageView
+                val likeCount = holder[R.id.like_count] as TextView
+                val reply = holder[R.id.reply] as ImageView
 
-                    likeCount.visibility = if (likeVisible) View.VISIBLE else View.GONE
-                    like.visibility = if (likeVisible) View.VISIBLE else View.GONE
-                    reply.visibility = if (replyVisible) View.VISIBLE else View.GONE
+                likeCount.visibility = if (likeVisible) View.VISIBLE else View.GONE
+                like.visibility = if (likeVisible) View.VISIBLE else View.GONE
+                reply.visibility = if (replyVisible) View.VISIBLE else View.GONE
 
-                    if (item == null) return
+                title.setHTML(item.titleRaw, false)
+                likeCount.text = item.postcount.toString()
+                like.setIcon(FontAwesome.Icon.faw_heart)
+                reply.setIcon(FontAwesome.Icon.faw_reply)
 
-                    title.setHTML(item.titleRaw, false)
-                    likeCount.text = item.postcount.toString()
-                    like.setIcon(FontAwesome.Icon.faw_heart)
-                    reply.setIcon(FontAwesome.Icon.faw_reply)
+                if (bodyControl) {
+                    if (item.posts.isEmpty()) return
+                    head.setUserIcon(item.posts[0].user)
+                    username.text = item.posts[0].user?.username ?: ""
 
-                    if (bodyControl) {
-                        if (item.posts.isEmpty()) return
-                        head.setUserIcon(item.posts[0].user)
-                        username.text = item.posts[0].user?.username ?: ""
+                    val bodyHide = spGet(Const.SP_HIDE_BODY, false)
+                    val bodyType = spGet(Const.SP_SHOW_TYPE, Const.CBODY_LAST)
 
-                        val bodyHide = spGet(Const.SP_HIDE_BODY, false)
-                        val bodyType = spGet(Const.SP_SHOW_TYPE, Const.CBODY_LAST)
+                    content.visibility = if (bodyHide) View.GONE else View.VISIBLE
 
-                        content.visibility = if (bodyHide) View.GONE else View.VISIBLE
-
-                        val post = when (bodyType) {
-                            Const.CBODY_CONTENT -> item.posts.firstOrNull()
-                            Const.CBODY_FIRST -> item.posts[1]
-                            Const.CBODY_LAST -> item.posts.lastOrNull()
-                            else -> null
+                    val post = when (bodyType) {
+                        Const.CBODY_CONTENT -> item.posts.firstOrNull()
+                        Const.CBODY_FIRST -> item.posts[1]
+                        Const.CBODY_LAST -> item.posts.lastOrNull()
+                        else -> null
+                    }
+                    time.text = FormatUtil.time(post?.timestamp)
+                    content.setHTML(post?.content, hideFragment = hFragment)
+                } else {
+                    when {
+                        item.teaser != null -> {
+                            time.text = FormatUtil.time(item.teaser.timestamp)
+                            content.setHTML(item.teaser.content, hideFragment = hFragment)
+                            head.setUserIcon(item.user)
+                            username.text = item.user?.username ?: ""
                         }
-                        time.text = FormatUtil.time(post?.timestamp)
-                        content.setHTML(post?.content, hideFragment = hFragment)
-                    } else {
-                        when {
-                            item.teaser != null -> {
-                                time.text = FormatUtil.time(item.teaser.timestamp)
-                                content.setHTML(item.teaser.content, hideFragment = hFragment)
-                                head.setUserIcon(item.user)
-                                username.text = item.user?.username ?: ""
-                            }
-                            item.posts.isNotEmpty() -> {
-                                val post = item.posts.firstOrNull { it.pid == item.teaserPid }
-                                time.text = FormatUtil.time(post?.timestamp)
-                                content.setHTML(post?.content, hideFragment = hFragment)
-                                head.setUserIcon(item.posts[0].user)
-                                username.text = item.posts[0].user?.username ?: ""
-                            }
-                            else -> {
-                                time.text = FormatUtil.time(item.timestamp)
-                                content.setHTML("", false)
-                                head.setUserIcon(item.user)
-                                username.text = item.user?.username ?: ""
-                            }
+                        item.posts.isNotEmpty() -> {
+                            val post = item.posts.firstOrNull { it.pid == item.teaserPid }
+                            time.text = FormatUtil.time(post?.timestamp)
+                            content.setHTML(post?.content, hideFragment = hFragment)
+                            head.setUserIcon(item.posts[0].user)
+                            username.text = item.posts[0].user?.username ?: ""
+                        }
+                        else -> {
+                            time.text = FormatUtil.time(item.timestamp)
+                            content.setHTML("", false)
+                            head.setUserIcon(item.user)
+                            username.text = item.user?.username ?: ""
                         }
                     }
                 }

@@ -14,13 +14,11 @@ import org.miaowo.miaowo.other.setUserIcon
  * Created by lq200 on 2018/3/29.
  */
 class UserListAdapter : ListAdapter<User>(object : ViewCreator<User> {
-    override fun createHolder(parent: ViewGroup?, viewType: Int) = ListHolder(R.layout.list_user, parent)
+    override fun createHolder(parent: ViewGroup, viewType: Int) = ListHolder(R.layout.list_user, parent)
 
-    override fun bindView(item: User?, holder: ListHolder?, type: Int) {
-        if (holder != null) {
-            holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item)
-            holder.find<TextView>(R.id.username)?.text = item?.username
-        }
+    override fun bindView(item: User, holder: ListHolder, type: Int) {
+        holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item)
+        holder.find<TextView>(R.id.username)?.text = item.username
     }
 
 })
