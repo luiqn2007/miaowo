@@ -28,7 +28,7 @@ fun Fragment.loadFragment(fragment: Fragment?, @IdRes container: Int = R.id.cont
 }
 
 fun Fragment.loadSelf(activity: AppCompatActivity, @IdRes container: Int = R.id.container) = activity.loadFragment(this, container)
-fun Fragment.showSelf(activity: AppCompatActivity, hideFragment: Fragment, @IdRes container: Int = R.id.container) = activity.showFragment(this, hideFragment, container)
+fun Fragment.showSelf(activity: AppCompatActivity, @IdRes container: Int = R.id.container) = activity.showFragment(this, container)
 
 fun Fragment.registerCall(callback: FragmentCall) {
     lInfo("registerCall: ${callback.from} -> ${callback.target}, tag = ${callback.tag}")
@@ -95,8 +95,9 @@ fun hLoadFragment(fragmentManager: FragmentManager, fragment: Fragment?, tag: St
     return false
 }
 
-fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hideFragment: Fragment?, tag: String, container: Int): Boolean {
+fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, tag: String, container: Int): Boolean {
     if (showFragment != null && !showFragment.isVisible) {
+        val hideFragment = fragmentManager.fragments.filter { it.isVisible }
         val isAdded = (showFragment.isAdded) || (fragmentManager.findFragmentByTag(showFragment.tag) != null)
         fragmentManager.beginTransaction().apply {
             // animator
@@ -108,7 +109,7 @@ fun hShowFragment(fragmentManager: FragmentManager, showFragment: Fragment?, hid
             if (showFragment.arguments?.getBoolean(Const.FG_ADD_TO_BACK_STACK, true) != false)
                 addToBackStack(null)
             if (!isAdded) add(container, showFragment, tag)
-            if (hideFragment?.isVisible == true) hide(hideFragment)
+            hideFragment.forEach { hide(it) }
             show(showFragment)
         }.commitAllowingStateLoss()
 

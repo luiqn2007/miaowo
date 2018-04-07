@@ -193,7 +193,7 @@ class Miao(private val handler: MiaoHandler) : AppCompatActivity(), IMiaoListene
                 onProfileImageClick { _, _, _ ->
                     if (API.isLogin) {
                         mNavigation.closeDrawer()
-                        showFragment(UserFragment.newInstance(API.user.username), this@Miao.loadedFragment)
+                        UserFragment.newInstance(API.user.username).showSelf(Miao.i)
                         true
                     } else {
                         toast(R.string.please_login, TastyToast.ERROR)

@@ -109,7 +109,7 @@ fun TextView.setHTML(html: String?, imageVisibility: Boolean = true, hideFragmen
                         override fun onClick(widget: View?) {
                             val fg = ImageFragment.getInstance(fixImagePath(url))
                             if (hideFragment == null) fg.loadSelf(Miao.i)
-                            else fg.showSelf(Miao.i, hideFragment)
+                            else fg.showSelf(Miao.i)
                         }
                     }, len - 1, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }

@@ -7,7 +7,10 @@ import org.miaowo.miaowo.API
 import org.miaowo.miaowo.Miao
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.adapter.ChatRoomListAdapter
-import org.miaowo.miaowo.base.extra.*
+import org.miaowo.miaowo.base.extra.FragmentCall
+import org.miaowo.miaowo.base.extra.lInfo
+import org.miaowo.miaowo.base.extra.registerCall
+import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.bean.data.User
 import org.miaowo.miaowo.fragment.user.UserListFragment
 import org.miaowo.miaowo.other.Const
@@ -48,13 +51,13 @@ class ChatListFragment : MiaoListFragment(R.string.chat, true) {
                 }
             }
             registerCall(call)
-            fg.showSelf(Miao.i, this)
+            fg.showSelf(Miao.i)
         }
     }
 
     override fun onClickListener(view: View, position: Int): Boolean {
         val clickItem = mAdapter.getItem(position)
-        Miao.i.showFragment(ChatFragment.newInstance(clickItem), this)
+        ChatFragment.newInstance(clickItem).showSelf(Miao.i)
         return true
     }
 

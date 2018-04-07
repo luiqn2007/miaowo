@@ -75,7 +75,7 @@ class UnreadFragment : MiaoListFragment(R.string.unread) {
                 }
             }
         }
-        PostFragment.newInstance(item.tid).showSelf(Miao.i, this)
+        PostFragment.newInstance(item.tid).showSelf(Miao.i)
         return true
     }
 }

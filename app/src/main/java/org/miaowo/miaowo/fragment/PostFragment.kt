@@ -73,7 +73,7 @@ class PostFragment : MiaoListFragment(R.string.question_detail) {
                     onRefresh()
                 }
             })
-            sFg.showSelf(Miao.i, this)
+            sFg.showSelf(Miao.i)
             return true
         }
 

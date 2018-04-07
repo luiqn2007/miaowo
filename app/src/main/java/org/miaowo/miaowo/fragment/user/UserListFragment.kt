@@ -66,7 +66,7 @@ class UserListFragment : MiaoListFragment(R.string.user_list) {
         val user = mAdapter.getItem(position)
         var handlerOver = false
         if (mCallTag != null) handlerOver = submitAndRemoveCall(mCallTag!!, user)
-        if (!handlerOver) UserFragment.newInstance(user.username).showSelf(Miao.i, this)
+        if (!handlerOver) UserFragment.newInstance(user.username).showSelf(Miao.i)
         return true
     }
 }

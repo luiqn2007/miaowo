@@ -58,7 +58,7 @@ class CategoryFragment : MiaoListFragment("No Title", true) {
         })
         miaoListener?.apply {
             button.setOnClickListener {
-                sFg.showSelf(Miao.i, this@CategoryFragment)
+                sFg.showSelf(Miao.i)
             }
         }
         mAdapter.clear()
@@ -132,14 +132,14 @@ class CategoryFragment : MiaoListFragment("No Title", true) {
         val item = mAdapter.getItem(position)
         when (view.id) {
             R.id.head -> UserFragment.newInstance(item.user?.username
-                    ?: item.posts.firstOrNull()?.user?.username ?: "").showSelf(Miao.i, this)
+                    ?: item.posts.firstOrNull()?.user?.username ?: "").showSelf(Miao.i)
             R.id.like -> API.Topics.follow(item.tid) {
                 activity?.runOnUiThread {
                     if (it != Const.RET_OK) activity?.handleError(it)
                     else (view as? ImageView)?.setImageDrawable(IconicsDrawable(App.i, FontAwesome.Icon.faw_heart).color(Color.RED).actionBar())
                 }
             }
-            else -> PostFragment.newInstance(item.tid).showSelf(Miao.i, this)
+            else -> PostFragment.newInstance(item.tid).showSelf(Miao.i)
         }
         return true
     }

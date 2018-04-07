@@ -71,7 +71,7 @@ class FeedbackFragment : MiaoListFragment(R.string.feedback) {
                 if (support?.isNotEmpty() == true) startActivity(intent)
                 else activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
             }
-            2 -> UserFragment.newInstance("Systemd").showSelf(Miao.i, this)
+            2 -> UserFragment.newInstance("Systemd").showSelf(Miao.i)
             3 -> {
                 val uri = "mqqwpa://im/chat?chat_type=wpa&uin=1289770378"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
