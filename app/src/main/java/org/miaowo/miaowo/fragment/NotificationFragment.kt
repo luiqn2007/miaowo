@@ -2,19 +2,22 @@ package org.miaowo.miaowo.fragment
 
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
+import org.miaowo.miaowo.activity.MainActivity
+import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.other.MiaoListFragment
 
 /**
  * 通知页
  */
-class NotificationFragment : MiaoListFragment(R.string.notification) {
+class NotificationFragment : BaseListFragment() {
     private val mAdapter = ListAdapter(object : ListAdapter.ViewCreator<Any> {
         override fun createHolder(parent: ViewGroup, viewType: Int) = ListHolder(R.layout.list_notification, parent)
 
@@ -28,6 +31,11 @@ class NotificationFragment : MiaoListFragment(R.string.notification) {
 
     override fun setAdapter(list: RecyclerView) {
         list.adapter = mAdapter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (attach as? MainActivity)?.toolBar?.setTitle(R.string.notification)
     }
 
     companion object {

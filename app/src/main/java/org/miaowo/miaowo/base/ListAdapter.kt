@@ -1,9 +1,7 @@
 package org.miaowo.miaowo.base
 
-import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import org.miaowo.miaowo.Miao
 
 open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.Adapter<ListHolder>() {
     private var mRAddedSize = 0
@@ -34,54 +32,27 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
 
     fun getItem(position: Int) = mItems[position]
 
-    fun update(newItems: List<E>) {
+    fun update(newItems: List<E>?) {
+        if (newItems == null) return
         mItems.clear()
         mItems = newItems as? MutableList ?: newItems.toMutableList()
-        runOnUiThread {
-            notifyDataSetChanged()
-        }
+        notifyDataSetChanged()
     }
 
-    fun append(newItems: List<E>, toHead: Boolean = false) {
+    fun append(newItems: List<E>?, toHead: Boolean = false) {
+        if (newItems == null) return
         prepareList()
         mRAddedSize = mLastAddedSize
         mRAddedPosition = mLastAddedPosition
         mLastAddedSize = newItems.size
         mLastAddedPosition = if (toHead) 0 else mItems.size
         mItems.addAll(mLastAddedPosition, newItems)
-        runOnUiThread {
-            notifyItemRangeInserted(mLastAddedPosition, newItems.size)
-        }
-    }
-
-    fun insert(item: E, toHead: Boolean) {
-        prepareList()
-        mRAddedSize = mLastAddedSize
-        mRAddedPosition = mLastAddedPosition
-        mLastAddedSize = 1
-        mLastAddedPosition = if (toHead) 0 else mItems.size
-        mItems.add(mLastAddedPosition, item)
-        runOnUiThread {
-            notifyItemInserted(mLastAddedPosition)
-        }
+        notifyItemRangeInserted(mLastAddedPosition, newItems.size)
     }
 
     fun clear() {
-        if (mItems.isNotEmpty())
-            mItems.clear()
-        runOnUiThread {
-            notifyDataSetChanged()
-        }
-    }
-
-    fun runOnUiThread(run: () -> Unit) {
-        if (Thread.currentThread() == Looper.getMainLooper().thread) {
-            run()
-        } else {
-            Miao.i.runOnUiThread {
-                run()
-            }
-        }
+        if (mItems.isNotEmpty()) mItems.clear()
+        notifyDataSetChanged()
     }
 
     private fun prepareList() {

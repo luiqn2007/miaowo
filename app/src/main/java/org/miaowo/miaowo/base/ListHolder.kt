@@ -8,6 +8,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.miaowo.miaowo.App
 import org.miaowo.miaowo.R
 
 /**

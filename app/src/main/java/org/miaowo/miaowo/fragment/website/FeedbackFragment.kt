@@ -9,23 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.sdsmdg.tastytoast.TastyToast
-import org.miaowo.miaowo.Miao
+import kotlinx.android.synthetic.main.activity_main.*
+import org.miaowo.miaowo.App
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.App
+import org.miaowo.miaowo.activity.MainActivity
+import org.miaowo.miaowo.activity.UserActivity
+import org.miaowo.miaowo.base.BaseListFragment
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.base.extra.showSelf
 import org.miaowo.miaowo.base.extra.toast
-import org.miaowo.miaowo.fragment.user.UserFragment
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.other.MiaoListFragment
 import kotlin.math.min
 
 /**
  * 状态
  * Created by lq2007 on 2017/7/22 0022.
  */
-class FeedbackFragment : MiaoListFragment(R.string.feedback) {
+class FeedbackFragment : BaseListFragment() {
 
     private val mAdapter = ListAdapter(object : ListAdapter.ViewCreator<Array<String>> {
         override fun createHolder(parent: ViewGroup, viewType: Int): ListHolder {
@@ -40,6 +40,11 @@ class FeedbackFragment : MiaoListFragment(R.string.feedback) {
         }
 
     })
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (attach as? MainActivity)?.toolBar?.setTitle(R.string.feedback)
+    }
 
     override fun setAdapter(list: RecyclerView) {
         list.adapter = mAdapter
@@ -71,7 +76,11 @@ class FeedbackFragment : MiaoListFragment(R.string.feedback) {
                 if (support?.isNotEmpty() == true) startActivity(intent)
                 else activity?.toast("无法打开 QQ 临时会话", TastyToast.ERROR)
             }
-            2 -> UserFragment.newInstance("Systemd").showSelf(Miao.i)
+            2 -> {
+                startActivity(Intent(context, UserActivity::class.java)
+                        .putExtra(Const.TYPE, UserActivity.USER_FROM_NAME)
+                        .putExtra(Const.NAME, "Systemd"))
+            }
             3 -> {
                 val uri = "mqqwpa://im/chat?chat_type=wpa&uin=1289770378"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))

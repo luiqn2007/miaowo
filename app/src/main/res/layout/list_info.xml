@@ -1,86 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <data>
-
-        <import
-            type="org.miaowo.miaowo.util.FormatUtil"
-            alias="Format" />
-
-        <variable
-            name="os"
-            type="String" />
-
-        <variable
-            name="time"
-            type="Long" />
-
-        <variable
-            name="ip"
-            type="String" />
-    </data>
-
-    <LinearLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/rl_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical"
+        app:cardBackgroundColor="@color/md_amber_A400"
+        app:cardCornerRadius="16dp"
+        app:contentPadding="8dp">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/rl_item"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            android:orientation="vertical"
-            app:cardBackgroundColor="@color/md_amber_A400"
-            app:cardCornerRadius="16dp"
-            app:contentPadding="8dp">
+            android:layout_height="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
+            <TextView
+                android:id="@+id/tv_msg"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="okhttp 3.8.0 on unknow" />
 
-                <TextView
-                    android:id="@+id/tv_msg"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="0dp"
-                    android:text="@{os}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="okhttp 3.8.0 on unknow" />
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/tv_msg"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_msg"
+                app:layout_constraintTop_toBottomOf="@+id/tv_msg"
+                tools:text="1天之前" />
 
-                <TextView
-                    android:id="@+id/tv_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@{Format.INSTANCE.time(time)}"
-                    app:layout_constraintEnd_toEndOf="@+id/tv_msg"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/tv_msg"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_msg"
-                    tools:text="1天之前" />
-
-                <TextView
-                    android:id="@+id/tv_ip"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@{ip}"
-                    app:layout_constraintEnd_toEndOf="@+id/tv_msg"
-                    app:layout_constraintStart_toStartOf="@+id/tv_msg"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_time"
-                    tools:text="IP地址: 127.0.0.1" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
-    </LinearLayout>
-</layout>
+            <TextView
+                android:id="@+id/tv_ip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/tv_msg"
+                app:layout_constraintStart_toStartOf="@+id/tv_msg"
+                app:layout_constraintTop_toBottomOf="@+id/tv_time"
+                tools:text="IP地址: 127.0.0.1" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

@@ -6,9 +6,9 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.miaowo.miaowo.API
+import kotlinx.android.synthetic.main.activity_main.*
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.interfaces.IMiaoListener
+import org.miaowo.miaowo.activity.MainActivity
 import org.miaowo.miaowo.base.extra.inflateId
 import org.miaowo.miaowo.other.Const
 
@@ -27,16 +27,16 @@ class BlogFragment : Fragment() {
         }
     }
 
-    var mListenerI: IMiaoListener? = null
+    private var mAttach: MainActivity? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is IMiaoListener) mListenerI = context
+        mAttach = context as? MainActivity
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListenerI = null
+        mAttach = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,6 +44,6 @@ class BlogFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mListenerI?.toolbar?.title = getString(R.string.blog)
+        mAttach?.toolBar?.title = getString(R.string.blog)
     }
 }

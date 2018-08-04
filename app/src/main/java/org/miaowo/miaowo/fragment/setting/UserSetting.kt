@@ -6,16 +6,24 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blankj.utilcode.util.ActivityUtils.getTopActivity
+import com.blankj.utilcode.util.AppUtils
 import com.sdsmdg.tastytoast.TastyToast
 import kotlinx.android.synthetic.main.fragment_setting_user.*
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import org.miaowo.miaowo.API
+import org.miaowo.miaowo.App
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.base.extra.*
-import org.miaowo.miaowo.interfaces.IMiaoListener
+import org.miaowo.miaowo.base.extra.error
+import org.miaowo.miaowo.base.extra.inflateId
+import org.miaowo.miaowo.base.extra.toast
+import org.miaowo.miaowo.other.ActivityCallback
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.PwdShowListener
 import org.miaowo.miaowo.other.setHTML
+import retrofit2.Call
+import retrofit2.Response
 
 /**
  * 设置-用户设置
@@ -30,10 +38,10 @@ class UserSetting : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         et_email.setText(API.user.email)
         et_user.setText(API.user.username)
-        et_location.setHTML(API.user.location, false)
-        et_website.setHTML(API.user.website, false)
-        et_birthday.setHTML(API.user.birthday, false)
-        et_signature.setHTML(API.user.signature, false)
+        et_location.setHTML(API.user.location)
+        et_website.setHTML(API.user.website)
+        et_birthday.setHTML(API.user.birthday)
+        et_signature.setHTML(API.user.signature)
 
         show_ori.setOnTouchListener(PwdShowListener(et_pwd_ori))
         show_new.setOnTouchListener(PwdShowListener(et_pwd_new))
@@ -44,9 +52,19 @@ class UserSetting : Fragment() {
         update_pwd.setOnClickListener {
             val pwdNew = et_pwd_new.text.toString()
             val pwdOld = et_pwd_ori.text.toString()
-            API.Users.password(API.user.uid, pwdOld, pwdNew) {
-                (activity as? IMiaoListener)?.login(null, null)
-            }
+            API.Users.password(pwdOld, pwdNew, API.user.uid).enqueue(object : ActivityCallback<ResponseBody>(getTopActivity()) {
+                override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                    val obj = JSONObject(response?.body()?.string())
+                    if (obj.getString("code").toUpperCase() == Const.RET_OK) {
+                        var err = obj.getString("message")
+                        if (err.isNullOrBlank()) err = obj.getString("code")
+                        if (err.isNullOrBlank()) err = activity.getString(R.string.err_ill)
+                        activity.error(err)
+                    } else {
+                        activity.toast(R.string.success, TastyToast.SUCCESS)
+                    }
+                }
+            })
         }
 
         update_user.setOnClickListener {
@@ -56,10 +74,19 @@ class UserSetting : Fragment() {
             val website = et_website.text.toString()
             val birthday = et_birthday.text.toString()
             val signature = et_signature.text.toString()
-            API.Users.update(user, email, user, website, location, birthday, signature) {
-                if (it == Const.RET_OK) activity?.toast(getString(R.string.user_edit_ok), TastyToast.SUCCESS)
-                else activity?.handleError(Exception(it))
-            }
+            API.Users.update(user, email, user, website, location, birthday, signature).enqueue(object : ActivityCallback<ResponseBody>(getTopActivity()) {
+                override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                    val obj = JSONObject(response?.body()?.string())
+                    if (obj.getString("code").toUpperCase() == Const.RET_OK) {
+                        var err = obj.getString("message")
+                        if (err.isNullOrBlank()) err = obj.getString("code")
+                        if (err.isNullOrBlank()) err = activity.getString(R.string.err_ill)
+                        activity.error(err)
+                    } else {
+                        activity.toast(R.string.user_edit_ok, TastyToast.SUCCESS)
+                    }
+                }
+            })
         }
 
         btn_remove.setOnClickListener {
@@ -70,18 +97,24 @@ class UserSetting : Fragment() {
                 setNegativeButton(R.string.give_up, null)
             }
             builder.setPositiveButton(R.string.delete) { dialog, _ ->
-                API.Users.delete {
-                    if (it == Const.RET_OK) {
-                        API.Profile.logout()
-                        activity?.finish()
-                    } else activity?.handleError(Exception(it))
-                }
+                API.Users.delete().enqueue(object : ActivityCallback<ResponseBody>(getTopActivity()) {
+                    override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                        val obj = JSONObject(response?.body()?.string())
+                        if (obj.getString("code").toUpperCase() == Const.RET_OK) {
+                            var err = obj.getString("message")
+                            if (err.isNullOrBlank()) err = obj.getString("code")
+                            if (err.isNullOrBlank()) err = activity.getString(R.string.err_ill)
+                            activity.error(err)
+                        } else {
+                            AppUtils.relaunchApp()
+                        }
+                    }
+                })
                 dialog.dismiss()
             }
             builder.show()
         }
     }
-
 
     companion object {
 

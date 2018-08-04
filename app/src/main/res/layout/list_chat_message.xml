@@ -11,10 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:maxEms="16"
-        android:padding="12dp"
+        android:padding="6dp"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="aaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaa\naaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaa" />
-    <!--app:html="@{message.content}"-->
 </RelativeLayout>
 

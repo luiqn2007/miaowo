@@ -36,6 +36,9 @@ interface IProcessable {
     // 隐藏进度
     fun hideProcess()
 
+    // 更新进度
+    fun setProcess(process: Float, text: String?, isError: Boolean)
+
     enum class ShowType { Null, OnlyText, OnlyProcess, Both }
 
     enum class ProcessType { Number, Percent }

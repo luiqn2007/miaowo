@@ -14,7 +14,7 @@ import android.view.View
  */
 
 @Suppress("unused", "UNUSED_PARAMETER")
-class FabScrollBehavior(context: Context, attrs: AttributeSet) : FloatingActionButton.Behavior() {
+class FabScrollBehavior(context: Context, attrs: AttributeSet?) : FloatingActionButton.Behavior() {
 
     override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton,
                                      directTargetChild: View, target: View, axes: Int, type: Int) = true

@@ -4,8 +4,8 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import com.amulyakhare.textdrawable.TextDrawable
-import org.miaowo.miaowo.base.App
-import org.miaowo.miaowo.bean.config.TextIconConfig
+import org.miaowo.miaowo.App
+import org.miaowo.miaowo.data.config.TextIconConfig
 
 /**
  * 图形处理类

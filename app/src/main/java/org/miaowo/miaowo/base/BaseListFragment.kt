@@ -3,7 +3,6 @@ package org.miaowo.miaowo.base
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -12,7 +11,7 @@ import com.liaoinstan.springview.container.DefaultFooter
 import com.liaoinstan.springview.container.DefaultHeader
 import com.liaoinstan.springview.widget.SpringView
 import kotlinx.android.synthetic.main.fragment_list.*
-import org.miaowo.miaowo.Miao
+import org.miaowo.miaowo.App
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.firstPosition
 import org.miaowo.miaowo.base.extra.inflateId
@@ -130,7 +129,7 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
         set(value) {
             if (footer != null) {
                 springView.isEnableFooter = true
-                springView.footer
+                springView.footer = value
             } else {
                 springView.isEnableFooter = false
             }
@@ -139,12 +138,6 @@ abstract class BaseListFragment : Fragment(), SpringView.OnFreshListener {
     protected var attach: Context? = null
 
     fun loadOver() {
-        if (Thread.currentThread() == Looper.getMainLooper().thread) _loadOver()
-        else Miao.i.runOnUiThread { _loadOver() }
-    }
-
-    @Suppress("FunctionName")
-    private fun _loadOver() {
         if (isVisible) {
             loading.hide()
             springView?.onFinishFreshAndLoad()

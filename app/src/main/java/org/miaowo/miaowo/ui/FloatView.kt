@@ -12,11 +12,10 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.base.App
+import org.miaowo.miaowo.App
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.base.extra.lInfo
 import org.miaowo.miaowo.util.FormatUtil
-import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
 /**
@@ -48,15 +47,12 @@ class FloatView : LinearLayout {
         init()
         reset(title, layout, viewToken)
     }
-
     constructor(context: Context) : super(context) {
         init()
     }
-
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
     }
-
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init()
     }
@@ -75,6 +71,14 @@ class FloatView : LinearLayout {
 
     fun show(): FloatView {
         if (isShowing) {
+            val index = shownWindows.indexOf(this)
+            if (index > 0) {
+                val bfViews = shownWindows.subList(0, index - 1)
+                shownWindows[0] = this
+                (0 until index).forEach {
+                    shownWindows[it + 1] = bfViews[it]
+                }
+            }
             return this
         }
         val params = buildLayoutParams()
@@ -141,46 +145,45 @@ class FloatView : LinearLayout {
         view = LayoutInflater.from(context).inflate(layout, container)
     }
 
-//    override fun onTouchEvent(event: MotionEvent): Boolean {
-//        when (event.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                mStartX = event.x
-//                mStartY = event.y
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//                mEndX = event.x
-//                mEndY = event.y
-//                mChangeX = mEndX - mStartX
-//                mChangeY = mEndY - mStartY
-//                if (mChangeX * mChangeX + mChangeY * mChangeY >= mSlop * mSlop) {
-//                    val params = layoutParams as WindowManager.LayoutParams
-//                    val limitXR = mScreenSize.x + params.width / 5 * 4
-//                    val limitXL = -params.width / 5
-//                    val limitYB = mScreenSize.y + params.height / 5 * 4
-//                    val limitYT = -params.height / 5
-//                    val pX = params.x + mChangeX.toInt()
-//                    val pY = params.y - mChangeY.toInt()
-//                    when {
-//                        pX > limitXR -> params.x = limitXR
-//                        pX < limitXL -> params.x = limitXL
-//                        else -> params.x = pX
-//                    }
-//                    when {
-//                        pY > limitYB -> params.y = limitYB
-//                        pY < limitYT -> params.y = limitYT
-//                        else -> params.y = pY
-//                    }
-//                    mPosition.set(params.x, params.y)
-//                    lInfo("moveTo: $mPosition")
-//                    mManager.updateViewLayout(this, params)
-//                }
-//            }
-//            MotionEvent.ACTION_UP -> {
-//                positionSave(mPosition, mGravity)
-//            }
-//        }
-//        return true
-//    }
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                mStartX = event.x
+                mStartY = event.y
+            }
+            MotionEvent.ACTION_MOVE -> {
+                mEndX = event.x
+                mEndY = event.y
+                mChangeX = mEndX - mStartX
+                mChangeY = mEndY - mStartY
+                if (mChangeX * mChangeX + mChangeY * mChangeY >= mSlop * mSlop) {
+                    val params = layoutParams as WindowManager.LayoutParams
+                    val limitXR = mScreenSize.x + params.width / 5 * 4
+                    val limitXL = -params.width / 5
+                    val limitYB = mScreenSize.y + params.height / 5 * 4
+                    val limitYT = -params.height / 5
+                    val pX = params.x + mChangeX.toInt()
+                    val pY = params.y - mChangeY.toInt()
+                    when {
+                        pX > limitXR -> params.x = limitXR
+                        pX < limitXL -> params.x = limitXL
+                        else -> params.x = pX
+                    }
+                    when {
+                        pY > limitYB -> params.y = limitYB
+                        pY < limitYT -> params.y = limitYT
+                        else -> params.y = pY
+                    }
+                    mPosition.set(params.x, params.y)
+                    mManager.updateViewLayout(this, params)
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                positionSave(mPosition, mGravity)
+            }
+        }
+        return true
+    }
 
     fun defaultBar(): FloatView {
         val holder = ListHolder(this)
@@ -191,7 +194,7 @@ class FloatView : LinearLayout {
     }
 
     companion object {
-        var shownWindows = ArrayList<FloatView>()
+        var shownWindows = ArrayList<FloatView>(5)
 
         fun setDimAmount(activity: Activity, dimAmount: Float) {
             val window = activity.window
@@ -199,5 +202,7 @@ class FloatView : LinearLayout {
             lp.dimAmount = dimAmount
             window.attributes = lp
         }
+
+        fun dismissFirst() = shownWindows.firstOrNull()?.dismiss(true)
     }
 }

@@ -1,28 +1,18 @@
 <resources>
+    <!--suppress AndroidDomInspection -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-    </style>
-
-    <style name="TranslateTheme" parent="AppTheme">
+    <style name="Translate" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/translate</item>
     </style>
 
-    <style name="NoTitleTranslucentTheme" parent="AppTheme">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/translate</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
-    <style name="MiaoEditor" parent="Widget.AppCompat.EditText" />
-
-    <style name="MiaoEditor.OneLineInput">
+    <!--suppress AndroidDomInspection -->
+    <style name="MiaoEditor.OneLineInput" parent="Widget.AppCompat.EditText">
         <item name="android:background">@color/etBackground</item>
         <item name="android:textColorHint">@color/etHint</item>
         <item name="android:textColor">@color/etTextColor</item>
@@ -34,6 +24,7 @@
         <item name="android:drawablePadding">8dp</item>
     </style>
 
+    <!--suppress AndroidDomInspection -->
     <style name="MiaoButton" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@color/btnTextColor</item>
         <item name="android:minHeight">40dp</item>
@@ -49,5 +40,9 @@
 
     <style name="MiaoButton.Red">
         <item name="android:background">@drawable/btn_red</item>
+    </style>
+
+    <style name="MiaoButton.Purple">
+        <item name="android:background">@drawable/btn_purple</item>
     </style>
 </resources>

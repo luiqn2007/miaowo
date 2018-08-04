@@ -8,26 +8,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import org.miaowo.miaowo.Miao
+import com.blankj.utilcode.util.ActivityUtils
 import org.miaowo.miaowo.R
 
 class InputAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val mContentList = mutableListOf<InputViewContent>()
-    val contents get() = mContentList
-    val results get() = mContentList.map { it.s }
+    val contents = mutableListOf<InputViewContent>()
+    val results get() = contents.map { it.s }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        // 啊啊啊啊啊啊啊啊啊 那个SB写的 TextInputLayout 必须用 AppCompatActivity 当 Context 啊啊
-        val v = LayoutInflater.from(Miao.i).inflate(R.layout.list_input, parent, false)
+        // TextInputLayout 必须用 AppCompatActivity 作为 Context
+        val v = LayoutInflater.from(ActivityUtils.getTopActivity()).inflate(R.layout.list_input, parent, false)
         return object : RecyclerView.ViewHolder(v) {}
     }
 
-    override fun getItemCount() = mContentList.size
+    override fun getItemCount() = contents.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         holder.itemView.apply {
-            val h = mContentList[position]
+            val h = contents[position]
 
             findViewById<TextInputLayout>(R.id.input_layout)?.apply {
                 hint = h.hint
@@ -57,21 +56,21 @@ class InputAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun add(position: Int, content: InputViewContent) {
         val i = position + 1
-        mContentList.add(i, content)
+        contents.add(i, content)
         notifyItemInserted(i)
     }
 
     fun remove(position: Int) {
-        if (position == 1 && mContentList.size == 1) {
-            mContentList[1] = mContentList[1].copyEmpty()
+        if (position == 1 && contents.size == 1) {
+            contents[1] = contents[1].copyEmpty()
 //            notifyDataSetChanged()
         } else {
-            mContentList.removeAt(position)
+            contents.removeAt(position)
             notifyItemRemoved(position)
         }
     }
 
-    fun add(content: InputViewContent) = add(mContentList.size - 1, content)
+    fun add(content: InputViewContent) = add(contents.size - 1, content)
 
     data class InputViewContent(val hint: String?, val addVisible: Boolean, val removeVisible: Boolean, val maxLines: Int) {
         var s: CharSequence? = null

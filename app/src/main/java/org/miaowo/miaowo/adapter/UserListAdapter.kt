@@ -6,7 +6,7 @@ import android.widget.TextView
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.bean.data.User
+import org.miaowo.miaowo.data.bean.User
 import org.miaowo.miaowo.other.setUserIcon
 
 /**
@@ -20,5 +20,4 @@ class UserListAdapter : ListAdapter<User>(object : ViewCreator<User> {
         holder.find<ImageView>(R.id.iv_user)?.setUserIcon(item)
         holder.find<TextView>(R.id.username)?.text = item.username
     }
-
 })

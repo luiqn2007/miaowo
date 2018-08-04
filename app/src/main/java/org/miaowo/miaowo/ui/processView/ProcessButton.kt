@@ -1,18 +1,20 @@
 package org.miaowo.miaowo.ui.processView
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.Button
-import org.miaowo.miaowo.base.App
 
 /**
  * 用于显示有进度的按钮
  * Created by lq2007 on 2017/9/27 0027.
  */
 class ProcessButton(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : Button(context, attrs, defStyleAttr), IProcessable {
+
     // IProcessable
     private var mMaxProcess = 100f
     private var mMinProcess = 0f
@@ -132,7 +134,6 @@ class ProcessButton(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     override val showFinish: Boolean
         get() = mDrawWidth >= mProcessWidth
 
-    constructor() : this(App.i, null, 0)
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
@@ -159,6 +160,13 @@ class ProcessButton(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             mIsShowProcess = false
             mDrawWidth = 0f
         }
+    }
+
+    override fun setProcess(process: Float, text: String?, isError: Boolean) {
+        this.process = process
+        this.processText = text ?: ""
+        this.isError = isError
+        updateProcess()
     }
 
     private fun updateProcess() {

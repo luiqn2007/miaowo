@@ -11,7 +11,7 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import org.miaowo.miaowo.R
-import org.miaowo.miaowo.other.template.MyAnimatorListener
+import org.miaowo.miaowo.other.template.EmptyAnimatorListener
 import kotlin.math.min
 
 class LoadingView : View {
@@ -153,7 +153,7 @@ class LoadingView : View {
             it.addUpdateListener {
                 alpha = it.animatedValue as Float
             }
-            it.addListener(object : MyAnimatorListener() {
+            it.addListener(object : EmptyAnimatorListener() {
                 override fun onAnimationEnd(animation: Animator?) {
                     visibility = View.GONE
                 }
@@ -164,7 +164,7 @@ class LoadingView : View {
             it.addUpdateListener {
                 alpha = it.animatedValue as Float
             }
-            it.addListener(object : MyAnimatorListener() {
+            it.addListener(object : EmptyAnimatorListener() {
                 override fun onAnimationEnd(animation: Animator?) {
                     animPlay.start()
                 }

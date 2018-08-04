@@ -270,6 +270,7 @@
                     android:layout_marginTop="16dp"
                     android:ems="10"
                     android:inputType="textPassword"
+                    android:hint="重置密码后将重启 APP"
                     app:layout_constraintLeft_toLeftOf="@+id/et_pwd_ori"
                     app:layout_constraintRight_toRightOf="@+id/et_pwd_ori"
                     app:layout_constraintTop_toBottomOf="@+id/et_pwd_ori" />

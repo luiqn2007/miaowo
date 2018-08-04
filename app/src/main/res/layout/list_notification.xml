@@ -1,29 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="16sp"
-    android:layout_marginTop="16dp"
-    app:cardCornerRadius="8dp"
-    app:cardPreventCornerOverlap="true"
-    app:contentPaddingTop="16dp"
-    app:contentPaddingBottom="16dp">
+    android:layout_height="48dp">
+
+    <View
+        android:id="@+id/select"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        android:background="@color/translate"
+        tools:background="@color/md_red_900" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/select"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_notifications" />
 
     <TextView
         android:id="@+id/notification"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textSize="24sp"
-        android:gravity="center_vertical"
-        android:textColor="@color/textColor1"
-        android:drawableLeft="@drawable/ic_event_note"
-        android:drawableStart="@drawable/ic_event_note"
-        android:drawablePadding="16dp"
-        android:paddingLeft="16dp"
-        android:paddingStart="16dp"
-        tools:text="今天天气如何？" />
-</android.support.v7.widget.CardView>
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/md_grey_600"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="通知" />
+
+    <ImageView
+        android:id="@+id/status"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/md_grey_600"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="25"
+        tools:visibility="visible" />
+</android.support.constraint.ConstraintLayout>
