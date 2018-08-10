@@ -16,8 +16,8 @@ import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.data.config.VersionMessage
 import org.miaowo.miaowo.handler.WelcomeHandler
+import org.miaowo.miaowo.other.ActivityHttpCallback
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.other.template.EmptyCallback
 import org.miaowo.miaowo.other.template.EmptyTextWatcher
 import retrofit2.Call
 import retrofit2.Response
@@ -47,9 +47,9 @@ class WelcomeActivity : AppCompatActivity() {
             App.SP.put(Const.SP_FIRST_BOOT, false)
         }
         // 更新
-        API.Docs.version().enqueue(object : EmptyCallback<VersionMessage>() {
-            override fun onResponse(call: Call<VersionMessage>?, response: Response<VersionMessage>?) {
-                val msg = response?.body()
+        API.Docs.version().enqueue(object : ActivityHttpCallback<VersionMessage>(this) {
+            override fun onSucceed(call: Call<VersionMessage>?, response: Response<VersionMessage>) {
+                val msg = response.body()
                 if (msg != null && msg.version > packageManager.getPackageInfo(App.i.packageName, 0).versionCode) {
                     with(AlertDialog.Builder(App.i)) {
                         setTitle(msg.versionName)
@@ -103,12 +103,21 @@ class WelcomeActivity : AppCompatActivity() {
         save.setOnCheckedChangeListener { _, checked ->
             App.SP.put(Const.SP_SAVE, checked)
         }
+        save.isChecked = App.SP.getBoolean(Const.SP_SAVE, false)
+
+        val savedUser = App.SP.getString(Const.SP_USER, "")
+        val savedPwd = App.SP.getString(Const.SP_PWD, "")
+        user.editText?.setText(savedUser)
+        pwd.editText?.setText(savedPwd)
+        mHandler.inputName = savedUser
+        mHandler.inputPwd = savedPwd
+        mHandler.playButtonAnimator()
     }
 
     private fun initButton() {
         login.setOnClickListener {
             App.SP.run {
-                if (getBoolean(Const.SP_SAVE, false)) {
+                if (save.isChecked) {
                     put(Const.SP_USER, mHandler.inputName)
                     put(Const.SP_PWD, mHandler.inputPwd)
                 }
@@ -118,7 +127,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         register.setOnClickListener {
             App.SP.run {
-                if (getBoolean(Const.SP_SAVE, false)) {
+                if (save.isChecked) {
                     put(Const.SP_USER, mHandler.inputName)
                     put(Const.SP_PWD, mHandler.inputPwd)
                 }
@@ -126,12 +135,8 @@ class WelcomeActivity : AppCompatActivity() {
             mHandler.register()
         }
 
-        forget.setOnClickListener {
-            mHandler.forget()
-        }
+        forget.setOnClickListener { mHandler.forget() }
 
-        github.setOnClickListener {
-            mHandler.github()
-        }
+        github.setOnClickListener { mHandler.github() }
     }
 }

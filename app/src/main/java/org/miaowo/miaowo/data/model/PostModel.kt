@@ -5,7 +5,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.data.bean.Topic
-import org.miaowo.miaowo.other.template.EmptyCallback
+import org.miaowo.miaowo.other.BaseHttpCallback
+import org.miaowo.miaowo.other.template.EmptyHttpCallback
 import retrofit2.Call
 import retrofit2.Response
 
@@ -13,9 +14,9 @@ class PostModel: ViewModel() {
     private val mPost = MutableLiveData<Topic>()
 
     fun load(id: Int): LiveData<Topic> {
-        API.Docs.topic(id).enqueue(object : EmptyCallback<Topic>() {
-            override fun onResponse(call: Call<Topic>?, response: Response<Topic>?) {
-                mPost.postValue(response?.body())
+        API.Docs.topic(id).enqueue(object : BaseHttpCallback<Topic>() {
+            override fun onSucceed(call: Call<Topic>?, response: Response<Topic>) {
+                mPost.postValue(response.body())
             }
         })
         return mPost
@@ -24,9 +25,9 @@ class PostModel: ViewModel() {
     fun refresh() {
         val id = mPost.value?.tid
         if (id != null) {
-            API.Docs.topic(id).enqueue(object : EmptyCallback<Topic>() {
-                override fun onResponse(call: Call<Topic>?, response: Response<Topic>?) {
-                    mPost.postValue(response?.body())
+            API.Docs.topic(id).enqueue(object : BaseHttpCallback<Topic>() {
+                override fun onSucceed(call: Call<Topic>?, response: Response<Topic>) {
+                    mPost.postValue(response.body())
                 }
             })
         }

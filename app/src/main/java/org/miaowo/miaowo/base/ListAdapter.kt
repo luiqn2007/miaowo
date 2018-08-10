@@ -39,15 +39,45 @@ open class ListAdapter<E>(private val mCreator: ViewCreator<E>) : RecyclerView.A
         notifyDataSetChanged()
     }
 
-    fun append(newItems: List<E>?, toHead: Boolean = false) {
+    fun append(newItems: List<E>?) {
         if (newItems == null) return
         prepareList()
         mRAddedSize = mLastAddedSize
         mRAddedPosition = mLastAddedPosition
         mLastAddedSize = newItems.size
-        mLastAddedPosition = if (toHead) 0 else mItems.size
+        mLastAddedPosition = mItems.size
         mItems.addAll(mLastAddedPosition, newItems)
         notifyItemRangeInserted(mLastAddedPosition, newItems.size)
+    }
+
+    fun append(newItem: E) {
+        prepareList()
+        mItems.add(newItem)
+        notifyItemInserted(mItems.size - 1)
+    }
+
+    fun insert(newItem: E, position: Int) {
+        prepareList()
+        val rPosition: Int = when {
+            position < 0 -> 0
+            position > itemCount -> itemCount
+            else -> position
+        }
+
+        mItems.add(rPosition, newItem)
+        notifyItemInserted(rPosition)
+    }
+
+    fun remove(position: Int) {
+        prepareList()
+        val rPosition: Int = when {
+            position < 0 -> 0
+            position > itemCount -> itemCount
+            else -> position
+        }
+
+        mItems.removeAt(rPosition)
+        notifyItemRemoved(rPosition)
     }
 
     fun clear() {

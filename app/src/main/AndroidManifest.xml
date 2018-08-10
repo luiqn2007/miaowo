@@ -42,7 +42,7 @@
         <activity android:name=".activity.ImageActivity" />
         <activity android:name=".activity.SettingActivity" />
         <activity android:name=".activity.ChatActivity" />
-        <activity android:name=".activity.SiteActivity" />
+        <activity android:name=".activity.ListActivity" />
     </application>
 
 </manifest>

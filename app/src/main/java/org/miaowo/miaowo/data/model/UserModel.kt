@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.data.bean.User
-import org.miaowo.miaowo.other.template.EmptyCallback
+import org.miaowo.miaowo.other.BaseHttpCallback
 import retrofit2.Call
 import retrofit2.Response
 
@@ -32,9 +32,9 @@ class UserModel: ViewModel() {
     }
 
     private fun load(username: String): LiveData<User> {
-        API.Docs.user(username).enqueue(object : EmptyCallback<User>() {
-            override fun onResponse(call: Call<User>?, response: Response<User>?) {
-                mUser.postValue(response?.body())
+        API.Docs.user(username.replace(" ", "-")).enqueue(object : BaseHttpCallback<User>() {
+            override fun onSucceed(call: Call<User>?, response: Response<User>) {
+                mUser.postValue(response.body())
             }
         })
         return mUser
@@ -54,7 +54,7 @@ class UserModel: ViewModel() {
                                 finish = true
                             } else {
                                 if (users.pagination?.currentPage != users.pagination?.pageCount) {
-                                    response = API.Docs.users(users.pagination?.next?.qs).execute()
+                                    response = API.Docs.users(users.pagination?.next?.qs ?: "").execute()
                                 } else {
                                     finish = true
                                 }

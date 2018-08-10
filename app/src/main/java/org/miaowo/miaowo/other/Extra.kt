@@ -1,11 +1,11 @@
 package org.miaowo.miaowo.other
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.v4.content.res.ResourcesCompat
-import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ImageSpan
@@ -14,7 +14,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.amulyakhare.textdrawable.TextDrawable
-import com.blankj.utilcode.util.ActivityUtils
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.squareup.picasso.Picasso
@@ -60,9 +59,9 @@ fun TextView.setHTML(html: String?) {
                     override fun onClick(widget: View?) {
                         val url = mark.attrs["href"] ?: ""
                         if (url.startsWith("http:") && !url.startsWith(Const.URL_BASE))
-                            openUri(url)
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                         else
-                            openMiaoPage(Const.URL_BASE, url)
+                            openMiaoPage(context, Const.URL_BASE, url)
                     }
                 }
                 return@addTagHandler arrayOf(clickSpan)
@@ -83,7 +82,7 @@ fun TextView.setHTML(html: String?) {
                 val clickSpan = object : ClickableSpan() {
                     override fun onClick(widget: View?) {
                         Log.i("imageUrlClick", src)
-                        ActivityUtils.getTopActivity().startActivity(Intent(context, ImageActivity::class.java).putExtra(Const.NAME, FormatUtil.fixImagePath(src)))
+                        context.startActivity(Intent(context, ImageActivity::class.java).putExtra(Const.NAME, FormatUtil.fixImagePath(src)))
                     }
                 }
                 return@addTagHandler arrayOf(imgSpan, clickSpan)
@@ -92,23 +91,18 @@ fun TextView.setHTML(html: String?) {
     text = FormatUtil.html(html, textSize, config).trimEnd { it == '\n' }
 }
 
-private fun openMiaoPage(homeUrl: String, path: String) {
+private fun openMiaoPage(context: Context, homeUrl: String, path: String) {
     var subPath = path
     if (path.startsWith(homeUrl))
         subPath = subPath.replace(homeUrl, "")
     while (subPath.startsWith("/"))
         subPath = subPath.substring(1)
     val miaoSub = subPath.split("/")
-    val activity = ActivityUtils.getTopActivity()
     when (miaoSub[0]) {
-        "post" -> activity.startActivity(Intent(activity, PostActivity::class.java).putExtra(Const.ID, miaoSub[1].toInt()))
-        "uid" -> activity.startActivity(Intent(activity, UserActivity::class.java)
+        "post" -> context.startActivity(Intent(context, PostActivity::class.java).putExtra(Const.ID, miaoSub[1].toInt()))
+        "uid" -> context.startActivity(Intent(context, UserActivity::class.java)
                 .putExtra(Const.TYPE, UserActivity.USER_FROM_ID)
                 .putExtra(Const.ID, miaoSub[1].toInt()))
     }
-}
-
-private fun openUri(url: String) {
-    ActivityUtils.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
 

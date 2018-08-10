@@ -23,12 +23,8 @@ class SettingActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> {
-                        FragmentUtils.add(supportFragmentManager, UserSetting.newInstance(), R.id.container)
-                    }
-                    1 -> {
-                        FragmentUtils.add(supportFragmentManager, AppSetting.newInstance(), R.id.container)
-                    }
+                    0 -> FragmentUtils.add(supportFragmentManager, UserSetting.newInstance(), R.id.container)
+                    1 -> FragmentUtils.add(supportFragmentManager, AppSetting.newInstance(), R.id.container)
                 }
             }
         })

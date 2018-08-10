@@ -3,6 +3,7 @@ package org.miaowo.miaowo.interfaces.apiInterface
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.data.bean.*
 import org.miaowo.miaowo.data.config.VersionMessage
+import org.miaowo.miaowo.other.Const
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -21,8 +22,11 @@ interface IApiDocs {
     fun user(@Path("username") username: String,
              @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<User>
 
+    @GET("api/users")
+    fun users(@Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<Users>
+
     @GET("api/users/{qs}")
-    fun users(@Path("qs") qs: String? = null,
+    fun users(@Path("qs") qs: String,
               @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<Users>
 
     /**
@@ -34,8 +38,12 @@ interface IApiDocs {
     /**
      * 未读列表
      */
+
+    @GET("api/unread")
+    fun unread(@Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<Category>
+
     @GET("api/unread/{qs}")
-    fun unread(@Path("qs") qs: String? = null,
+    fun unread(@Path("qs") qs: String,
                @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<Category>
 
     /**
@@ -73,8 +81,14 @@ interface IApiDocs {
     @GET("api/search")
     fun searchUser(@Query("term") key: String,
                    @Query("in") queryIn: String = "users",
-                   @Header("Authorization") authorization: String = "Bearer ${API.token[0]}",
-                   @Query("_uid") searchUid: Int? = null): Call<SearchResult>
+                   @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<SearchResult>
+
+
+    @GET("api/search")
+    fun searchUserMaster(@Query("term") key: String,
+                   @Query("in") queryIn: String = "users",
+                   @Header("Authorization") authorization: String = "Bearer ${Const.TOKEN_MASTER}",
+                   @Query("_uid") searchUid: Int = 7): Call<SearchResult>
 
     @GET("api/search")
     fun searchTopic(@Query("term") key: String,
@@ -86,19 +100,19 @@ interface IApiDocs {
      * 聊天
      */
     @GET("api/user/{username}/chats")
-    fun chatRoom(@Path("username") username: String = API.user.username,
+    fun chatRoom(@Path("username") username: String = API.user.username.replace(" ", "-"),
                  @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ChatRooms>
 
 
     @GET("api/user/{username}/chats/{roomId}")
     fun chatMessage(@Path("roomId") roomId: Int,
-                    @Path("username") username: String = API.user.username,
+                    @Path("username") username: String = API.user.username.replace(" ", "-"),
                     @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ChatRoom>
 
     /**
      * 用户帖子
      */
     @GET("api/user/{username}/posts")
-    fun post(@Path("username") username: String = API.user.username,
+    fun post(@Path("username") username: String = API.user.username.replace(" ", "-"),
              @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<UserPosts>
 }

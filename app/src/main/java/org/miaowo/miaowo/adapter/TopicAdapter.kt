@@ -20,7 +20,7 @@ import org.miaowo.miaowo.util.FormatUtil
  * 显示问题的 Adapter
  * Created by lq2007 on 2017/7/22 0022.
  */
-class TopicAdapter(likeVisible: Boolean, bodyControl: Boolean = false) : ListAdapter<Topic>(
+class TopicAdapter(var likeVisible: Boolean, var bodyControl: Boolean = false) : ListAdapter<Topic>(
         object : ListAdapter.ViewCreator<Topic> {
             override fun createHolder(parent: ViewGroup, viewType: Int): ListHolder {
                 return ListHolder(R.layout.list_post, parent)

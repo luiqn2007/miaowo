@@ -200,7 +200,13 @@ interface IApiUsers {
     @POST("api/v2/users/{uid}/chats")
     fun chat(@Path("uid") uid: Int,
              @Field("message") message: String,
-             @Field("roomId") roomId: Int? = null,
+             @Field("roomId") roomId: Int,
+             @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("api/v2/users/{uid}/chats")
+    fun chat(@Path("uid") uid: Int,
+             @Field("message") message: String,
              @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
 
     /**

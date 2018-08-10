@@ -1,17 +1,25 @@
 package org.miaowo.miaowo.adapter
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.blankj.utilcode.util.ActivityUtils
+import com.sdsmdg.tastytoast.TastyToast
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.App
 import org.miaowo.miaowo.base.ListAdapter
 import org.miaowo.miaowo.base.ListHolder
+import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.data.bean.ChatMessage
+import org.miaowo.miaowo.other.BaseListTouchListener
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.setHTML
 import org.miaowo.miaowo.other.setUserIcon
@@ -21,7 +29,7 @@ import org.miaowo.miaowo.other.setUserIcon
  * Created by luqin on 17-4-7.
  */
 
-class ChatMsgAdapter : ListAdapter<ChatMessage>(
+class ChatMsgAdapter: ListAdapter<ChatMessage>(
         object : ListAdapter.ViewCreator<ChatMessage> {
 
             override fun createHolder(parent: ViewGroup, viewType: Int) = ListHolder(R.layout.list_chat_message, parent)
@@ -41,3 +49,21 @@ class ChatMsgAdapter : ListAdapter<ChatMessage>(
                 return if (item.fromuid == API.user.uid) Const.MY else Const.TO
             }
         })
+
+class ChatMsgListener(context: Context, val adapter: ChatMsgAdapter): BaseListTouchListener(context) {
+    var mSavedClipData: ClipData? = null
+    var mLastCopyIndex = -1
+
+    override fun onLongPress(view: View?, position: Int) {
+        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        if (position == mLastCopyIndex) {
+            cm.primaryClip = mSavedClipData
+            ActivityUtils.getTopActivity().toast("剪贴板已恢复", TastyToast.SUCCESS)
+        } else {
+            mSavedClipData = cm.primaryClip
+            mLastCopyIndex = position
+            cm.primaryClip = ClipData.newPlainText("text", adapter.getItem(position).content)
+            ActivityUtils.getTopActivity().toast("已复制", TastyToast.SUCCESS)
+        }
+    }
+}

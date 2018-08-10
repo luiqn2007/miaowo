@@ -159,13 +159,15 @@ class ProcessButton(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             text = mText
             mIsShowProcess = false
             mDrawWidth = 0f
+            updateProcess()
         }
     }
 
     override fun setProcess(process: Float, text: String?, isError: Boolean) {
-        this.process = process
-        this.processText = text ?: ""
+        if (!mIsShowProcess) showProcess()
+        this.processText = text ?: mProcessText
         this.isError = isError
+        this.process = process
         updateProcess()
     }
 

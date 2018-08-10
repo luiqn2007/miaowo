@@ -1,74 +1,76 @@
 package org.miaowo.miaowo.data.model
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import org.miaowo.miaowo.API
+import org.miaowo.miaowo.activity.MainActivity
 import org.miaowo.miaowo.data.bean.Category
-import org.miaowo.miaowo.fragment.CategoryFragment
-import org.miaowo.miaowo.other.template.EmptyCallback
+import org.miaowo.miaowo.other.BaseHttpCallback
 import retrofit2.Call
 import retrofit2.Response
 
 class CategoryModel: ViewModel() {
 
-    private val sCategories = mutableMapOf<Int, MutableLiveData<Category>>()
+    val category = MutableLiveData<Category>()
 
-    operator fun get(id: Int): LiveData<Category> {
-        if (sCategories[id] == null) sCategories[id] = MutableLiveData()
-        if (id == CategoryFragment.UNREAD) {
-            API.Docs.unread().enqueue(object : EmptyCallback<Category>() {
-                override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                    sCategories[id]!!.postValue(response?.body())
+    fun load(id: Int) {
+        if (id == Category.UNREAD_ID) {
+            API.Docs.unread().enqueue(object : BaseHttpCallback<Category>() {
+                override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                    category.postValue(response.body())
                 }
             })
         } else {
-            API.Docs.category(id).enqueue(object : EmptyCallback<Category>() {
-                override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                    sCategories[id]!!.postValue(response?.body())
+            API.Docs.category(id).enqueue(object : BaseHttpCallback<Category>() {
+                override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                    category.postValue(response.body())
                 }
             })
         }
-        return sCategories[id]!!
     }
 
-    fun next(id: Int) {
-        sCategories[id]?.apply {
+    fun next() {
+        category.apply {
             val category = value
             if (category != null && category.pagination?.pageCount != category.pagination?.currentPage) {
-                if (id == CategoryFragment.UNREAD) {
-                    API.Docs.unread(category.pagination?.next?.qs).enqueue(object : EmptyCallback<Category>() {
-                        override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                            sCategories[id]!!.postValue(response?.body())
+                if (category.cid == Category.UNREAD_ID) {
+                    API.Docs.unread(category.pagination?.next?.qs ?: "").enqueue(object : BaseHttpCallback<Category>() {
+                        override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                            this@CategoryModel.category.postValue(response.body())
                         }
                     })
                 } else {
-                    API.Docs.category(id, category.pagination?.next?.qs ?: "").enqueue(object : EmptyCallback<Category>() {
-                        override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                            sCategories[id]!!.postValue(response?.body())
+                    API.Docs.category(category.cid, category.pagination?.next?.qs ?: "").enqueue(object : BaseHttpCallback<Category>() {
+                        override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                            this@CategoryModel.category.postValue(response.body())
                         }
                     })
                 }
             } else {
-                postValue(null)
+                load(Category.UNREAD_ID)
             }
         }
     }
 
-    fun first(id: Int) {
-        sCategories[id]?.apply {
-            if (id == CategoryFragment.UNREAD) {
-                API.Docs.unread().enqueue(object : EmptyCallback<Category>() {
-                    override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                        sCategories[id]!!.postValue(response?.body())
-                    }
-                })
+    fun first() {
+        category.apply {
+            val category = value
+            if (category != null) {
+                if (category.cid == Category.UNREAD_ID) {
+                    API.Docs.unread().enqueue(object : BaseHttpCallback<Category>() {
+                        override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                            this@CategoryModel.category.postValue(response.body())
+                        }
+                    })
+                } else {
+                    API.Docs.category(category.cid).enqueue(object : BaseHttpCallback<Category>() {
+                        override fun onSucceed(call: Call<Category>?, response: Response<Category>) {
+                            this@CategoryModel.category.postValue(response.body())
+                        }
+                    })
+                }
             } else {
-                API.Docs.category(id).enqueue(object : EmptyCallback<Category>() {
-                    override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                        sCategories[id]!!.postValue(response?.body())
-                    }
-                })
+                load(Category.UNREAD_ID)
             }
         }
     }

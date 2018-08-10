@@ -6,7 +6,7 @@ import retrofit2.Call
 import retrofit2.http.*
 
 /**
- * /categories
+ * /category
  * Categories
  *
  * Admin!!
@@ -45,13 +45,13 @@ interface IApiCategories {
      * }
      */
     @FormUrlEncoded
-    @POST("api/v2/categories/")
+    @POST("api/v2/category/")
     fun create(@Field("name") name: String,
-               @Field("description") description: String?,
+               @Field("description") description: String = "",
                @Field("bgColor") bgColor: String = "#e95c5a",
                @Field("color") color: String = "#fff",
                @Field("parentCid") parentCid: Int = 0,
-               @Field("icon") icon: String? = null,
+               @Field("icon") icon: String = "",
                @Field("clazz") clazz: String = "col-md-3 col-xs-6",
                @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
 
@@ -67,12 +67,12 @@ interface IApiCategories {
      * }
      */
     @FormUrlEncoded
-    @PUT("api/v2/categories/{cid}")
+    @PUT("api/v2/category/{cid}")
     fun update(@Path("cid") cid: Int,
                @Field("name") name: String,
-               @Field("description") description: String? = null,
-               @Field("bgColor") bgColor: Int? = null,
-               @Field("color") color: Int? = null,
+               @Field("description") description: String = "",
+               @Field("bgColor") bgColor: String = "#e95c5a",
+               @Field("color") color: String = "#fff",
                @Field("icon") icon: String? = null,
                @Field("parentCid") parentCid: Int,
                @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
@@ -88,7 +88,7 @@ interface IApiCategories {
      *     "payload": {}
      * }
      */
-    @DELETE("api/v2/categories/{cid}")
+    @DELETE("api/v2/category/{cid}")
     fun delete(@Path("cid") cid: Int,
                @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
 
@@ -103,7 +103,7 @@ interface IApiCategories {
      *     "payload": {}
      * }
      */
-    @PUT("api/v2/categories/{cid}/state")
+    @PUT("api/v2/category/{cid}/state")
     fun enable(@Path("cid") cid: Int,
                @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
 
@@ -118,7 +118,7 @@ interface IApiCategories {
      *     "payload": {}
      * }
      */
-    @DELETE("api/v2/categories/{cid}/state")
+    @DELETE("api/v2/category/{cid}/state")
     fun disable(@Path("cid") cid: Int,
                 @Header("Authorization") authorization: String = "Bearer ${API.token[0]}"): Call<ResponseBody>
 
@@ -130,7 +130,7 @@ interface IApiCategories {
      * privileges(特权?) // groups: JSON Array
      */
     @FormUrlEncoded
-    @PUT("api/v2/categories/{cid}/privileges")
+    @PUT("api/v2/category/{cid}/privileges")
     fun privilegesAdd(@Path("cid") cid: Int,
                       @Field("privileges") privileges: Iterable<String>,
                       @Field("groups") groups: Iterable<String>,
@@ -142,7 +142,7 @@ interface IApiCategories {
      * Requires: privileges (array), groups (array)
      */
     @FormUrlEncoded
-    @DELETE("api/v2/categories/{cid}/privileges")
+    @DELETE("api/v2/category/{cid}/privileges")
     fun privilegesDelete(@Path("cid") cid: Int,
                          @Field("privileges") privileges: Iterable<String>,
                          @Field("groups") groups: Iterable<String>,

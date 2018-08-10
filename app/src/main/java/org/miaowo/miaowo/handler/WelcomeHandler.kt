@@ -4,7 +4,7 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.view.View
-import com.blankj.utilcode.util.ActivityUtils
+import com.blankj.utilcode.util.KeyboardUtils
 import com.sdsmdg.tastytoast.TastyToast
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -16,9 +16,9 @@ import org.miaowo.miaowo.base.extra.toast
 import org.miaowo.miaowo.data.bean.Index
 import org.miaowo.miaowo.data.bean.SearchResult
 import org.miaowo.miaowo.data.bean.User
+import org.miaowo.miaowo.other.BaseHttpCallback
 import org.miaowo.miaowo.other.Const
 import org.miaowo.miaowo.other.template.EmptyAnimatorListener
-import org.miaowo.miaowo.other.template.EmptyCallback
 import org.miaowo.miaowo.ui.processView.ProcessButton
 import retrofit2.Call
 import retrofit2.Response
@@ -31,28 +31,37 @@ class WelcomeHandler(activity: WelcomeActivity) {
     var inputPwd = ""
     var inputName = ""
     var inputEmail = ""
+    var loginUid: Int? = null
     // 登录注册等功能
-    fun login(id: Int? = null) {
+    fun login() {
         val processView = mActivity.findViewById<ProcessButton>(R.id.login)
+        KeyboardUtils.hideSoftInput(mActivity)
 
-        val stepIndex = object : EmptyCallback<Index>() {
-            override fun onResponse(call: Call<Index>?, response: Response<Index>?) {
+        val stepIndex = object : BaseHttpCallback<Index>() {
+            override fun onSucceed(call: Call<Index>?, response: Response<Index>) {
                 setInputEnable(true)
                 processView.setProcess(100f, mActivity.getString(R.string.process_login_over, API.user.username), false)
-                MainActivity.CATEGORY_LIST = response?.body()?.categories
+                MainActivity.CATEGORY_LIST = response.body()?.categories
                 mActivity.startActivity(Intent(mActivity.applicationContext, MainActivity::class.java))
-                super.onResponse(call, response)
+                mActivity.finish()
             }
 
-            override fun onFailure(call: Call<Index>?, t: Throwable?) {
-                t?.printStackTrace()
+            override fun onFailure(call: Call<Index>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message") ?: errMsg.getString("code")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
                 setInputEnable(true)
-                processView.setProcess(100f, t?.message, true)
+                processView.setProcess(100f, error, true)
             }
         }
-        val stepUser = object : EmptyCallback<User>() {
-            override fun onResponse(call: Call<User>?, response: Response<User>?) {
-                val user = response?.body()
+        val stepUser = object : BaseHttpCallback<User>() {
+            override fun onSucceed(call: Call<User>?, response: Response<User>) {
+                val user = response.body()
                 if (user != null) {
                     API.user = user
                     API.Docs.index().enqueue(stepIndex)
@@ -60,70 +69,92 @@ class WelcomeHandler(activity: WelcomeActivity) {
                 processView.setProcess(80f, mActivity.getString(R.string.process_category), false)
             }
 
-            override fun onFailure(call: Call<User>?, t: Throwable?) {
-                super.onFailure(call, t)
-                t?.printStackTrace()
+            override fun onFailure(call: Call<User>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message") ?: errMsg.getString("code")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
                 setInputEnable(true)
-                processView.setProcess(60f, t?.message, true)
+                processView.setProcess(60f, error, true)
             }
         }
-        val stepToken = object : EmptyCallback<ResponseBody>() {
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val obj = JSONObject(response?.body()?.string())
+        val stepToken = object : BaseHttpCallback<ResponseBody>() {
+            override fun onSucceed(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
+                val obj = JSONObject(response.body()?.string())
                 if (obj.getString("code").toUpperCase() == Const.RET_OK) {
                     val newToken = obj.getJSONObject("payload").getString("token")
                     API.token.clear()
                     API.token.add(newToken)
-                    API.Docs.user(inputName).enqueue(stepUser)
+                    API.Docs.user(inputName.replace(" ", "-")).enqueue(stepUser)
                 } else {
                     processView.setProcess(40f, "无法获取 Token", true)
                 }
                 processView.setProcess(60f, mActivity.getString(R.string.process_user), false)
             }
 
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                super.onFailure(call, t)
-                t?.printStackTrace()
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message") ?: errMsg.getString("code")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
                 setInputEnable(true)
-                processView.setProcess(40f, t?.message, true)
+                processView.setProcess(40f, error, true)
             }
         }
-        val stepSearch = object : EmptyCallback<SearchResult>() {
-            override fun onResponse(call: Call<SearchResult>?, response: Response<SearchResult>?) {
-                if (response?.body() == null || response.body()!!.matchCount <= 0) {
+        val stepSearch = object : BaseHttpCallback<SearchResult>() {
+            override fun onSucceed(call: Call<SearchResult>?, response: Response<SearchResult>) {
+                if (response.body()?.matchCount ?: -1 <= 0) {
                     processView.setProcess(0f, "无此用户", true)
                     setInputEnable(true)
                 } else {
-                    val uid = response.body()!!.users[0].uid
+                    val uid = response.body()?.users?.firstOrNull()?.uid ?: -1
                     API.Users.tokenCreate(inputPwd, uid).enqueue(stepToken)
                 }
                 processView.setProcess(40f, mActivity.getString(R.string.process_get_token), false)
             }
 
-            override fun onFailure(call: Call<SearchResult>?, t: Throwable?) {
-                super.onFailure(call, t)
-                t?.printStackTrace()
+            override fun onFailure(call: Call<SearchResult>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message") ?: errMsg.getString("code")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
                 setInputEnable(true)
-                processView.setProcess(20f, t?.message, true)
+                processView.setProcess(20f, error, true)
             }
         }
 
-        if (id == null) {
+        val uid = loginUid
+        loginUid = null
+        if (uid == null) {
             processView.setProcess(20f, "搜索用户", false)
-            API.Docs.searchUser(inputName, authorization = "Bearer ${Const.TOKEN_MASTER}", searchUid = 7).enqueue(stepSearch)
+            API.Docs.searchUserMaster(inputName).enqueue(stepSearch)
             setInputEnable(false)
         } else {
-            API.Users.tokenCreate(inputPwd, id).enqueue(stepToken)
+            API.Users.tokenCreate(inputPwd, uid).enqueue(stepToken)
         }
     }
     fun register() {
         val processView = mActivity.findViewById<ProcessButton>(R.id.register)
+        KeyboardUtils.hideSoftInput(mActivity)
 
         processView.setProcess(0f, mActivity.getString(R.string.process_reg), false)
-        API.Users.create(inputName, inputPwd, inputEmail).enqueue(object : EmptyCallback<ResponseBody>() {
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val obj = JSONObject(response?.body()?.string())
+        API.Users.create(inputName, inputPwd, inputEmail).enqueue(object : BaseHttpCallback<ResponseBody>() {
+            override fun onSucceed(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
+                val obj = JSONObject(response.body()?.string())
                 if (obj.getString("code").toUpperCase() == Const.RET_OK) {
+                    loginUid = obj.getJSONObject("payload").getInt("uid")
                     login()
                     processView.setProcess(100f, mActivity.getString(R.string.process_reg_over), false)
                 } else {
@@ -131,20 +162,37 @@ class WelcomeHandler(activity: WelcomeActivity) {
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                processView.setProcess(100f, t?.message, true)
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message") ?: errMsg.getString("code")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
+                processView.setProcess(100f, error, true)
             }
         })
     }
     fun forget() {
         val processView = mActivity.findViewById<ProcessButton>(R.id.forget)
-        API.Users.password(API.user.password, inputPwd).enqueue(object : EmptyCallback<ResponseBody>() {
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                processView.setProcess(100f, t?.message, true)
+        KeyboardUtils.hideSoftInput(mActivity)
+        API.Users.password(API.user.password, inputPwd).enqueue(object : BaseHttpCallback<ResponseBody>() {
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?, errMsg: Any?) {
+                val error = when(errMsg) {
+                    is String -> errMsg
+                    is JSONObject -> errMsg.getString("message")
+                    else -> {
+                        t?.printStackTrace()
+                        t?.message
+                    }
+                }
+                processView.setProcess(100f, error, true)
             }
 
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val msg = response?.body()?.string()
+            override fun onSucceed(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
+                val msg = response.body()?.string()
                 if (msg == null) {
                     processView.setProcess(100f, mActivity.getString(R.string.err_ill), true)
                 } else {
@@ -164,7 +212,8 @@ class WelcomeHandler(activity: WelcomeActivity) {
     }
     fun github() {
         val processView = mActivity.findViewById<ProcessButton>(R.id.github)
-        ActivityUtils.getTopActivity().toast("暂未实现", TastyToast.ERROR)
+        KeyboardUtils.hideSoftInput(mActivity)
+        mActivity.toast("暂未实现", TastyToast.ERROR)
     }
     private fun setInputEnable(isEnable: Boolean) {
         mActivity.findViewById<View>(R.id.user).isEnabled = isEnable
@@ -195,20 +244,14 @@ class WelcomeHandler(activity: WelcomeActivity) {
             override fun onAnimationEnd(animation: Animator?) {
                 mButtonAlphaBegins.clear()
             }
-
-            override fun onAnimationStart(animation: Animator?) {
-                mButtonEnableTargets.forEach {
-                    mActivity.findViewById<View>(it.key).isEnabled = it.value
-                }
-            }
         })
         mButtonEnableAnimator.duration = 300
     }
     fun playButtonAnimator() {
-        mActivity.findViewById<ProcessButton>(R.id.login).setProcess(0f, mActivity.getString(R.string.login), false)
-        mActivity.findViewById<ProcessButton>(R.id.forget).setProcess(0f, mActivity.getString(R.string.forget), false)
-        mActivity.findViewById<ProcessButton>(R.id.github).setProcess(0f, mActivity.getString(R.string.github), false)
-        mActivity.findViewById<ProcessButton>(R.id.register).setProcess(0f, mActivity.getString(R.string.register), false)
+        mActivity.findViewById<ProcessButton>(R.id.login).hideProcess()
+        mActivity.findViewById<ProcessButton>(R.id.forget).hideProcess()
+        mActivity.findViewById<ProcessButton>(R.id.github).hideProcess()
+        mActivity.findViewById<ProcessButton>(R.id.register).hideProcess()
         if (inputName.isNotBlank() && inputPwd.isNotBlank()) {
             // +login, +github
             mButtonEnableTargets[R.id.login] = true
@@ -228,6 +271,9 @@ class WelcomeHandler(activity: WelcomeActivity) {
             mButtonEnableTargets[R.id.github] = false
             mButtonEnableTargets[R.id.forget] = inputEmail.isNotBlank()
             mButtonEnableTargets[R.id.register] = false
+        }
+        mButtonEnableTargets.forEach {
+            mActivity.findViewById<View>(it.key).isEnabled = it.value
         }
         if (mButtonEnableAnimator.isRunning)
             mButtonEnableAnimator.cancel()

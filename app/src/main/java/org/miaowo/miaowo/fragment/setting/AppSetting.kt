@@ -11,16 +11,13 @@ import android.widget.TextView
 import com.blankj.utilcode.util.ActivityUtils.getTopActivity
 import kotlinx.android.synthetic.main.fragment_setting_app.*
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import org.miaowo.miaowo.API
 import org.miaowo.miaowo.App
 import org.miaowo.miaowo.R
 import org.miaowo.miaowo.base.ListHolder
-import org.miaowo.miaowo.base.extra.error
 import org.miaowo.miaowo.base.extra.inflateId
-import org.miaowo.miaowo.other.ActivityCallback
+import org.miaowo.miaowo.other.ActivityHttpCallback
 import org.miaowo.miaowo.other.Const
-import org.miaowo.miaowo.other.template.EmptyCallback
 import retrofit2.Call
 import retrofit2.Response
 
@@ -78,18 +75,10 @@ class AppSetting : Fragment() {
             val tk = API.token[position]
             holder.find<TextView>(R.id.token)?.text = tk
             holder[R.id.remove]?.setOnClickListener {
-                API.Users.tokenRemove(tk, API.user.uid).enqueue(object : ActivityCallback<ResponseBody>(getTopActivity()) {
-                    override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                        val obj = JSONObject(response?.body()?.string())
-                        if (obj.getString("code").toUpperCase() == Const.RET_OK) {
-                            var err = obj.getString("message")
-                            if (err.isNullOrBlank()) err = obj.getString("code")
-                            if (err.isNullOrBlank()) err = activity.getString(R.string.err_ill)
-                            getTopActivity().error(err)
-                        } else {
-                            API.token.remove(tk)
-                            notifyDataSetChanged()
-                        }
+                API.Users.tokenRemove(tk, API.user.uid).enqueue(object : ActivityHttpCallback<ResponseBody>(getTopActivity()) {
+                    override fun onSucceed(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
+                        API.token.remove(tk)
+                        notifyDataSetChanged()
                     }
                 })
             }

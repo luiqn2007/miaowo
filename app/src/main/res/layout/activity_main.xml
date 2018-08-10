@@ -31,10 +31,19 @@
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 
-        <FrameLayout
-            android:id="@+id/container"
+        <com.liaoinstan.springview.widget.SpringView
+            android:id="@+id/springView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:footer="@layout/default_footer"
+            app:header="@layout/default_header">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+        </com.liaoinstan.springview.widget.SpringView>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -42,11 +51,14 @@
         android:layout_width="@dimen/fabSize"
         android:layout_height="@dimen/fabSize"
         android:layout_margin="@dimen/fabMargin"
+        android:visibility="gone"
+        android:onClick="fabClick"
+        app:layout_behavior="org.miaowo.miaowo.other.FabScrollBehavior"
         app:rippleColor="@color/fabRipple"
         app:backgroundTint="@color/fabBackground"
         app:srcCompat="@drawable/add"
         app:elevation="@dimen/fabElevation"
         app:fabSize="auto"
-        app:layout_anchor="@id/container"
+        app:layout_anchor="@id/springView"
         app:layout_anchorGravity="end|bottom" />
 </android.support.design.widget.CoordinatorLayout>

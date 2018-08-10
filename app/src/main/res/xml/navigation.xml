@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Drawer
+    headerPadding="true"
+    onDrawerItemClickListener="onChoose"
+    showDrawerOnFirstLaunch="true">
+
+    <AccountHeader
+        onlyMainProfileImageVisible="true"
+        textColor="BLACK"
+        nameTypeface="DEFAULT_BOLD"
+        emailTypeface="MONOSPACE">
+        <ProfileDrawerItem
+            selectedBackgroundAnimated="true"
+            nameShown="true"/>
+    </AccountHeader>
+
+    <DrawerItems>
+        <SecondaryDrawerItem
+            name="@string/notification"
+            icon="faw_bell"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" >
+            <BadgeStyle
+                color="WHITE"
+                pressedColor="WHITE"
+                textColor="DKGRAY" />
+        </SecondaryDrawerItem>
+
+        <SecondaryDrawerItem
+            name="@string/inbox"
+            icon="faw_inbox"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED"
+            badge="52" >
+            <BadgeStyle
+                color="WHITE"
+                pressedColor="WHITE"
+                textColor="DKGRAY" />
+        </SecondaryDrawerItem>
+
+        <SecondaryDrawerItem
+            name="@string/chat"
+            icon="faw_commenting"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED"
+            badge="25" >
+            <BadgeStyle
+                color="WHITE"
+                pressedColor="WHITE"
+                textColor="DKGRAY" />
+        </SecondaryDrawerItem>
+
+        <SectionDrawerItem
+            name="@string/square"
+            divider="true" >
+            <BadgeStyle
+                color="WHITE"
+                pressedColor="WHITE"
+                textColor="DKGRAY" />
+        </SectionDrawerItem>
+
+        <CategoryDrawerItems
+            icon="faw_question"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" />
+
+        <SecondaryDrawerItem
+            name="@string/unread"
+            icon="faw_inbox"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" />
+
+        <SectionDrawerItem
+            name="@string/site"
+            divider="true" >
+        </SectionDrawerItem>
+
+        <SecondaryDrawerItem
+            name="@string/status"
+            icon="faw_tasks"
+            badge="√"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" >
+            <BadgeStyle
+                color="WHITE"
+                pressedColor="WHITE"
+                textColor="GREEN" />
+        </SecondaryDrawerItem>
+
+        <SecondaryDrawerItem
+            name="@string/blog"
+            icon="faw_rocket"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" />
+
+        <SecondaryDrawerItem
+            name="@string/feedback"
+            icon="faw_comments"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED" />
+    </DrawerItems>
+
+    <StickyDrawerItems>
+        <SecondaryDrawerItem
+            name="@string/setting"
+            icon="faw_cogs"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED"/>
+        <SecondaryDrawerItem
+            name="@string/logout"
+            icon="faw_share_square"
+            selectedColor="WHITE"
+            selectedIconColor="RED"
+            selectedTextColor="RED"/>
+    </StickyDrawerItems>
+</Drawer>

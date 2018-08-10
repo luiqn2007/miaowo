@@ -15,7 +15,8 @@ import com.squareup.picasso.Picasso
 import okhttp3.Call
 import okhttp3.Request
 import okhttp3.Response
-import org.miaowo.miaowo.other.template.EmptyCallback
+import org.miaowo.miaowo.other.BaseHttpCallback
+import org.miaowo.miaowo.other.template.EmptyHttpCallback
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.properties.Delegates
@@ -62,14 +63,14 @@ class App : Application() {
      * 进行升级操作
      */
     fun update(url: String) {
-        API.okhttp.newCall(Request.Builder().url(url).build()).enqueue(object : EmptyCallback<Any>() {
-            override fun onResponse(call: Call?, response: Response?) {
+        API.okhttp.newCall(Request.Builder().url(url).build()).enqueue(object : BaseHttpCallback<Any>() {
+            override fun onSucceed(call: Call?, response: Response) {
                 val dir = getDir("update", Context.MODE_PRIVATE)
                 if (!dir.isDirectory) dir.mkdirs()
                 val file = File(dir, "miaowo.apk")
                 if (file.exists()) file.delete()
                 if (!file.createNewFile()) throw Exception(getString(R.string.err_apk))
-                response?.body()?.byteStream()?.apply {
+                response.body()?.byteStream()?.apply {
                     val out = FileOutputStream(file)
                     copyTo(out)
                     out.flush()

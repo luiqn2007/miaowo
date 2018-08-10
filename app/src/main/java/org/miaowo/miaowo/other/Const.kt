@@ -34,7 +34,7 @@ object Const {
     const val CBODY_CONTENT = 0
     const val CBODY_FIRST = 1
     const val CBODY_LAST = 2
-    // result
+    // results
     const val RET_OK = "OK"
     // id
     const val MY = 1
@@ -72,6 +72,7 @@ object Const {
             R.color.md_teal_700,
             R.color.md_yellow_700
     )
+
     val DOWNLOAD_FILE_TYPES = arrayOf(".zip", ".rar", ".pdf", ".doc", ".xls", ".mp3", ".wma"
             , ".ogg", ".m4a", ".wav", ".avi", ".mov", ".mp4", ".mpg", ".3gp", ".bin", ".apk"
             , ".gif", ".png", ".jpg", ".jpeg")
